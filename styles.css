@@ -1,0 +1,1857 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Nunito', sans-serif;
+  height: 100vh;
+  background: linear-gradient(116.82deg, #E0EEFB 0%, #DDE6F9 100%);
+  color: #444;
+  overflow-y: hidden;
+}
+
+p {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+
+.logo {
+  width: clamp(144px, 10vw, 576px);
+  height: clamp(30px, 2.05vw, 118.35px);
+  top: 40px;
+  left: 50vw;
+  transform: translateX(-50%);
+  gap: 0px;
+  opacity: 0.9;
+  position: fixed;
+  background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/logo/logo.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.logo:hover {
+  opacity: 1;
+}
+
+.bot-avatar {
+  height: 32px;
+  width: 32px;
+  border-radius: 16px;
+  background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/dolores.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.user-avatar {
+  height: 32px;
+  width: 32px;
+  border-radius: 16px;
+  /* background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png"); */
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+
+.chat-container {
+  position: absolute;
+  top: 10vh;
+  transform: translateX(-50%);
+  left: 50%;
+  min-width: 400px;
+  width: 50vw;
+  bottom: 10vh;
+  max-height: 80vh;
+}
+
+
+
+.chat-container.active {
+  display: flex;
+}
+
+.chat-container:not(.active) {
+  display: none;
+}
+
+.chat-messages::-webkit-scrollbar {
+  width: 0px;
+}
+
+.chat-messages {
+  z-index: -1;
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-wrap: break-word;
+  
+}
+
+.user-message,
+.bot-message {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.user-message {
+  justify-content: flex-start;
+  flex-direction: row-reverse;
+  align-items: flex-end;
+}
+
+
+.bot-message {
+  justify-content: flex-start;
+}
+
+
+.user-profile,
+.bot-profile {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #5080DE0D;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.message-bubble {
+  width: auto;
+  max-width: 35vw;
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 20px;
+  margin: 5px 5px 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-weight: thick;
+  font-size: 15px;
+}
+
+
+
+
+.user-message .message-bubble {
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 0;
+  background-color: #5080DE;
+  color: #fff;
+}
+
+.bot-message .message-bubble {
+  border-bottom-left-radius: 0;
+}
+
+@keyframes generating {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.bot-avatar.loading {
+  animation-name: generating;
+  animation-timing-function: ease-in-out;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+}
+
+@keyframes textGen {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 1;
+  }
+
+
+}
+
+.message-bubble.loading .ellipsis-gif {
+  height: 19.6px;
+  width: 117.6px;
+  opacity: 0.5;
+  background-image: url('https://doloreschatbucket.s3.us-east-2.amazonaws.com/gifs/chat/loading.gif');
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.side-container {
+  z-index: 1;
+  position: fixed;
+  top: 32px;
+  left: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+}
+
+.menu-container {
+  position: fixed;
+  top: 32px;
+  right: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.bottom-container {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+}
+
+.chat-bar-container {
+  font-family: 'Nunito', sans-serif;
+  z-index: 2;
+  bottom: 30px;
+  width: 50vw;
+  transform: translateX(-50%);
+  left: 50%;
+  position: fixed;
+  display: inline-flex;
+  align-items: center;
+  background-color: #FFFFFF;
+  width: 50vw;
+  justify-content: center;
+  border-radius: 35px;
+  padding: 10px;
+  gap: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chat-bar-container:not(.active) {
+  transition: all 0.2s ease-in-out;
+  display: none;
+}
+
+.chat-bar-container.active {
+  transition: all 0.2s ease-in-out;
+}
+
+.chat-bar-container input[id="user-input"] {
+  flex: 1;
+  font-family: 'Nunito', sans-serif;
+  padding: 15px;
+  border: none;
+  border-radius: 70px;
+  background-color: #5080DE0D;
+  outline: none;
+}
+
+.chat-buttons {
+  width: 48px;
+  height: 48px;
+  background-color: transparent;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  opacity: 0.5;
+}
+
+.chat-buttons.active {
+  opacity: 1;
+}
+
+.chat-buttons:hover {
+  opacity: 0.95;
+  background-color: #5080DE0D;
+}
+
+.chat-icons {
+  width: 50%;
+  height: 50%;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.chat-icons.add {
+  background-image: url("https://doloreschatbucket.s3.us-east-2.ama/zonaws.com/icons/chat/add.svg");
+}
+
+.chat-icons.mic {
+  background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/chat/mic.svg");
+}
+
+.chat-icons.send {
+  background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/chat/send.svg");
+}
+
+.button {
+  width: 48px;
+  height: 48px;
+  background-color: #FFFFFF;
+  opacity: 0.5;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.button.active {
+  opacity: 1;
+}
+
+.button:hover {
+  opacity: 0.95;
+}
+
+.button-icon {
+  width: 50%;
+  height: 50%;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.button-icon.chat {
+  background-image: url('https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/side_menu/chat.svg');
+}
+
+.button-icon.form {
+  background-image: url('https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/side_menu/form.svg');
+}
+
+.button-icon.user {
+  background-image: url('https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/side_menu/user.svg');
+}
+
+.button-icon.menu {
+  background-image: url('https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/side_menu/menu.svg');
+}
+
+.button-icon.download {
+  background-image: url('https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/side_menu/download.svg');
+}
+
+.button-icon.share {
+  background-image: url('https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/side_menu/share.svg');
+}
+
+.button-icon.info {
+  background-image: url('https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/side_menu/info.svg');
+}
+
+::-webkit-scrollbar {
+  width: 0;
+}
+
+.form-container {
+  position: absolute;
+  top: 10vh;
+  align-items: center;
+  width: 50%;
+  margin: 10vh auto 0px;
+  left: 25%;
+  padding: 20px;
+  background-color: #FFFFFF;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow-y: scroll;
+  border-radius: 10px 10px 10px 10px;
+}
+
+.form-container:not(.active) {
+  transition: all 0.2s ease-in-out;
+  display: none;
+}
+
+.form-container.active {
+  transition: all 0.2s ease-in-out;
+}
+
+#header {
+  height: auto;
+  background-color: #FFFFFF;
+  border-radius: 10px 10px 10px 10px;
+}
+
+#header h1 {
+  margin: 0;
+  font-size: clamp(18px, 3vw, 24px);
+}
+
+.sub-heading {
+  margin-top: 5px;
+  font-size: clamp(14px, 2vw, 16px);
+  color: #666;
+}
+
+#progressBar {
+  height: 5px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+#progress {
+  background-color: #5080DE;
+  height: 100%;
+  width: 0;
+  transition: width 0.3s ease;
+}
+
+.section {
+  margin-top: 30px;
+}
+
+.subsection {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  /* padding: 10px 0px 10px; */
+  font-size: clamp(14px, 2vw, 16px);
+}
+
+
+input[type="text"],
+input[type="tel"] {
+  width: calc(100% - 16px);
+  padding: 8px;
+  border-radius: 10px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #f0f0f0;
+  outline: none;
+  box-sizing: border-box;
+}
+
+label[for="male"],
+label[for="female"] {
+  margin-right: 25px;
+  margin-left: 5px;
+}
+
+.radio-group {
+  display: flex;
+  align-items: center;
+
+  padding: 10px 0px 10px;
+  gap: 10px 5px;
+}
+
+.radio-group input[type="radio"] {
+  align-items: center;
+}
+
+p [id="diffAdd"] {
+  margin-top: 5px;
+}
+
+.toggle-switch {
+  display: inline-block;
+  margin-top: 10px;
+}
+
+.toggle-switch-checkbox {
+  opacity: 0;
+  position: absolute;
+}
+
+.toggle-switch-label {
+  display: inline-block;
+  position: relative;
+  width: 36px;
+  height: 22px;
+  background-color: #ccc;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  padding: 0px;
+}
+
+.toggle-switch-label .toggle-switch-inner {
+  display: block;
+  width: 18px;
+  height: 18px;
+  background-color: white;
+  border-radius: 50%;
+  position: absolute;
+  left: 2px;
+  bottom: 2px;
+  transition: transform 0.3s ease;
+}
+
+.toggle-switch-checkbox:checked+.toggle-switch-label {
+  background-color: #5080DE;
+}
+
+.toggle-switch-checkbox:checked+.toggle-switch-label .toggle-switch-inner {
+  transform: translateX(14px);
+}
+
+.hidden {
+  display: none;
+}
+
+.download-button-container {
+  text-align: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.download-button-container button {
+  background-color: #FFFFFF;
+  border: 2px solid #5080DE;
+  color: #5080DE;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  font-size: clamp(14px, 2vw, 16px);
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 50vw;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.download-button-container button:hover {
+  background-color: #5080DE;
+  color: #FFFFFF;
+}
+
+/* .userPage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #fff;
+  padding: 20px;
+  min-width: 250px;
+  max-width: calc(100vw - 40px);
+  max-height: calc(100vh - 40px);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 24px;
+} */
+
+
+.user-info {
+  margin: 20px
+}
+
+.user-info,
+.title {
+  display: flex;
+  align-items: center;
+}
+
+.title {
+  gap: 5px;
+}
+
+.data-text {
+  margin-bottom: 5px;
+  margin-top: 5px;
+
+}
+
+.data-text.value {
+  display: block;
+  background-color: #afb1b44d;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-radius: 7px;
+  color: rgba(44, 41, 41, 0.582);
+  width: fit-content;
+}
+
+.profile-pic {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 20px;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.sign-out {
+  background-color: rgb(241, 93, 93);
+  font-family: 'Nunito', sans-serif;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  /* margin-top: 15px; */
+  margin-right: 25px;
+}
+
+.subscribe {
+  background-color: #5080DE;
+  font-family: 'Nunito', sans-serif;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  /* margin-top: 15px; */
+}
+
+.signout-modal {
+  display: none;
+  position: fixed;
+  top: 62.5%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+
+.signout-modal-content {
+  /* backdrop-filter: blur(1px); */
+  isolation: isolate;
+  background-color: white;
+  position: fixed;
+  /* margin: 15% auto; */
+  padding: 20px;
+  border: 1px solid #ccc;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  outline: none;
+  border: none;
+  border-radius: 20px;
+  width: fit-content;
+  z-index: 2;
+
+}
+
+.confirm-signout,
+.cancel-signout {
+  margin-top: 10px;
+  font-family: 'Nunito', sans-serif;
+  padding: 10px 20px;
+  background-color: #ddd;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+}
+
+.confirm-signout {
+  background-color: #5080DE;
+  color: white;
+}
+
+.cancel-signout {
+  margin-left: 10px;
+}
+
+.login-window {
+  background-color: #fff;
+  padding: 40px;
+  border-radius: 50px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+  position: relative;
+  transform: translateX(-50%);
+  left: 50%;
+  top: 25%;
+}
+
+form[id="registrationForm"] {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.login-container {
+  text-align: center;
+}
+
+.emailForm {
+  text-align: center;
+  align-items: center;
+  display: flex
+}
+
+input[type="email"],
+input[type="text"],
+input[type="password"] {
+  padding: 10px;
+  /* margin: 10px; */
+  margin-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  width: auto;
+  outline: none;
+}
+
+input[id="emailInput"]{
+  width: 100%;
+}
+
+.regName {
+  display: flex;
+  flex-direction: row;
+  width: auto;
+}
+
+.regPass {
+  display: flex;
+  flex-direction: row;
+}
+
+.regButtons {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  justify-content: center;
+}
+
+p[id="passwordError"]{
+  font-size: xx-small;
+  margin: 0;
+}
+
+
+p[id="usernameError"]{
+  font-size: xx-small;
+}
+
+#registrationForm {
+  justify-content: center;
+  gap: 10px
+}
+
+canvas[id="profilePicCanvas"]{
+  /* background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png"); */
+  background-repeat: no-repeat;
+  background-size: contain;
+  border-radius: 87.5px;
+}
+
+button[id="doneButton"],
+button[id="loginButton"],
+button[class="passButton"] {
+  padding: 10px 20px;
+  margin: 10px;
+  background-color: #5080DE;
+  color: #fff;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+}
+
+button[id="createAccountButton"],
+button[id="backButton"] {
+  padding: 10px 20px;
+  background-color: #5080DE;
+  color: #fff;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+}
+
+img[id="profilePic"]{
+  height: 150px;
+}
+
+h2[id="loginText"],
+h2[id="emailformText"],
+h2[id="profileText"],
+h2[id="regText"],
+h2[id="passwordText"] {
+  margin-bottom: 40px;
+}
+
+.profileFormLogin{
+  display: flex;
+  flex-direction: row;
+  gap: 50px;
+  justify-content: center;
+  align-items: center;
+}
+
+/* .userDets {
+  display: flex;
+  flex-direction: column;
+} */
+
+.passForm {
+  gap: 50px;
+}
+
+.passDets,
+.passButtons {    
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.passDets {    
+  flex-direction: column;
+}
+
+.passButtons {
+  margin-top: 20px;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+#emailButton {
+  background-color: transparent;
+  color: #5080DE;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#googleButton {
+  background-color: #FFFF;
+  color: rgba(0, 0, 0);
+  font-family: 'Nunito', sans-serif;
+  padding: 10px 20px;
+  margin: 10px;
+  border-radius: 25px;
+  outline: none;
+  border: thin;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  /* gap: 10px; */
+}
+
+#separator {
+  text-align: center;
+  margin: 20px 0;
+  color: #ccc;
+  position: relative;
+}
+
+#separator span {
+  display: inline-block;
+  background-color: #fff;
+  padding: 0 10px;
+  position: relative;
+  z-index: 1;
+}
+
+#separator::before,
+#separator::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: calc(50% - 30px);
+  /* Adjust the value as needed */
+  height: 1px;
+  background-color: #ccc;
+  z-index: 0;
+}
+
+#separator::before {
+  left: 0;
+}
+
+#separator::after {
+  right: 0;
+}
+
+
+span.icon {
+  background: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/logo/g-normal.png") transparent no-repeat;
+  background-size: cover;
+  display: inline-block;
+  vertical-align: middle;
+  justify-content: center;
+  align-items: center;
+  width: 24px;
+  height: 24px;
+  /* margin-right: 10px; */
+  border-radius: 50px;
+}
+
+.error {
+  color: #ff0000;
+  font-weight: bold;
+}
+
+button[id="emailButton"] {
+  height: 42px;
+  width: 48px;
+  background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/login_icons/next-arrow.png");
+  background-repeat: no-repeat;
+  /* background-position: center; */
+  background-size: contain;
+  /* margin-top: 12px; */
+  opacity: 0.7;
+  cursor: pointer;
+
+}
+
+form[id="registrationForm"] {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form-container {
+  text-align: center;
+}
+
+.emailForm {
+  text-align: center;
+  align-items: center;
+  display: flex
+}
+
+input[type="email"],
+input[type="text"],
+input[type="password"] {
+  padding: 10px;
+  /* margin: 10px; */
+  margin-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  width: auto;
+  outline: none;
+}
+
+input[id="emailInput"]{
+  width: 100%;
+}
+
+.regName {
+  display: flex;
+  flex-direction: row;
+  width: auto;
+}
+
+.regPass {
+  display: flex;
+  flex-direction: row;
+}
+
+.regButtons {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  justify-content: center;
+}
+
+p[id="passwordError"]{
+  font-size: xx-small;
+  margin: 0;
+}
+
+
+p[id="usernameError"]{
+  font-size: xx-small;
+}
+
+#registrationForm {
+  justify-content: center;
+  gap: 10px
+}
+
+canvas[id="profilePicCanvas"]{
+  background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+  border-radius: 75px;
+}
+
+button[id="doneButton"],
+button[id="loginButton"],
+button[class="passButton"] {
+  padding: 10px 20px;
+  margin: 10px;
+  background-color: #5080DE;
+  color: #fff;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+}
+
+button[id="createAccountButton"],
+button[id="backButton"] {
+  padding: 10px 20px;
+  background-color: #5080DE;
+  color: #fff;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+}
+
+img[id="profilePic"]{
+  height: 150px;
+}
+
+h2[id="loginText"],
+h2[id="emailformText"],
+h2[id="profileText"],
+h2[id="regText"],
+h2[id="passwordText"] {
+  margin-bottom: 40px;
+}
+
+.profileForm{
+  display: flex;
+  flex-direction: row;
+  gap: 50px;
+  justify-content: center;
+  align-items: center;
+}
+
+.profilPicLogin {
+  display: flex;
+  flex-direction: column;
+}
+
+.userDetsLogin {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.passForm {
+  gap: 50px;
+}
+
+.passDets,
+.passButtons {    
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.passDets {    
+  flex-direction: column;
+}
+
+.passButtons {
+  margin-top: 20px;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+#emailButton {
+  background-color: transparent;
+  color: #5080DE;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#googleButton {
+  background-color: #FFFF;
+  color: rgba(0, 0, 0);
+  font-family: 'Nunito', sans-serif;
+  padding: 10px 20px;
+  margin: 10px;
+  border-radius: 25px;
+  outline: none;
+  border: thin;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+#separator {
+  text-align: center;
+  margin: 20px 0;
+  color: #ccc;
+  position: relative;
+}
+
+#separator span {
+  display: inline-block;
+  background-color: #fff;
+  padding: 0 10px;
+  position: relative;
+  z-index: 1;
+}
+
+#separator::before,
+#separator::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: calc(50% - 30px);
+  /* Adjust the value as needed */
+  height: 1px;
+  background-color: #ccc;
+  z-index: 0;
+}
+
+#separator::before {
+  left: 0;
+}
+
+#separator::after {
+  right: 0;
+}
+
+
+
+
+.error {
+  color: #ff0000;
+  font-weight: bold;
+}
+
+button[id="emailButton"] {
+  height: 42px;
+  width: 48px;
+  background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/login_icons/next-arrow.png");
+  background-repeat: no-repeat;
+  /* background-position: center; */
+  background-size: contain;
+  /* margin-top: 12px; */
+  opacity: 0.7;
+  cursor: pointer;
+
+}
+
+
+
+p[class="footerClass"] {
+  position: fixed;
+  font-size: 12px;
+  justify-content: center;
+  vertical-align: center;
+  text-align: center;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  white-space: nowrap;
+  /* overflow: hidden; */
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.disclaimer {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  background-color: rgba(0, 0, 0, 0.3);
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.disclaimerHead {
+  font-size: x-large;
+  padding-bottom: 10px;
+}
+
+
+.window {
+  position: relative;
+  background: #ffff;
+  text-align: center;
+  width: 400px;
+  max-width: calc(100vw - 40px);
+  padding: 25px;
+  border-radius: 10px;
+}
+
+.closeDisclaimer {
+  position: absolute;
+  top: 0px;
+  right: 10px;
+  z-index: 0;
+  cursor: pointer;
+  font-size: 24px;
+  color: #888;
+}
+
+.footerClass {
+  color: #444;
+  z-index: -1;
+}
+
+a[class=footerClass]:hover {
+  cursor: pointer;
+}
+
+#customBtn {
+  position: relative;
+  display: inline-block;
+  background: #ffff;
+  color: #444;
+  width: auto;
+  border-radius: 50px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 30px;
+}
+
+#customBtn:hover {
+  background-color: #5080DE0D;
+  cursor: pointer;
+}
+
+
+
+span.buttonText {
+  display: inline-block;
+  vertical-align: middle;
+  padding-right: 24px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.subscription-title {
+  margin-bottom: 10px;
+}
+
+.subscription-subtitle {
+  margin-top: 0px;
+  color: #929292;
+}
+
+.subscription-container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  /* gap: 20px; */
+  background-color: #fff;
+  padding: 30px;
+  width: fit-content;
+  transform: translateX(-50%);
+  left: 50%;
+  top: 25%;
+  border-radius: 30px;
+  box-shadow: rgb(0, 0, 0, 0.1);
+  z-index: 3;
+}
+
+.subscription-selection {
+  display: inline-flex;
+  gap: 50px;
+  margin-top: 50px;
+}
+
+.plan-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.plan-cards {
+  display: flex;
+  gap: 25px;
+}
+
+.plan-card {
+  background-color: #e6e8eb;
+  padding: 20px;
+  border-radius: 20px;
+  text-align: center;
+  transition: transform 0.3s ease;
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+}
+
+.plan-card:hover {
+  transform: scale(1.1);
+  background-color: #e4f1ff;
+  /* color: #ffffff; */
+  z-index: 1;
+}
+
+.plan-name {
+  font-size: 32px;
+  font-weight: bolder;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+.plan-price {
+  font-size: 18px;
+  color: #000000;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  font-weight:bold;
+}
+
+.plan-features {
+  text-align: left;
+  margin-bottom: 20px;
+  color: #444;
+  flex-grow: 1;
+}
+
+.plan-features ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.plan-features li {
+  margin-bottom: 5px;
+}
+
+.feature-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 5px;
+  vertical-align: middle;
+  opacity: 0.75;
+}
+
+.yearly-price-crossed {
+  font-size: 12px;
+  color: #999;
+  text-decoration: line-through;
+}
+
+.plan-button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: auto;
+}
+
+.plan-button[id='current-plan']{
+  background-color: #c9c9c9;
+  color: #a1a1a1;
+}
+
+.plan-button:hover {
+  background-color: #0056b3;
+}
+
+.plan-button[id='current-plan']:hover{
+  background-color: #c9c9c9;
+  cursor: not-allowed;
+}
+
+.plan-card.current:hover{
+  transform: scale(1);
+  background-color: #e6e8eb;
+
+}
+
+.plan-name[id="plus"]{
+  color: #3E90F0;
+}
+
+.plan-name[id="premium"]{
+  color: #17a54b;
+}
+
+.plan-name[id="enterprise"]{
+  color: #af0000
+}
+
+@media (max-width: 500px){
+  .message-bubble {
+    max-width: calc(min(85vw, 250px));
+  }
+
+  .chat-container{
+    min-width: calc(min(85vw, 350px));
+  }
+
+  .chat-bar-container {
+    min-width: calc(min(85vw, 350px));
+  }
+  p[class="footerClass"] {
+    font-size: 2.5vw;
+  }
+  .side-container{
+    top: 18px;
+    left: 18px;
+  }
+
+  .logo {
+    height: 50px;
+    width: 50px;
+    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/logo/favicon.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    cursor: pointer;
+  }
+
+  .user-info,
+  .title {
+  display: block;
+  align-items: center;
+}
+
+  /* .button {
+    opacity: 0.15;
+  }
+  
+  .button.active {
+    opacity: 0.5;
+  } */
+  
+  /* .button:hover {
+    opacity: 0.95;
+  } */
+  
+}
+.profile-container {
+  position: relative;
+  display: flex;
+  transform: translateX(50%);
+  top: 25%;
+  width: 50vw;
+  height: 40vh;
+  background-color: #ffff;
+  border-radius: 25px;
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
+  width: 100%;
+  height: 100%;
+}
+
+.profileInfo .userDetsText {
+  display: flex;
+  flex-direction: column;
+  /* gap: 20px; */
+}
+
+.userDetsText {
+  gap: 10px;
+}
+
+.profileInfo {
+  justify-content: space-between;
+  height: 100%;
+}
+
+.passText,
+.supportForm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.supportForm {
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+.profilePic {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.profileButtons,
+.newPassButt {
+  position: absolute;
+  /* align-items: center; */
+  gap: 25px;
+  bottom: 20px;
+  width: 100%;
+  display: flex;
+  color: #FFFFFF;
+}
+
+.profileButtons button,
+.newPassButt button {
+  color: inherit;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 25px;
+  background-color: #5080DE;
+  font-family: inherit;
+  font-size: inherit;
+  position: relative;
+  left: 25px;
+  right: 25px;
+}
+
+h2[class="pagetitle"],
+h2[class="passtitle"],
+h2[class="filestitle"],
+h2[class="lawyerstitle"],
+h2[class="supporttitle"],
+h2[class="formsList"] {
+  display: flex;
+  margin-top: 0px;
+  margin-bottom: 25px;
+  justify-content: center;
+}
+
+.supportButton {
+  margin-top: auto;
+  /* Add this line to push the button to the bottom */
+  margin-bottom: 0;
+}
+
+button[id="supportSubmit"] {
+  color: #ffff;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 25px;
+  background-color: #5080DE;
+  font-family: inherit;
+  position: relative;
+  /* bottom: 0; */
+  justify-content: center;
+  width: fit-content;
+  font-size: inherit;
+}
+
+.files-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-gap: 1rem;
+  font-family: inherit;
+}
+
+.file-tile {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.file-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.file-image {
+  padding-bottom: 60%;
+  /* Adjust this value to control the aspect ratio */
+  background-size: cover;
+  background-position: center;
+}
+
+.file-title {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0.5rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 14px;
+  text-align: center;
+}
+
+.forms-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-gap: 1rem;
+  font-family: inherit;
+}
+
+.form-tile {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.form-image {
+  padding-bottom: 60%;
+  /* Adjust this value to control the aspect ratio */
+  background-size: cover;
+  background-position: center;
+}
+
+.form-title {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0.5rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 14px;
+  text-align: center;
+}
+
+.add-tile {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #f5f5f5;
+  cursor: pointer;
+}
+
+.add-icon {
+  font-size: 3rem;
+  color: #aaa;
+}
+
+.add-title {
+  font-size: 14px;
+  color: #666;
+}
+
+.lawyers-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-gap: 1rem;
+  font-family: inherit;
+}
+
+.lawyer-tile {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.lawyer-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.lawyer-image {
+  padding-bottom: 60%;
+  /* Adjust this value to control the aspect ratio */
+  background-size: cover;
+  background-position: center;
+}
+
+.lawyer-title {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0.5rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 14px;
+  text-align: center;
+}
+
+.supportFormIncl {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  flex: 1;
+  height: 100%;
+}
+
+input[id="supportEmail"],
+input[id="supportSubj"],
+textarea[id="supportMsg"] {
+  outline: none;
+  resize: none;
+  padding: 10px;
+  border-radius: 25px;
+  border-style: solid;
+  border-width: thin;
+  border-color: #ddd;
+}
+
+input[id="supportEmail"] {
+  width: 85%;
+  /* width: calc(100%-20px); */
+  font-family: inherit;
+}
+
+input[id="supportSubj"] {
+  width: 86.5%;
+  /* width: calc(100% - 20px); */
+  font-family: inherit;
+}
+
+textarea[id="supportMsg"] {
+  /* width: 75%; */
+  width: 100%;
+  margin-right: 20px;
+  height: 20%;
+  font-family: inherit;
+}
+
+label[id="supportMsg"] {
+  display: flex;
+  flex-direction: row;
+  gap: 7px;
+}
+
+input[id="username"],
+input[id="firstname"],
+input[id="lastname"],
+input[id="password"],
+input[id="location"],
+input[id="Confpassword"] {
+  padding: 10px;
+  border-radius: 25px;
+  border-style: solid;
+  border-width: thin;
+  width: 90%;
+  border-color: #ddd;
+}
+
+input [id="firstname"],
+input[id="lastname"] {
+  width: 80%;
+}
+
+.userDets,
+.profileButtons,
+.userName {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+.userDets {
+  flex: 1;
+}
+
+.sidebar {
+  position: relative;
+  width: 25%;
+  background-color: #f1f1f1;
+  padding: 20px;
+  border-radius: 25px 0px 0px 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sidebar li {
+  margin-bottom: 10px;
+}
+
+.sidebar a {
+  display: block;
+  color: #333;
+  text-decoration: none;
+  padding: 10px;
+  border-radius: 25px;
+}
+
+.sidebar a.active {
+  background-color: #ddd;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.content {
+  width: 75%;
+  padding: 20px;
+}
+
+.tab {
+  display: none;
+}
+
+.tab.active {
+  display: block;
+}
+
+#logout-item {
+  font-family: inherit;
+  font-size: inherit;
+  border: none;
+  color: #333;
+  text-decoration: none;
+  padding: 10px;
+  border-radius: 25px;
+  margin-top: auto;
+  display: block;
+  position: absolute;
+  bottom: 12px;
+  border-radius: 25px;
+  background-color: transparent;
+  cursor: pointer;
+  border-color: #ddd;
+  color: #e53935;
+}
+
+#logout-item a {
+  color: inherit;
+  /* Add this line */
+}
+
+#logout-item:hover {
+  background-color: #e53935;
+  color: #ffff;
+}
+
+canvas[id="profilePicCanvas"] {
+  /* background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png"); */
+  background-repeat: no-repeat;
+  background-size: contain;
+  border-radius: 87.5px;
+}
+

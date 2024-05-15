@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
+  <meta name="google-signin-client_id"
+    content="699627421105-5b2u0uckdbqievn40vjto4l04ih7v4pq.apps.googleusercontent.com">
+  <title>ReLo | JustiGuide</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <script src="https://apis.google.com/js/api.js"></script>
+  <script src="https://js.stripe.com/v3/"></script>
+  <script>
+    function startApp() {
+      gapi.load('auth2', function () {
+        auth2 = gapi.auth2.init({
+          client_id: "699627421105-5b2u0uckdbqievn40vjto4l04ih7v4pq.apps.googleusercontent.com",
+          cookiepolicy: 'single_host_origin',
+          plugin_name: "Dolores_Login",
+        });
+        attachSignin(document.getElementById('googleButton'));
+      });
+    }
+
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <link rel="icon" type="image/x-icon"
+    href="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/favicon/favicon.ico">
+</head>
+
+<body>
+  <div class="logo" onclick="window.location.href='https://www.justiguide.com'"></div>
+  <div class="profile-container" id="profile-container">
+    <div class="sidebar">
+      <ul>
+        <li><a href="#" class="active" data-tab="profile">Profile Information</a></li>
+        <li><a href="#" data-tab="files">Files</a></li>
+        <li><a href="#" data-tab="lawyers">Lawyers</a></li>
+        <li><a href="#" data-tab="support">Support</a></li>
+        <li><a href="#" data-tab="forms">Forms</a></li>
+      </ul>
+      <button id="logout-item" onclick="signOut();">Logout</button>
+    </div>
+    <div class="content">
+      <div id="profile" class="tab active">
+        <!-- Profile Information -->
+      </div>
+      <div id="files" class="tab">
+        <!-- Files -->
+      </div>
+      <div id="lawyers" class="tab">
+        <!-- Lawyers -->
+      </div>
+      <div id="support" class="tab">
+        <!-- Support -->
+      </div>
+      <div id="forms" class="tab">
+        <!-- Forms -->
+      </div>
+    </div>
+    <div id="signout-modal" class="signout-modal">
+      <div class="signout-modal-content">
+        <p class="data-text">Are you sure you want to sign out?</p>
+        <button type="button" class="confirm-signout" onclick="confirmSignOut()">Yes</button>
+        <button type="button" class="cancel-signout" onclick="closeSignOutModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+  <div class="side-container" id="sides">
+    <a class="button active" id="user">
+      <svg class="button-icon user"></svg>
+    </a>
+    <a class="button" id="chat">
+      <svg class="button-icon chat"></svg>
+    </a>
+    <a class="button" id="form" style="display: none;">
+      <svg class="button-icon form"></svg>
+    </a>
+  </div>
+  <div class="bottom-container">
+    <a id="download" class="button" style="display: none;">
+      <svg class="button-icon download"></svg>
+    </a>
+    <a id="share" class="button" style="display: none;">
+      <svg class="button-icon share"></svg>
+    </a>
+    <!-- <a id="info" class="button" href="https://www.justiguide.com/faq">
+            <svg class="button-icon info"></svg>
+        </a> -->
+  </div>
+  <div class="chat-bar-container">
+    <input type="text" id="user-input" placeholder="Enter your message">
+    <a class="chat-buttons" id="send">
+      <svg class="chat-icons send"></svg>
+    </a>
+  </div>
+  <div class="chat-container">
+    <div class="chat-messages">
+      <div class="bot-message">
+        <div class="bot-profile">
+          <svg class="bot-avatar"></svg>
+        </div>
+        <div class="message-bubble">
+          <p>Hi there! I'm here to assist you. How can I help you today?</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="form-container">
+    <form id="immigrationForm">
+      <div id="header">
+        <h1>Immigration Form</h1>
+        <div class="sub-heading">Information about you</div>
+        <div id="progressBar">
+          <div id="progress"></div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="subsection">
+          <label for="firstName">First Name:</label>
+          <input type="text" id="firstName" name="firstName" required>
+          <label for="middleName">Middle Name:</label>
+          <input type="text" id="middleName" name="middleName">
+          <label for="lastName">Last Name:</label>
+          <input type="text" id="lastName" name="lastName" required>
+        </div>
+        <div class="subsection">
+          <div class="sub-heading">Residence in US</div>
+          <label for="street">Street Number & Name:</label>
+          <input type="text" id="street" name="street" required>
+          <label for="city">City:</label>
+          <input type="text" id="city" name="city" required>
+          <label for="state">State:</label>
+          <input type="text" id="state" name="state" required>
+          <label for="zipCode">Zip Code:</label>
+          <input type="text" id="zipCode" name="zipCode" required>
+          <label for="telephone">Telephone Number:</label>
+          <input type="tel" id="telephone" name="telephone" required>
+          <p style="margin-top: 10px;">Different Mailing Address</p>
+          <div class="toggle-switch">
+            <input type="checkbox" id="differentAddress" class="toggle-switch-checkbox">
+            <label for="differentAddress" class="toggle-switch-label">
+              <span class="toggle-switch-inner"></span>
+              <span class="toggle-switch-switch"></span>
+            </label>
+          </div>
+          <div id="mailingAddress" class="hidden">
+            <label for="mailingStreet">Street Number & Name:</label>
+            <input type="text" id="mailingStreet" name="mailingStreet">
+            <label for="mailingCity">City:</label>
+            <input type="text" id="mailingCity" name="mailingCity">
+            <label for="mailingState">State:</label>
+            <input type="text" id="mailingState" name="mailingState">
+            <label for="mailingZipCode">Zip Code:</label>
+            <input type="text" id="mailingZipCode" name="mailingZipCode">
+            <label for="mailingTelephone">Telephone Number:</label>
+            <input type="tel" id="mailingTelephone" name="mailingTelephone">
+          </div>
+        </div>
+        <div class="subsection">
+          <div class="sub-heading">General Information</div>
+          <div class="radio-group">
+            <input type="radio" id="male" name="gender" value="male">
+            <label for="male">Male</label>
+            <input type="radio" id="female" name="gender" value="female">
+            <label for="female">Female</label>
+          </div>
+        </div>
+      </div>
+      <div class="download-button-container">
+        <button id="next">Next</button>
+        <button id="submit" style="display: none;">Submit</button>
+      </div>
+    </form>
+    <form id="downloadForm" style="display: none;">
+      <input type="hidden" name="data">
+      <div class="download-button-container">
+        <button id="downloadButton">Download</button>
+      </div>
+    </form>
+  </div>
+  <!-- <div class="login-window" id="login-window" style="display: none;">
+    <p class="greeting">Welcome to JustiGuide!</p>
+    <p class="sub-heading_user">Continue to login with your Google Account.</p>
+    <hr class="divider">
+    <div id="customBtn" class="customGPlusSignIn" onclick="startApp();">
+      <span class="icon"></span>
+      <span class="buttonText">Sign in with Google</span>
+    </div>
+  </div> -->
+  <div class="login-window" id="login-window" style="display: none;">
+    <div class="login-container">
+        <h2 id="loginText">Register/Login</h2>
+        <div class="emailForm" id="emailForm">
+            <input type="email" id="emailInput" placeholder="Enter your email">
+            <button id="emailButton" onclick="checkUser();"></button>
+        </div>
+        <div id="separator">
+            <span>OR</span>
+        </div>
+        <button id="googleButton" onclick="startApp();">                    
+            <span class="icon"></span>
+            <span class="buttonText">Sign in with Google</span>
+        </button>
+    </div>
+</div>
+  <div class="disclaimer" style="display: none;">
+    <div class="window">
+      <p class="disclaimerHead">
+        JusitGuide Disclaimer
+      </p>
+      <p class="disclaimerP">
+        JustiGuide is an AI-powered assistant designed to provide guidance and information to help you navigate your
+        relocation journey. Please be aware that JustiGuide does not offer legal advice, represent legal authority, or
+        substitute for the advice of an attorney. Our recommendations are based on general data and should not be taken
+        as specific advice tailored to your legal needs. For legal advice, please consult a qualified attorney in your
+        jurisdiction.
+      </p>
+      <a class="closeDisclaimer" onclick="closeDisclaimer();">
+        &times;
+      </a>
+    </div>
+  </div>
+  <div class="subscription-container" id="subscription-container" style="display: none;">
+    <h1 class="subscription-title">Immigration Should Be Simple</h1>
+    <h3 class="subscription-subtitle">Pricing Plans for every Budget</h3>
+    <div class="subscription-selection">
+      <div class="plan-selection">
+        <label>
+          <input type="radio" name="plan-duration" value="monthly" checked>
+          Monthly
+        </label>
+        <label>
+          <input type="radio" name="plan-duration" value="yearly">
+          Yearly
+        </label>
+      </div>
+      <div class="plan-cards">
+        <div class="plan-card current" id="basic">
+          <h3 class="plan-name" id="basic">Basic</h3>
+          <p class="plan-price">
+            <span class="monthly-price">$19.99/mon</span>
+            <span class="yearly-price" style="display: none;">
+              $16.66/mon
+              <del class="yearly-price-crossed">$19.99/mon</del>
+            </span>
+          </p>
+          <div class="plan-features">
+            <ul>
+              <li><img src="icons/subs/features.png" alt="Checkmark" class="feature-icon">Feature 1</li>
+              <li><img src="icons/subs/features.png" alt="Checkmark" class="feature-icon">Feature 2</li>
+              <li><img src="icons/subs/features.png" alt="Checkmark" class="feature-icon">Feature 3</li>
+            </ul>
+          </div>
+          <button class="plan-button" id="current-plan">Current Plan</button>
+        </div>
+        <div class="plan-card" id="plus">
+          <h3 class="plan-name" id="plus">Plus</h3>
+          <p class="plan-price">
+            <span class="monthly-price">$39.99/mon</span>
+            <span class="yearly-price" style="display: none;">
+              $33.33/mon
+              <del class="yearly-price-crossed">$39.99/mon</del>
+            </span>
+          </p>
+          <div class="plan-features">
+            <ul>
+              <li><img src="icons/subs/features.png" alt="Checkmark" class="feature-icon">Feature 1</li>
+              <li><img src="icons/subs/features.png" alt="Checkmark" class="feature-icon">Feature 2</li>
+              <li><img src="icons/subs/features.png" alt="Checkmark" class="feature-icon">Feature 3</li>
+              <li><img src="icons/subs/features.png" alt="Checkmark" class="feature-icon">Feature 4</li>
+            </ul>
+          </div>
+          <button class="plan-button" onclick="handlePlanButtonClick(event);">Subscribe</button>
+        </div>
+        <div class="plan-card" id="premium">
+          <h3 class="plan-name" id="premium">Premium</h3>
+          <p class="plan-price">
+            <span class="monthly-price">$59.99/mon</span>
+            <span class="yearly-price" style="display: none;">
+              $49.99/mon
+              <del class="yearly-price-crossed">$59.99/mon</del>
+            </span>
+          </p>
+          <div class="plan-features">
+            <ul>
+              <li><img src="icons/subs/features.png" alt="Checkmark" class="feature-icon">Feature 1</li>
+              <li><img src="icons/subs/features.png" alt="Checkmark" class="feature-icon">Feature 2</li>
+              <li><img src="icons/subs/features.png" alt="Checkmark" class="feature-icon">Feature 3</li>
+              <li><img src="icons/subs/features.png" alt="Checkmark" class="feature-icon">Feature 4</li>
+              <li><img src="icons/subs/features.png" alt="Checkmark" class="feature-icon">Feature 5</li>
+            </ul>
+          </div>
+          <button class="plan-button" onclick="handlePlanButtonClick(event);">Subscribe</button>
+        </div>
+        <div class="plan-card" id="enterprise">
+          <h3 class="plan-name" id="enterprise">Enterprise</h3>
+          <p class="plan-price">
+            <span class="monthly-price">$99.99/mon</span>
+            <span class="yearly-price" style="display: none;">
+              $95.99/mon
+              <del class="yearly-price-crossed">$99.99/mon</del>
+            </span>
+          </p>
+          <div class="plan-features">
+            <ul>
+              <li><img src="icons/subs/features.png" alt="Checkmark" class="feature-icon">Feature 1</li>
+              <li><img src="icons/subs/features.png" alt="Checkmark" class="feature-icon">Feature 2</li>
+              <li><img src="icons/subs/features.png" alt="Checkmark" class="feature-icon">Feature 3</li>
+            </ul>
+          </div>
+          <button class="plan-button" onclick="handlePlanButtonClick(event)">Subscribe</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="footerClass" id="disclaimer" style="display: none;">JustiGuide is an AI assistant and is not giving you
+    legal advice. Click <a class="footerClass" onclick="showDisclaimer();"><u>here</u> to know more.</p>
+
+  <script src="script.js"></script>
+  <script>
+    const loggedInUser = getCookie('username');
+    if (loggedInUser != null) {
+      const { username, firstName, lastName, email, profilePicUrl } = loggedInUser;
+      showUserPage(username, firstName, lastName, email, profilePicUrl);
+      // const tabLinks = document.querySelectorAll('.sidebar a');
+      // const tabContents = document.querySelectorAll('.content .tab');
+      // const userData = {
+      //   profilePic: profilePicUrl,
+      //   username: username,
+      //   firstName: firstName,
+      //   lastName: lastName,
+      //   location: 'Santa Clara'
+      // };
+      // tabLinks.forEach(link => {
+      //   link.addEventListener('click', e => {
+      //     e.preventDefault();
+      //     const targetTab = e.target.getAttribute('data-tab');
+
+      //     // Remove active class from all links and content divs
+      //     tabLinks.forEach(link => link.classList.remove('active'));
+      //     tabContents.forEach(content => content.classList.remove('active'));
+
+      //     // Add active class to clicked link and corresponding content div
+      //     e.target.classList.add('active');
+      //     document.getElementById(targetTab).classList.add('active');
+
+      //     // Load content for the selected tab
+      //     loadTabContent(targetTab, userData);
+      //   });
+      // });
+      // loadTabContent('profile', userData);
+      // createUserPage(username, firstName, lastName, email, profilePicUrl);
+      // showUserPage();
+    } else {
+      showLoginWindow();
+      startApp();
+    }
+  </script>
+</body>
+
+</html>
