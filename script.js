@@ -19,30 +19,30 @@ const mailingAddressSection = document.getElementById('mailingAddress');
 const monthlyPriceElements = document.querySelectorAll('.monthly-price');
 const yearlyPriceElements = document.querySelectorAll('.yearly-price');
 const yearlyPriceCrossedElements = document.querySelectorAll('.yearly-price-crossed');
-const backendUrl = 'http://127.0.0.1:8000';
+const backendUrl = 'http://127.0.0.1:8000/';
 const tabLinks = document.querySelectorAll('.sidebar a');
 const tabContents = document.querySelectorAll('.content .tab');
 const emailInput = document.getElementById('emailInput');
 const emailButton = document.getElementById('emailButton');
 const googleButton = document.getElementById('googleButton');
-const loginContainer = document.querySelector('.login-container')
+const loginContainer = document.querySelector('.login-window')
 
 function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) {
         const cookieData = parts.pop().split(';').shift();
-        const [username, firstName, lastName, email, profilePicUrl] = cookieData.split('|');
-        return { username, firstName, lastName, email, profilePicUrl };
+        const [username, firstName, lastName, email, profilePicUrl, location] = cookieData.split('|');
+        return { username, firstName, lastName, email, profilePicUrl, location };
     }
-    else {
-        const username = 'rajanpande';
-        const firstName = 'Rajan';
-        const lastName = 'Pande';
-        const email = 'panderajan1996@gmail.com';
-        const profilePicUrl = 'https://lh3.googleusercontent.com/a/ACg8ocLSpnnjCN1nbp0YmOax2v3KBzzedo_X9pxtXujLphgR_xqi9NuG7g=s288-c-no';
-        return { username, firstName, lastName, email, profilePicUrl };
-    }
+    // else {
+    //     const username = 'rajanpande';
+    //     const firstName = 'Rajan';
+    //     const lastName = 'Pande';
+    //     const email = 'panderajan1996@gmail.com';
+    //     const profilePicUrl = 'https://lh3.googleusercontent.com/a/ACg8ocLSpnnjCN1nbp0YmOax2v3KBzzedo_X9pxtXujLphgR_xqi9NuG7g=s288-c-no';
+    //     return { username, firstName, lastName, email, profilePicUrl };
+    // }
     return null;
 }
 
@@ -58,21 +58,26 @@ function getCookie(name) {
 // }
 
 function checkUser() {
-    const email = emailInput.value;
-    console.log(email)
-    if (!email) {
-        fetch(`http://127.0.0.1:8000/check_user/?email=${email}`)
+    const email_id = emailInput.value;
+    if (email_id) {
+        fetch(`${backendUrl}check_user/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email: email_id })
+        })
             .then(response => response.json())
             .then(data => {
                 if (data.exists) {
-                    showLoginPasswordForm(email);
+                    showLoginPasswordForm(email_id);
                 } else {
-                    showRegistrationForm();
+                    showRegistrationForm(email_id);
                 }
             })
             .catch(error => console.error(error));
     } else {
-        showRegistrationForm();
+        showRegistrationForm(email_id);
     }
 }
 
@@ -101,10 +106,27 @@ function showLoginPasswordForm(email) {
     loginButton.addEventListener('click', login);
 }
 
-function showRegistrationForm() {
+function validatePassword(password, confirmPassword, passwordError, createAccountButton) {
+    // const password = regPasswordInput.value;
+    // const confirmPassword = confirmPasswordInput.value;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+    if (password !== confirmPassword) {
+        passwordError.textContent = 'Passwords do not match';
+        createAccountButton.disabled = true;
+    } else if (!passwordRegex.test(password)) {
+        passwordError.textContent = 'Password must be at least 8 characters long, contain at least one uppercase letter, one number, and one special character';
+        createAccountButton.disabled = true;
+    } else {
+        passwordError.textContent = '';
+        createAccountButton.disabled = false;
+    }
+}
+
+function showRegistrationForm(email) {
     const registrationForm = `
     <form id="registrationForm">
-        <input type="email" id="regEmailInput" placeholder="Enter your email">
+        <input type="email" id="regEmailInput" value="${email}" disabled>
         <div class="regName">
             <input type="text" id="firstNameInput" placeholder="First Name">
             <input type="text" id="lastNameInput" placeholder="Last Name">
@@ -141,32 +163,72 @@ function showRegistrationForm() {
     const createAccountButton = document.getElementById('createAccountButton');
 
     backButton.addEventListener('click', showEmailForm);
-    regPasswordInput.addEventListener('input', validatePassword);
-    confirmPasswordInput.addEventListener('input', validatePassword);
+    regPasswordInput.addEventListener('input', () => {
+        validatePassword(regPasswordInput.value, confirmPasswordInput.value, passwordError, createAccountButton);
+    });
+    confirmPasswordInput.addEventListener('input', () => {
+        validatePassword(regPasswordInput.value, confirmPasswordInput.value, passwordError, createAccountButton);
+    });
 
-    function validatePassword() {
-        const password = regPasswordInput.value;
-        const confirmPassword = confirmPasswordInput.value;
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-        if (password !== confirmPassword) {
-            passwordError.textContent = 'Passwords do not match';
-            createAccountButton.disabled = true;
-        } else if (!passwordRegex.test(password)) {
-            passwordError.textContent = 'Password must be at least 8 characters long, contain at least one uppercase letter, one number, and one special character';
-            createAccountButton.disabled = true;
-        } else {
-            passwordError.textContent = '';
-            createAccountButton.disabled = false;
-        }
-    }
 
     createAccountButton.addEventListener('click', showProfileForm);
 }
 
+function checkUsername(doneButton, username, usernameError) {
+    // const username = usernameInput.value;
+    fetch(`${backendUrl}check_username/`, {
+        method: 'POST',
+        body: JSON.stringify({ username })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.exists) {
+                usernameError.textContent = 'Username already exists';
+                doneButton.disabled = true;
+            } else {
+                usernameError.textContent = '';
+                doneButton.disabled = false;
+            }
+        })
+        .catch(error => console.error(error));
+}
+
+function updateProfilePic(profilePicInput, profilePicCanvas) {
+    const file = profilePicInput.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function () {
+            const img = new Image();
+            img.onload = function () {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const size = Math.min(img.width, img.height);
+                canvas.width = canvas.height = 175;
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(87.5, 87.5, 87.5, 0, 2 * Math.PI);
+                ctx.closePath();
+                ctx.clip();
+                ctx.drawImage(img, (img.width - size) / 2, (img.height - size) / 2, size, size, 0, 0, 175, 175);
+                ctx.restore();
+                const dataURL = canvas.toDataURL(file.type);
+                profilePicCanvas.getContext('2d').clearRect(0, 0, 175, 175);
+                profilePicCanvas.getContext('2d').drawImage(canvas, 0, 0);
+            };
+            img.src = reader.result;
+        }
+        reader.readAsDataURL(file);
+    }
+}
+
+
 function showProfileForm() {
     const profilePicUrl = "https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png"
     const regEmailInput = document.getElementById('regEmailInput');
+    const firstNameInput = document.getElementById('firstNameInput');
+    const lastNameInput = document.getElementById('lastNameInput');
+    const regPasswordInput = document.getElementById('regPasswordInput');
     const email = regEmailInput.value;
     const username = email.split('@')[0];
     const profileForm = `
@@ -194,89 +256,86 @@ function showProfileForm() {
     const usernameError = document.getElementById('usernameError');
     const locationInput = document.getElementById('locationInput');
     const profilePicInput = document.getElementById('profilePicInput');
-    const profilePic = document.getElementById('profilePic');
+    const profilePicCanvas = document.getElementById('profilePicCanvas');
     const doneButton = document.getElementById('doneButton');
-
-    usernameInput.addEventListener('input', checkUsername);
+    let newProfilePic = "https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png"
+    usernameInput.addEventListener('input', () => {
+        checkUsername(doneButton, usernameInput.value, usernameError);
+    });
+    
+    const formData = new FormData();
     // profilePicInput.addEventListener('click', () => profilePicInput.click());
-    profilePicInput.addEventListener('change', updateProfilePic);
-
-    function checkUsername() {
-        const username = usernameInput.value;
-        fetch(`http://127.0.0.1:8000/check_username/?username=${username}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.exists) {
-                    usernameError.textContent = 'Username already exists';
-                    doneButton.disabled = true;
-                } else {
-                    usernameError.textContent = '';
-                    doneButton.disabled = false;
-                }
-            })
-            .catch(error => console.error(error));
-    }
-
-    function updateProfilePic() {
+    profilePicInput.addEventListener('change', ()=>{
+        updateProfilePic(profilePicInput, profilePicCanvas)
         const file = profilePicInput.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function () {const img = new Image();
-                img.onload = function () {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    const size = Math.min(img.width, img.height);
-                    canvas.width = canvas.height = 150;
-                    ctx.save();
-                    ctx.beginPath();
-                    ctx.arc(75, 75, 75, 0, 2 * Math.PI);
-                    ctx.closePath();
-                    ctx.clip();
-                    ctx.drawImage(img, (img.width - size) / 2, (img.height - size) / 2, size, size, 0, 0, 150, 150);
-                    ctx.restore();
-                    const dataURL = canvas.toDataURL(file.type);
-                    profilePicCanvas.getContext('2d').clearRect(0, 0, 150, 150);
-                    profilePicCanvas.getContext('2d').drawImage(canvas, 0, 0);
-                };
-                img.src = reader.result;
+        formData.append('profilePic', file)
+        formData.append('email_id', email)     
+        
+    });
+    doneButton.addEventListener('click', () => {
+        registerUser(email, firstNameInput.value, lastNameInput.value, regPasswordInput.value, usernameInput.value, locationInput.value);
+        fetch(`${backendUrl}uploadProfilePic/`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response  => response.json())
+        .then(data => {
+            if (data.resp){
+                newProfilePic = data.url;
             }
-            reader.readAsDataURL(file);
-        }
-    }
+            else {
+                
+                console.log('Error uploading the pic: ', data.error)
+            }
+        })
+        .then(() => {
+            createLoginCookie(usernameInput.value, firstNameInput.value, lastNameInput.value, email, newProfilePic, locationInput.value);
+            loginContainer.setAttribute('style', 'display: none;');
+            showUserPage(usernameInput.value, firstNameInput.value, lastNameInput.value, email, newProfilePic, locationInput.value);
+        })
+        .catch(error => {
+            console.error('Error uploading the pic: ', error);
+        });
+        
+    });
 
-    doneButton.addEventListener('click', registerUser);
+
 }
 
-function registerUser() {
-    const regEmailInput = document.getElementById('regEmailInput');
-    const firstNameInput = document.getElementById('firstNameInput');
-    const lastNameInput = document.getElementById('lastNameInput');
-    const regPasswordInput = document.getElementById('regPasswordInput');
-    const locationInput = document.getElementById('locationInput');
-    const profilePicInput = document.getElementById('profilePicInput');
+function registerUser(email, firstName, lastName, password, username, location = "", profilePic = "https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png") {
+    // const regEmailInput = document.getElementById('regEmailInput');
+    // const firstNameInput = document.getElementById('firstNameInput');
+    // const lastNameInput = document.getElementById('lastNameInput');
+    // const regPasswordInput = document.getElementById('regPasswordInput');
+    // const locationInput = document.getElementById('locationInput');
+    // const profilePicInput = document.getElementById('profilePicInput');
 
-    const email = regEmailInput.value;
-    const firstName = firstNameInput.value;
-    const lastName = lastNameInput.value;
-    const password = regPasswordInput.value;
-    const location = locationInput.value;
-    const profilePic = profilePicInput.files[0];
+    // // console.log(regEmailInput)
 
-    const formData = new FormData();
-    formData.append('email', email);
-    formData.append('firstName', firstName);
-    formData.append('lastName', lastName);
-    formData.append('password', password);
-    formData.append('location', location);
-    formData.append('profilePic', profilePic);
+    // const email = regEmailInput.value;
+    // const firstName = firstNameInput.value;
+    // const lastName = lastNameInput.value;
+    // const password = regPasswordInput.value;
+    // const location = locationInput.value;
+    // const profilePic = profilePicInput.files[0];
+    // console.log(profilePic)
 
-    fetch('http://127.0.0.1:8000/register', {
+    // const formData = new FormData();
+    const formData = { email, firstName, lastName, password, location, profilePic, username }
+    // formData.append('email', email);
+    // formData.append('firstName', firstName);
+    // formData.append('lastName', lastName);
+    // formData.append('password', password);
+    // formData.append('location', location);
+    // formData.append('profilePic', profilePic);
+
+    fetch(`${backendUrl}register/`, {
         method: 'POST',
-        body: formData
+        body: JSON.stringify(formData)
     })
         .then(response => response.json())
         .then(data => {
-            console.log(data);
+            console.log('User Registered!');
             // Handle successful registration
         })
         .catch(error => console.error(error));
@@ -326,20 +385,45 @@ function login() {
     const passwordInput = document.getElementById('passwordInput');
     const email = emailInput.value;
     const password = passwordInput.value;
+    fetch(`${backendUrl}check_login/`, {
+        method: 'POST',
+        body: JSON.stringify({
+            'email': email,
+            'password': password
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data['resp'] == true) {
+                const { username, firstName, lastName, email, profilePicUrl, location } = data;
+                createLoginCookie(username, firstName, lastName, email, profilePicUrl, location);
+                document.getElementById("login-window").setAttribute("style", "display: none");
+                showUserPage(username, firstName, lastName, email, profilePicUrl, location)
+
+            }
+
+        })
+        .catch(error => console.error(error));
+
+
 
     // Implement login functionality
-    console.log('Login with email:', email, 'and password:', password);
+    // console.log('Login with email:', email, 'and password:', password);
 }
 
-function showUserPage(username, firstName, lastName, email, profilePicUrl) {
+function showUserPage(username, firstName, lastName, email, profilePicUrl, location) {
+    const profileContainer = document.getElementById('profile-container');
+    profileContainer.removeAttribute('style');
     const tabLinks = document.querySelectorAll('.sidebar a');
     const tabContents = document.querySelectorAll('.content .tab');
+
     const userData = {
         profilePic: profilePicUrl,
         username: username,
         firstName: firstName,
         lastName: lastName,
-        location: 'Santa Clara'
+        location: location,
+        email: email
     };
     tabLinks.forEach(link => {
         link.addEventListener('click', e => {
@@ -360,13 +444,15 @@ function showUserPage(username, firstName, lastName, email, profilePicUrl) {
     });
     loadTabContent('profile', userData);
     document.getElementById("form").removeAttribute('style');
+    addUser(backendUrl, firstName, lastName, email, username, location, password=null, profilePic=profilePicUrl);
+
 
 }
 
 async function getSubscription() {
     const email_id = getCookie('username').email;
     try {
-        const response = await fetch(`${backendUrl}/user_sub/`, {
+        const response = await fetch(`${backendUrl}user_sub/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -558,12 +644,10 @@ function updatePlanPrices() {
 
 async function subscription() {
     const userPlan = await getSubscription()
-    console.log(userPlan)
     updateCurrentPlan(userPlan)
     const planDurationRadios = document.querySelectorAll('input[name="plan-duration"]');
     document.getElementById("login-window").setAttribute("style", "display: none");
     try {
-        console.log('hiding profile')
         document.getElementById("profile-container").setAttribute("style", "display: none");
     }
     catch {
@@ -665,8 +749,8 @@ function setActiveButton(clickedButton) {
             if (loginCookie != null) {
                 const userPage = document.getElementById("profile-container");
                 if (!userPage) {
-                    const { username, firstName, lastName, email, profilePicUrl } = loginCookie;
-                    showUserPage(username, firstName, lastName, email, profilePicUrl);
+                    const { username, firstName, lastName, email, profilePicUrl, location } = loginCookie;
+                    showUserPage(username, firstName, lastName, email, profilePicUrl, location);
                     // const userData = {
                     //     profilePic: profilePicUrl,
                     //     username: username,
@@ -717,10 +801,10 @@ function closeDisclaimer() {
 }
 
 
-function createLoginCookie(username, firstName, lastName, email, profilePicUrl) {
+function createLoginCookie(username, firstName, lastName, email, profilePicUrl, location = "") {
     const expirationDate = new Date();
     expirationDate.setDate(expirationDate.getDate() + 14);
-    const cookieValue = `username=${username}|${firstName}|${lastName}|${email}|${profilePicUrl}; expires=${expirationDate.toUTCString()}; path=/`;
+    const cookieValue = `username=${username}|${firstName}|${lastName}|${email}|${profilePicUrl}|${location}; expires=${expirationDate.toUTCString()}; path=/`;
     document.cookie = cookieValue;
 }
 
@@ -735,7 +819,7 @@ function attachSignin(element) {
             const profilePicUrl = profile.getImageUrl();
             createLoginCookie(username, firstName, lastName, email, profilePicUrl);
             document.getElementById("login-window").setAttribute("style", "display: none");
-            showUserPage(username, firstName, lastName, email, profilePicUrl)
+            showUserPage(username, firstName, lastName, email, profilePicUrl, location=null)
             // const userData = {
             //     profilePic: profilePicUrl,
             //     username: username,
@@ -763,8 +847,8 @@ function attachSignin(element) {
             // loadTabContent('profile');
             // createUserPage(username, firstName, lastName, email, profilePicUrl);
             document.getElementById("userPage").setAttribute("style", "display: flex");
-            // addUser(backendUrl, firstName, lastName, email);
-            // fetch(`${backendUrl}/new_user/`, {
+            addUser(backendUrl, firstName, lastName, email, username=email.split('@')[0], location=null, password=null, profilePic=profilePicUrl);
+            // fetch(`${backendUrl}new_user/`, {
             //     method: 'POST',
             //     headers: {
             //         'Content-Type': 'application/json'
@@ -784,13 +868,13 @@ function attachSignin(element) {
         });
 }
 
-function addUser(backendUrl, firstName, lastName, email) {
-    fetch(`${backendUrl}/new_user/`, {
+function addUser(backendUrl, firstName, lastName, email, username, location=null, password = null, profilePic="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png") {
+    fetch(`${backendUrl}new_user/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ firstName, lastName, email })
+        body: JSON.stringify({ firstName, lastName, email, username, location, password, profilePic })
     })
         .then(response => {
             if (!response.ok) {
@@ -854,7 +938,7 @@ messageInput.addEventListener('keyup', () => {
                 addUserMessage(messageInput.value, profilePicUrl);
                 const messageVal = messageInput.value;
                 addGeneratingMessage();
-                fetch(`${backendUrl}/get_response/`, {
+                fetch(`${backendUrl}get_response/`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -882,7 +966,7 @@ messageInput.addEventListener('keyup', () => {
                     addUserMessage(messageInput.value, profilePicUrl);
                     const messageVal = messageInput.value;
                     addGeneratingMessage();
-                    fetch(`${backendUrl}/get_response/`, {
+                    fetch(`${backendUrl}get_response/`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -915,7 +999,7 @@ async function handlePlanButtonClick(event) {
     const duration = document.querySelector('input[name="plan-duration"]:checked').value;
     const email = getCookie('username').email;
     try {
-        const response = await fetch(`${backendUrl}/create_checkoutsess/`, {
+        const response = await fetch(`${backendUrl}create_checkoutsess/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -960,6 +1044,23 @@ function loadTabContent(tab, userData) {
     }
 }
 
+function updateUserData(firstName, lastName, username, location, profilePicUrl="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png") {
+    const email_id = getCookie('username').email
+    fetch(`${backendUrl}update_user/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email_id, firstName, lastName, username, location, profilePicUrl })
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log('User Data Updated!');
+            // Handle successful registration
+        })
+        .catch(error => console.error(error));
+
+}
 
 function loadProfileContent(contentDiv, userData) {
     // const userData = {
@@ -984,6 +1085,7 @@ function loadProfileContent(contentDiv, userData) {
         </div>
         <div class="userDetsText">
             <label>Username: <input id="username" type="text" value="${userData.username}"></label>
+            <p id="usernameError" class="error"></p>
             <div class="userName">
                 <label>First Name: <input id="firstname" type="text" value="${userData.firstName}"></label>
                 <label>Last Name: <input id="lastname" type="text" value="${userData.lastName}"></label>
@@ -1000,10 +1102,45 @@ function loadProfileContent(contentDiv, userData) {
   `;
 
     const changePasswordBtn = profileForm.querySelector('#changePassword');
-    changePasswordBtn.addEventListener('click', showPasswordForm);
+    changePasswordBtn.addEventListener('click', () => {
+        showPasswordForm()
+    });
 
-    const saveChangesBtn = profileForm.querySelector('#saveChanges');
-    saveChangesBtn.addEventListener('click', saveProfileChanges);
+    const saveChangesBtn = profileForm.querySelector('#saveChanges');    
+    const email_id = getCookie('username').email
+    const newUsername = profileForm.querySelector('#username');
+    const newUsernameError = profileForm.querySelector('#usernameError')
+    const firstNameInput = profileForm.querySelector('#firstname')
+    const lastNameInput = profileForm.querySelector('#lastname')
+    const locationInput = profileForm.querySelector('#location')
+    let newProfilePic = "https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png"
+    const profilePicInput = profileForm.querySelector('#profilePicInput');
+    const profilePicCanvas = profileForm.querySelector("#profilePicCanvas");
+    profilePicInput.addEventListener('change', () => {
+        updateProfilePic(profilePicInput, profilePicCanvas);
+        const file = profilePicInput.files[0];
+        const formData = new FormData();
+        formData.append('profilePic', file)
+        formData.append('email_id', email_id)
+        
+        fetch(`${backendUrl}uploadProfilePic/`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response  => response.json())
+        .then(data => {
+            if (data.resp){
+                newProfilePic = data.url
+            }
+            else {
+                
+                console.log('Error uploading the pic: ', data.error)
+            }
+        })
+        .catch(error => {
+            console.error('Error uploading the pic: ', error);
+        });
+    });
 
     const inputFields = profileForm.querySelectorAll('input');
     inputFields.forEach(input => {
@@ -1011,6 +1148,15 @@ function loadProfileContent(contentDiv, userData) {
             saveChangesBtn.style.display = 'inline-block';
         });
     });
+
+    newUsername.addEventListener('change', () => {
+        checkUsername(saveChangesBtn, newUsername.value, newUsernameError);
+    })
+
+    saveChangesBtn.addEventListener('click', () => {
+        updateUserData(firstNameInput.value, lastNameInput.value, newUsername.value, locationInput.value, newProfilePic)
+        createLoginCookie(newUsername.value, firstNameInput.value, lastNameInput.value, email_id, newProfilePic, locationInput.value);
+    })
 
     contentDiv.appendChild(profileForm);
 }
@@ -1027,14 +1173,26 @@ function showPasswordForm() {
         <label>New Password: <input id="password" type="password"></label>
         <label>Confirm Password: <input id="Confpassword" type="password"></label>
     </div>
+    <p id="passwordError" class="error"></p>
     <div class="newPassButt">
         <button type="button" id="savePassword">Save Password</button>
         <button type="button" id="cancelPassword">Cancel</button>
     </div>
   `;
-
+    const passwordInput = passwordForm.querySelector("#password");
+    const confirmPasswordInput = passwordForm.querySelector("#Confpassword");
+    const passwordError = passwordForm.querySelector("#passwordError");
     const savePasswordBtn = passwordForm.querySelector('#savePassword');
-    savePasswordBtn.addEventListener('click', saveNewPassword);
+    passwordInput.addEventListener('input', () => {
+        validatePassword(passwordInput.value, confirmPasswordInput.value, passwordError, savePasswordBtn);
+    });
+    confirmPasswordInput.addEventListener('input', () => {
+        validatePassword(passwordInput.value, confirmPasswordInput.value, passwordError, savePasswordBtn);
+    });
+    savePasswordBtn.addEventListener('click', () => {
+        // validatePassword(passwordInput.value, confirmPasswordInput.value, passwordError, createAccountButton);
+        saveNewPassword(passwordInput.value)
+    });
 
     const cancelBtn = passwordForm.querySelector('#cancelPassword');
     cancelBtn.addEventListener('click', () => {
@@ -1047,9 +1205,22 @@ function showPasswordForm() {
     contentDiv.appendChild(passwordForm);
 }
 
-function saveNewPassword() {
-    const newPassword = document.querySelector('#profile div input[type="password"]').value;
-    console.log(newPassword)
+function saveNewPassword(password) {
+    const email_id = getCookie('username').email
+    fetch(`${backendUrl}update_password/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email_id, password })
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log('User Password Updated!');
+            // Handle successful registration
+        })
+        .catch(error => console.error(error));
+
     // ... send newPassword to the backend
 
     const passwordForm = document.querySelector('.updPass');
@@ -1074,11 +1245,12 @@ function saveProfileChanges(e) {
 
 function loadFilesContent(contentDiv) {
     // Fetch files data from the backend
-    const filesData = [
-        { title: 'File 1', url: 'file1.html', thumbnail: 'file1.jpg' },
-        { title: 'File 2', url: 'file2.html', thumbnail: 'file2.jpg' },
-        // ... add more files
-    ];
+    // const filesData = [
+    //     { title: 'File 1', url: 'file1.html', thumbnail: 'file1.jpg' },
+    //     { title: 'File 2', url: 'file2.html', thumbnail: 'file2.jpg' },
+    //     // ... add more files
+    // ];
+    const filesData = []
 
     const gridContainer = document.createElement('div');
     const gridTitle = document.createElement('h2');
@@ -1127,11 +1299,43 @@ function loadFilesContent(contentDiv) {
 
     gridContainer.appendChild(gridTitle);
     gridContainer.appendChild(filesContainer);
-
     contentDiv.appendChild(gridContainer);
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.multiple = true;
+    fileInput.style.display = 'none';
     addTile.addEventListener('click', () => {
         // Handle adding items from local storage
+        fileInput.click();
         console.log('Adding items from local storage');
+    });
+
+    fileInput.addEventListener('change', async (event) => {
+        const files = event.target.files;
+
+        // Create a FormData object to send the files to the backend
+        const formData = new FormData();
+
+        // Append each file to the FormData object
+        for (const file of files) {
+            formData.append('files', file);
+        }
+
+        try {
+            // Send the FormData object to the backend using fetch
+            const response = await fetch(`${backendUrl}upload_forms/`, {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (response.ok) {
+                console.log('Files uploaded successfully');
+            } else {
+                console.error('Error uploading files');
+            }
+        } catch (error) {
+            console.error('Error uploading files:', error);
+        }
     });
 }
 
@@ -1211,12 +1415,12 @@ function loadSupportContent(contentDiv) {
 
 function loadFormsContent(contentDiv) {
     // Fetch forms data from the backend
-    const formsData = [
-        { title: 'Form 1', url: 'form1.html', thumbnail: 'form1.jpg' },
-        { title: 'Form 2', url: 'form2.html', thumbnail: 'form2.jpg' },
-        // ... add more forms
-    ];
-
+    // const formsData = [
+    //     { title: 'Form 1', url: 'form1.html', thumbnail: 'form1.jpg' },
+    //     { title: 'Form 2', url: 'form2.html', thumbnail: 'form2.jpg' },
+    //     // ... add more forms
+    // ];
+    const formsData = []
     const gridContainer = document.createElement('div');
     const gridTitle = document.createElement('h2');
     gridTitle.classList.add('formsList');
@@ -1265,8 +1469,43 @@ function loadFormsContent(contentDiv) {
     gridContainer.appendChild(formsContainer);
 
     contentDiv.appendChild(gridContainer);
+
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.multiple = true;
+    fileInput.style.display = 'none';
+
     addTile.addEventListener('click', () => {
         // Handle adding items from local storage
+        fileInput.click();
         console.log('Adding items from local storage');
+    });
+
+    fileInput.addEventListener('change', async (event) => {
+        const files = event.target.files;
+
+        // Create a FormData object to send the files to the backend
+        const formData = new FormData();
+
+        // Append each file to the FormData object
+        for (const file of files) {
+            formData.append('files', file);
+        }
+
+        try {
+            // Send the FormData object to the backend using fetch
+            const response = await fetch(`${backendUrl}upload_forms/`, {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (response.ok) {
+                console.log('Files uploaded successfully');
+            } else {
+                console.error('Error uploading files');
+            }
+        } catch (error) {
+            console.error('Error uploading files:', error);
+        }
     });
 }
