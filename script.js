@@ -19,7 +19,7 @@ const mailingAddressSection = document.getElementById('mailingAddress');
 const monthlyPriceElements = document.querySelectorAll('.monthly-price');
 const yearlyPriceElements = document.querySelectorAll('.yearly-price');
 const yearlyPriceCrossedElements = document.querySelectorAll('.yearly-price-crossed');
-const backendUrl = 'https://justiguide.org/';
+const backendUrl = 'http://127.0.0.1:8000/';
 const tabLinks = document.querySelectorAll('.sidebar a');
 const tabContents = document.querySelectorAll('.content .tab');
 const emailInput = document.getElementById('emailInput');
@@ -32,8 +32,8 @@ function getCookie(name) {
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) {
         const cookieData = parts.pop().split(';').shift();
-        const [username, firstName, lastName, email, profilePicUrl, location] = cookieData.split('|');
-        return { username, firstName, lastName, email, profilePicUrl, location };
+        const [username, firstName, lastName, email, profilePicUrl, user_location] = cookieData.split('|');
+        return { username, firstName, lastName, email, profilePicUrl, user_location };
     }
     // else {
     //     const username = 'rajanpande';
@@ -302,7 +302,7 @@ function showProfileForm() {
 
 }
 
-function registerUser(email, firstName, lastName, password, username, location = "", profilePic = "https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png") {
+function registerUser(email, firstName, lastName, password, username, user_location = null, profilePic = "https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png") {
     // const regEmailInput = document.getElementById('regEmailInput');
     // const firstNameInput = document.getElementById('firstNameInput');
     // const lastNameInput = document.getElementById('lastNameInput');
@@ -321,7 +321,7 @@ function registerUser(email, firstName, lastName, password, username, location =
     // console.log(profilePic)
 
     // const formData = new FormData();
-    const formData = { email, firstName, lastName, password, location, profilePic, username }
+    const formData = { email, firstName, lastName, password, user_location, profilePic, username }
     // formData.append('email', email);
     // formData.append('firstName', firstName);
     // formData.append('lastName', lastName);
@@ -395,10 +395,10 @@ function login() {
         .then(response => response.json())
         .then(data => {
             if (data['resp'] == true) {
-                const { username, firstName, lastName, email, profilePicUrl, location } = data;
-                createLoginCookie(username, firstName, lastName, email, profilePicUrl, location);
+                const { username, firstName, lastName, email, profilePicUrl, user_location } = data;
+                createLoginCookie(username, firstName, lastName, email, profilePicUrl, user_location);
                 document.getElementById("login-window").setAttribute("style", "display: none");
-                showUserPage(username, firstName, lastName, email, profilePicUrl, location)
+                showUserPage(username, firstName, lastName, email, profilePicUrl, user_location)
 
             }
 
@@ -411,7 +411,7 @@ function login() {
     // console.log('Login with email:', email, 'and password:', password);
 }
 
-function showUserPage(username, firstName, lastName, email, profilePicUrl, location) {
+function showUserPage(username, firstName, lastName, email, profilePicUrl, user_location) {
     const profileContainer = document.getElementById('profile-container');
     profileContainer.removeAttribute('style');
     const tabLinks = document.querySelectorAll('.sidebar a');
@@ -422,7 +422,7 @@ function showUserPage(username, firstName, lastName, email, profilePicUrl, locat
         username: username,
         firstName: firstName,
         lastName: lastName,
-        location: location,
+        user_location: user_location,
         email: email
     };
     tabLinks.forEach(link => {
@@ -444,7 +444,7 @@ function showUserPage(username, firstName, lastName, email, profilePicUrl, locat
     });
     loadTabContent('profile', userData);
     document.getElementById("form").removeAttribute('style');
-    addUser(backendUrl, firstName, lastName, email, username, location, password=null, profilePic=profilePicUrl);
+    addUser(backendUrl, firstName, lastName, email, username, user_location, password=null, profilePic=profilePicUrl);
 
 
 }
@@ -749,8 +749,8 @@ function setActiveButton(clickedButton) {
             if (loginCookie != null) {
                 const userPage = document.getElementById("profile-container");
                 if (!userPage) {
-                    const { username, firstName, lastName, email, profilePicUrl, location } = loginCookie;
-                    showUserPage(username, firstName, lastName, email, profilePicUrl, location);
+                    const { username, firstName, lastName, email, profilePicUrl, user_location } = loginCookie;
+                    showUserPage(username, firstName, lastName, email, profilePicUrl, user_location);
                     // const userData = {
                     //     profilePic: profilePicUrl,
                     //     username: username,
@@ -801,10 +801,10 @@ function closeDisclaimer() {
 }
 
 
-function createLoginCookie(username, firstName, lastName, email, profilePicUrl, location = "") {
+function createLoginCookie(username, firstName, lastName, email, profilePicUrl, user_location = null) {
     const expirationDate = new Date();
     expirationDate.setDate(expirationDate.getDate() + 14);
-    const cookieValue = `username=${username}|${firstName}|${lastName}|${email}|${profilePicUrl}|${location}; expires=${expirationDate.toUTCString()}; path=/`;
+    const cookieValue = `username=${username}|${firstName}|${lastName}|${email}|${profilePicUrl}|${user_location}; expires=${expirationDate.toUTCString()}; path=/`;
     document.cookie = cookieValue;
 }
 
@@ -819,7 +819,7 @@ function attachSignin(element) {
             const profilePicUrl = profile.getImageUrl();
             createLoginCookie(username, firstName, lastName, email, profilePicUrl);
             document.getElementById("login-window").setAttribute("style", "display: none");
-            showUserPage(username, firstName, lastName, email, profilePicUrl, location=null)
+            showUserPage(username, firstName, lastName, email, profilePicUrl, user_location=null)
             // const userData = {
             //     profilePic: profilePicUrl,
             //     username: username,
@@ -868,13 +868,13 @@ function attachSignin(element) {
         });
 }
 
-function addUser(backendUrl, firstName, lastName, email, username, location=null, password = null, profilePic="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png") {
+function addUser(backendUrl, firstName, lastName, email, username, user_location=null, password=null, profilePic="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png") {
     fetch(`${backendUrl}new_user/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ firstName, lastName, email, username, location, password, profilePic })
+        body: JSON.stringify({ firstName, lastName, email, username, user_location, password, profilePic })
     })
         .then(response => {
             if (!response.ok) {
@@ -1044,14 +1044,14 @@ function loadTabContent(tab, userData) {
     }
 }
 
-function updateUserData(firstName, lastName, username, location, profilePicUrl="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png") {
+function updateUserData(firstName, lastName, username, user_location, profilePicUrl="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png") {
     const email_id = getCookie('username').email
     fetch(`${backendUrl}update_user/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email_id, firstName, lastName, username, location, profilePicUrl })
+        body: JSON.stringify({ email_id, firstName, lastName, username, user_location, profilePicUrl })
     })
         .then(response => response.json())
         .then(data => {
@@ -1090,7 +1090,7 @@ function loadProfileContent(contentDiv, userData) {
                 <label>First Name: <input id="firstname" type="text" value="${userData.firstName}"></label>
                 <label>Last Name: <input id="lastname" type="text" value="${userData.lastName}"></label>
             </div>
-            <label>Location: <input id="location" type="text" value="${userData.location}"></label>
+            <label>Location: <input id="location" type="text" value="${userData.user_location}"></label>
         </div>
     </div>
     <div class="profileButtons">
@@ -1235,7 +1235,7 @@ function saveProfileChanges(e) {
 
     const firstName = document.querySelector('#profile form input[type="text"]').value;
     const lastName = document.querySelectorAll('#profile form input[type="text"]')[1].value;
-    const location = document.querySelectorAll('#profile form input[type="text"]')[2].value;
+    const user_location = document.querySelectorAll('#profile form input[type="text"]')[2].value;
     // ... send firstName, lastName, location to the backend
 
     const saveChangesBtn = document.querySelector('#saveChanges');
