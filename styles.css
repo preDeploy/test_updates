@@ -88,7 +88,7 @@ p {
   flex-direction: column;
   gap: 10px;
   overflow-wrap: break-word;
-  
+
 }
 
 .user-message,
@@ -429,12 +429,19 @@ p {
 
 label {
   display: block;
-  /* padding: 10px 0px 10px; */
   font-size: clamp(14px, 2vw, 16px);
+
 }
 
 
-input[type="text"],
+input[id="formfirstName"],
+input[id="formmiddleName"],
+input[id="formlastName"],
+input[id="street"],
+input[id="city"],
+input[id="state"],
+input[id="zipCode"],
+input[id="telephone"],
 input[type="tel"] {
   width: calc(100% - 16px);
   padding: 8px;
@@ -682,13 +689,17 @@ p [id="diffAdd"] {
 
 .login-window {
   background-color: #fff;
-  padding: 40px;
+  padding-top: 20px;
+  padding-left: 60px;
+  padding-right: 60px;
+  padding-bottom: 40px;
   border-radius: 50px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   max-width: 400px;
   width: 100%;
   position: relative;
   transform: translateX(-50%);
+  text-align: center;
   left: 50%;
   top: 25%;
 }
@@ -699,9 +710,9 @@ form[id="registrationForm"] {
   gap: 10px;
 }
 
-.login-container {
+/* .login-w {
   text-align: center;
-}
+} */
 
 .emailForm {
   text-align: center;
@@ -710,7 +721,11 @@ form[id="registrationForm"] {
 }
 
 input[type="email"],
-input[type="text"],
+input[id="username"],
+input[id="lastNameInput"],
+input[id="firstNameInput"],
+input[id="usernameInput"],
+input[id="locationInput"],
 input[type="password"] {
   padding: 10px;
   /* margin: 10px; */
@@ -721,7 +736,8 @@ input[type="password"] {
   outline: none;
 }
 
-input[id="emailInput"]{
+
+input[id="emailInput"] {
   width: 100%;
 }
 
@@ -743,13 +759,13 @@ input[id="emailInput"]{
   justify-content: center;
 }
 
-p[id="passwordError"]{
+p[id="passwordError"] {
   font-size: xx-small;
   margin: 0;
 }
 
 
-p[id="usernameError"]{
+p[id="usernameError"] {
   font-size: xx-small;
 }
 
@@ -758,11 +774,11 @@ p[id="usernameError"]{
   gap: 10px
 }
 
-canvas[id="profilePicCanvas"]{
+canvas[id="profilePicCanvas"] {
   /* background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png"); */
   background-repeat: no-repeat;
   background-size: contain;
-  border-radius: 87.5px;
+  border-radius: 90px;
 }
 
 button[id="doneButton"],
@@ -787,7 +803,7 @@ button[id="backButton"] {
   cursor: pointer;
 }
 
-img[id="profilePic"]{
+img[id="profilePic"] {
   height: 150px;
 }
 
@@ -799,7 +815,7 @@ h2[id="passwordText"] {
   margin-bottom: 40px;
 }
 
-.profileFormLogin{
+.profileFormLogin {
   display: flex;
   flex-direction: row;
   gap: 50px;
@@ -817,13 +833,13 @@ h2[id="passwordText"] {
 }
 
 .passDets,
-.passButtons {    
+.passButtons {
   display: flex;
   gap: 10px;
   justify-content: center;
 }
 
-.passDets {    
+.passDets {
   flex-direction: column;
 }
 
@@ -831,7 +847,9 @@ h2[id="passwordText"] {
   margin-top: 20px;
 }
 
-button:disabled {
+button:disabled,
+button[id="saveChanges"]:disabled,
+button[id="savePassword"]:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
@@ -933,230 +951,6 @@ form[id="registrationForm"] {
   gap: 10px;
 }
 
-.form-container {
-  text-align: center;
-}
-
-.emailForm {
-  text-align: center;
-  align-items: center;
-  display: flex
-}
-
-input[type="email"],
-input[type="text"],
-input[type="password"] {
-  padding: 10px;
-  /* margin: 10px; */
-  margin-right: 10px;
-  border: 1px solid #ccc;
-  border-radius: 25px;
-  width: auto;
-  outline: none;
-}
-
-input[id="emailInput"]{
-  width: 100%;
-}
-
-.regName {
-  display: flex;
-  flex-direction: row;
-  width: auto;
-}
-
-.regPass {
-  display: flex;
-  flex-direction: row;
-}
-
-.regButtons {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  justify-content: center;
-}
-
-p[id="passwordError"]{
-  font-size: xx-small;
-  margin: 0;
-}
-
-
-p[id="usernameError"]{
-  font-size: xx-small;
-}
-
-#registrationForm {
-  justify-content: center;
-  gap: 10px
-}
-
-canvas[id="profilePicCanvas"]{
-  background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png");
-  background-repeat: no-repeat;
-  background-size: contain;
-  border-radius: 75px;
-}
-
-button[id="doneButton"],
-button[id="loginButton"],
-button[class="passButton"] {
-  padding: 10px 20px;
-  margin: 10px;
-  background-color: #5080DE;
-  color: #fff;
-  border: none;
-  border-radius: 25px;
-  cursor: pointer;
-}
-
-button[id="createAccountButton"],
-button[id="backButton"] {
-  padding: 10px 20px;
-  background-color: #5080DE;
-  color: #fff;
-  border: none;
-  border-radius: 25px;
-  cursor: pointer;
-}
-
-img[id="profilePic"]{
-  height: 150px;
-}
-
-h2[id="loginText"],
-h2[id="emailformText"],
-h2[id="profileText"],
-h2[id="regText"],
-h2[id="passwordText"] {
-  margin-bottom: 40px;
-}
-
-.profileForm{
-  display: flex;
-  flex-direction: row;
-  gap: 50px;
-  justify-content: center;
-  align-items: center;
-}
-
-.profilPicLogin {
-  display: flex;
-  flex-direction: column;
-}
-
-.userDetsLogin {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.passForm {
-  gap: 50px;
-}
-
-.passDets,
-.passButtons {    
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-}
-
-.passDets {    
-  flex-direction: column;
-}
-
-.passButtons {
-  margin-top: 20px;
-}
-
-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-#emailButton {
-  background-color: transparent;
-  color: #5080DE;
-  border: none;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-#googleButton {
-  background-color: #FFFF;
-  color: rgba(0, 0, 0);
-  font-family: 'Nunito', sans-serif;
-  padding: 10px 20px;
-  margin: 10px;
-  border-radius: 25px;
-  outline: none;
-  border: thin;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-
-#separator {
-  text-align: center;
-  margin: 20px 0;
-  color: #ccc;
-  position: relative;
-}
-
-#separator span {
-  display: inline-block;
-  background-color: #fff;
-  padding: 0 10px;
-  position: relative;
-  z-index: 1;
-}
-
-#separator::before,
-#separator::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  width: calc(50% - 30px);
-  /* Adjust the value as needed */
-  height: 1px;
-  background-color: #ccc;
-  z-index: 0;
-}
-
-#separator::before {
-  left: 0;
-}
-
-#separator::after {
-  right: 0;
-}
-
-
-
-
-.error {
-  color: #ff0000;
-  font-weight: bold;
-}
-
-button[id="emailButton"] {
-  height: 42px;
-  width: 48px;
-  background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/login_icons/next-arrow.png");
-  background-repeat: no-repeat;
-  /* background-position: center; */
-  background-size: contain;
-  /* margin-top: 12px; */
-  opacity: 0.7;
-  cursor: pointer;
-
-}
-
-
 
 p[class="footerClass"] {
   position: fixed;
@@ -1245,7 +1039,7 @@ a[class=footerClass]:hover {
 span.buttonText {
   display: inline-block;
   vertical-align: middle;
-  padding-right: 24px;
+  padding-left: 10px;
   font-size: 14px;
   font-weight: bold;
 }
@@ -1324,7 +1118,7 @@ span.buttonText {
   color: #000000;
   margin-bottom: 10px;
   margin-top: 10px;
-  font-weight:bold;
+  font-weight: bold;
 }
 
 .plan-features {
@@ -1368,7 +1162,7 @@ span.buttonText {
   margin-top: auto;
 }
 
-.plan-button[id='current-plan']{
+.plan-button[id='current-plan'] {
   background-color: #c9c9c9;
   color: #a1a1a1;
 }
@@ -1377,45 +1171,47 @@ span.buttonText {
   background-color: #0056b3;
 }
 
-.plan-button[id='current-plan']:hover{
+.plan-button[id='current-plan']:hover {
   background-color: #c9c9c9;
   cursor: not-allowed;
 }
 
-.plan-card.current:hover{
+.plan-card.current:hover {
   transform: scale(1);
   background-color: #e6e8eb;
 
 }
 
-.plan-name[id="plus"]{
+.plan-name[id="plus"] {
   color: #3E90F0;
 }
 
-.plan-name[id="premium"]{
+.plan-name[id="premium"] {
   color: #17a54b;
 }
 
-.plan-name[id="enterprise"]{
+.plan-name[id="enterprise"] {
   color: #af0000
 }
 
-@media (max-width: 500px){
+@media (max-width: 500px) {
   .message-bubble {
     max-width: calc(min(85vw, 250px));
   }
 
-  .chat-container{
+  .chat-container {
     min-width: calc(min(85vw, 350px));
   }
 
   .chat-bar-container {
     min-width: calc(min(85vw, 350px));
   }
+
   p[class="footerClass"] {
     font-size: 2.5vw;
   }
-  .side-container{
+
+  .side-container {
     top: 18px;
     left: 18px;
   }
@@ -1431,9 +1227,9 @@ span.buttonText {
 
   .user-info,
   .title {
-  display: block;
-  align-items: center;
-}
+    display: block;
+    align-items: center;
+  }
 
   /* .button {
     opacity: 0.15;
@@ -1442,12 +1238,13 @@ span.buttonText {
   .button.active {
     opacity: 0.5;
   } */
-  
+
   /* .button:hover {
     opacity: 0.95;
   } */
-  
+
 }
+
 .profile-container {
   position: relative;
   display: flex;
@@ -1463,7 +1260,7 @@ span.buttonText {
   flex: 1;
   padding: 20px;
   width: 100%;
-  height: 100%;
+  /* height: 100%; */
 }
 
 .profileInfo .userDetsText {
@@ -1481,6 +1278,10 @@ span.buttonText {
   height: 100%;
 }
 
+.supportFormIncl {
+  width: 100%;
+}
+
 .passText,
 .supportForm {
   display: flex;
@@ -1490,7 +1291,8 @@ span.buttonText {
 
 .supportForm {
   width: 100%;
-  margin-bottom: 2rem;
+  max-width: 100%;
+  margin-bottom: 12px;
 }
 
 .profilePic {
@@ -1531,7 +1333,9 @@ h2[class="passtitle"],
 h2[class="filestitle"],
 h2[class="lawyerstitle"],
 h2[class="supporttitle"],
-h2[class="formsList"] {
+h2[class="formsList"],
+h2[class="lawyersList"],
+h2[id="filesList"] {
   display: flex;
   margin-top: 0px;
   margin-bottom: 25px;
@@ -1539,8 +1343,7 @@ h2[class="formsList"] {
 }
 
 .supportButton {
-  margin-top: auto;
-  /* Add this line to push the button to the bottom */
+  margin-top: 45px;
   margin-bottom: 0;
 }
 
@@ -1561,7 +1364,7 @@ button[id="supportSubmit"] {
 
 .files-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   grid-gap: 1rem;
   font-family: inherit;
 }
@@ -1600,7 +1403,7 @@ button[id="supportSubmit"] {
 
 .forms-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   grid-gap: 1rem;
   font-family: inherit;
 }
@@ -1652,13 +1455,16 @@ button[id="supportSubmit"] {
 }
 
 .add-title {
-  font-size: 14px;
+  /* font-size: 14px; */
+  text-align: center;
+  font-size: small;
   color: #666;
 }
 
 .lawyers-container {
+  justify-content: center;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   grid-gap: 1rem;
   font-family: inherit;
 }
@@ -1677,7 +1483,7 @@ button[id="supportSubmit"] {
 }
 
 .lawyer-image {
-  padding-bottom: 60%;
+  padding-bottom: 80%;
   /* Adjust this value to control the aspect ratio */
   background-size: cover;
   background-position: center;
@@ -1696,47 +1502,48 @@ button[id="supportSubmit"] {
 }
 
 .supportFormIncl {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   flex: 1;
-  height: 100%;
+  height: 80%;
 }
 
 input[id="supportEmail"],
 input[id="supportSubj"],
 textarea[id="supportMsg"] {
+  max-width: 100%;
+  /* Add this line */
   outline: none;
-  resize: none;
   padding: 10px;
   border-radius: 25px;
   border-style: solid;
   border-width: thin;
   border-color: #ddd;
+  box-sizing: border-box;
+  /* Add this line */
 }
 
+
 input[id="supportEmail"] {
-  width: 85%;
-  /* width: calc(100%-20px); */
-  font-family: inherit;
+  width: 100%;
 }
 
 input[id="supportSubj"] {
-  width: 86.5%;
-  /* width: calc(100% - 20px); */
-  font-family: inherit;
+  width: 100%;
 }
 
 textarea[id="supportMsg"] {
-  /* width: 75%; */
+  resize: none;
   width: 100%;
-  margin-right: 20px;
   height: 20%;
-  font-family: inherit;
 }
 
-label[id="supportMsg"] {
+label[id="supportMsg"],
+label[id="supportSubj"],
+label[id="supportEmail"] {
   display: flex;
   flex-direction: row;
   gap: 7px;
@@ -1806,10 +1613,7 @@ input[id="lastname"] {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.content {
-  width: 75%;
-  padding: 20px;
-}
+
 
 .tab {
   display: none;
@@ -1852,6 +1656,5 @@ canvas[id="profilePicCanvas"] {
   /* background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png"); */
   background-repeat: no-repeat;
   background-size: contain;
-  border-radius: 87.5px;
+  border-radius: 90px;
 }
-
