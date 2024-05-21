@@ -3,9 +3,7 @@ body {
   padding: 0;
   font-family: 'Nunito', sans-serif;
   height: 100vh;
-  background: linear-gradient(116.82deg, #E0EEFB 0%, #DDE6F9 100%);
   color: #444;
-  overflow-y: hidden;
 }
 
 p {
@@ -442,6 +440,10 @@ input[id="city"],
 input[id="state"],
 input[id="zipCode"],
 input[id="telephone"],
+input[id="mailingStreet"],
+input[id="mailingCity"],
+input[id="mailingState"],
+input[id="mailingZipCode"],
 input[type="tel"] {
   width: calc(100% - 16px);
   padding: 8px;
@@ -1065,7 +1067,7 @@ span.buttonText {
   width: fit-content;
   transform: translateX(-50%);
   left: 50%;
-  top: 25%;
+  top: 15%;
   border-radius: 30px;
   box-shadow: rgb(0, 0, 0, 0.1);
   z-index: 3;
@@ -1194,56 +1196,7 @@ span.buttonText {
   color: #af0000
 }
 
-@media (max-width: 500px) {
-  .message-bubble {
-    max-width: calc(min(85vw, 250px));
-  }
 
-  .chat-container {
-    min-width: calc(min(85vw, 350px));
-  }
-
-  .chat-bar-container {
-    min-width: calc(min(85vw, 350px));
-  }
-
-  p[class="footerClass"] {
-    font-size: 2.5vw;
-  }
-
-  .side-container {
-    top: 18px;
-    left: 18px;
-  }
-
-  .logo {
-    height: 50px;
-    width: 50px;
-    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/logo/favicon.png");
-    background-repeat: no-repeat;
-    background-size: cover;
-    cursor: pointer;
-  }
-
-  .user-info,
-  .title {
-    display: block;
-    align-items: center;
-  }
-
-  /* .button {
-    opacity: 0.15;
-  }
-  
-  .button.active {
-    opacity: 0.5;
-  } */
-
-  /* .button:hover {
-    opacity: 0.95;
-  } */
-
-}
 
 .profile-container {
   position: relative;
@@ -1581,7 +1534,7 @@ input[id="lastname"] {
 }
 
 .sidebar {
-  position: relative;
+  /* position: relative; */
   width: 25%;
   background-color: #f1f1f1;
   padding: 20px;
@@ -1601,7 +1554,7 @@ input[id="lastname"] {
 }
 
 .sidebar a {
-  display: block;
+  display: flex;
   color: #333;
   text-decoration: none;
   padding: 10px;
@@ -1657,4 +1610,359 @@ canvas[id="profilePicCanvas"] {
   background-repeat: no-repeat;
   background-size: contain;
   border-radius: 90px;
+}
+
+.profilePicText{
+  text-align: center;
+}
+
+@media (max-width: 1100px) {
+  .profile-container {
+    position: absolute;
+    transform: translateX(50%);
+    /* left: -50vw; */
+    left: -30%;
+    width: calc(100vw - 40px);
+    height: 35vh;
+    /* height: ; */
+    max-width: 80vw;
+  }
+
+  .sidebar {
+    width: 8%;
+    align-items: center;
+    /* font-size: 12px; */
+    /* color: #444; */
+  }
+
+  .sidebar a.active {
+    background-color: transparent;
+    box-shadow: none;
+    opacity: 1;
+    filter: invert(41%) sepia(61%) saturate(611%) hue-rotate(183deg) brightness(102%) contrast(91%);
+  }
+
+  .profilePicText{    
+    font-size: 12px;
+  }
+
+  a[data-tab="profile"],
+  a[data-tab="files"],
+  a[data-tab="lawyers"],
+  a[data-tab="support"],
+  a[data-tab="forms"]{
+    width: 20px;
+    height: 20px;
+    font-size: 0px;
+    /* background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/profileMain.png"); */
+    background-repeat: no-repeat;
+    background-size: contain;
+    opacity: 0.6;
+  }
+
+  a[data-tab="profile"]{
+    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/profileMain.png");    
+    /* color: #f1f1f1; */
+  }
+
+  a[data-tab="files"]{
+    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/files.png");    
+    color: #f1f1f1;
+  }
+
+  a[data-tab="lawyers"]{
+    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/lawyers.png");    
+    color: #f1f1f1;
+  }
+
+  a[data-tab="support"]{
+    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/support.png");    
+    color: #f1f1f1;
+  }
+
+  a[data-tab="forms"]{
+    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/forms.png");    
+    color: #f1f1f1;
+  }
+
+
+  .profileButtons {
+    position: relative;
+    bottom: -15px;
+    gap: 25px;
+  }
+
+  /* .newPassButt {
+    bottom: -25px
+  } */
+  /* a.active{
+    color: #f1f1f1
+  } */
+
+  button[id="subscribe"],
+  button[id="saveChanges"],
+  button[id="changePassword"],
+  button[id="savePassword"],
+  button[id="cancelPassword"]{
+    display: flex;
+    /* font-size: 12.5px; */
+    /* padding: 5px; */
+    align-items: center;
+    justify-content: center;
+    /* width: 75px; */
+    /* padding: 10px; */
+  }
+
+  button[id="logout-item"]:hover{
+    background-color: inherit;
+
+  }
+
+  h2[id="loginText"] {
+    margin-top: 0px;
+    margin-bottom: 20px;
+  }
+
+  .logo {
+    height: 50px;
+    width: 50px;
+    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/logo/favicon.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    cursor: pointer;
+  }
+
+  .user-info,
+  .title {
+    display: block;
+    align-items: center;
+  }
+
+  
+  input[id="lastNameInput"],
+  input[id="firstNameInput"],
+  input[id="regPasswordInput"],
+  input[id="confirmPasswordInput"] {
+    width: 50%;
+  }
+
+  /* .userDetsText input,
+  .passText input{
+    padding: 5px;
+  } */
+
+  .profilPicLogin {
+    position: relative;
+    left: 20px;
+  }
+
+  /* canvas[id="profilePicCanvas"] {
+    left: 20px;
+  } */
+}
+
+
+
+@media (max-width: 600px) {
+  .message-bubble {
+    max-width: calc(min(85vw, 250px));
+  }
+
+  .chat-container {
+    min-width: calc(min(85vw, 350px));
+  }
+
+  .chat-bar-container {
+    min-width: calc(min(85vw, 350px));
+  }
+
+  p[class="footerClass"] {
+    font-size: 2.5vw;
+  }
+
+  .side-container {
+    top: 18px;
+    left: 18px;
+  }
+
+  .login-window {
+    max-width: 80vw;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
+  }
+
+  .profile-container {
+    position: absolute;
+    transform: translateX(50%);
+    /* left: -50vw; */    
+    left: -30%;
+    width: calc(100vw - 40px);
+    height: 35vh;
+    /* height: ; */
+    /* max-width: 80vw; */
+  }
+
+  .sidebar {
+    width: 8%;
+    font-size: 0px;
+  }
+
+  .profilePicText{    
+    font-size: 12px;
+  }
+
+  a[data-tab="profile"],
+  button[id="logout-item"],
+  a[data-tab="files"],
+  a[data-tab="lawyers"],
+  a[data-tab="support"],
+  a[data-tab="forms"] {    
+    height: 6px;
+    width: 6px;
+    background-repeat: no-repeat;
+    background-size: contain;
+    opacity: 0.6;
+    color: #f1f1f1;
+  }
+
+  a[data-tab="profile"]{
+    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/profileMain.png");    
+    color: #f1f1f1;
+  }
+
+  a[data-tab="files"]{
+    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/files.png");    
+    color: #f1f1f1;
+  }
+
+  a[data-tab="lawyers"]{
+    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/lawyers.png");    
+    color: #f1f1f1;
+  }
+
+  a[data-tab="support"]{
+    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/support.png");    
+    color: #f1f1f1;
+  }
+
+  a[data-tab="forms"]{
+    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/forms.png");    
+    color: #f1f1f1;
+  }
+
+  button[id="logout-item"]{
+    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/logout-item.png");
+    margin-bottom: 15px;
+    /* opacity: 1; */
+  }
+
+  .profileButtons {
+    position: relative;
+    left: -30px;
+    gap: 4px;
+    bottom: -75px;
+  }
+  
+  .newPassButt {
+    bottom: 25px;
+    left: 75px;
+    gap: 10px;
+  }
+
+
+  /* a.active{
+    color: #f1f1f1
+  } */
+
+  button[id="subscribe"],
+  button[id="saveChanges"],
+  button[id="changePassword"],
+  button[id="savePassword"],
+  button[id="cancelPassword"]{
+    display: flex;
+    font-size: 12.5px;
+    padding: 5px;
+    align-items: center;
+    justify-content: center;
+    width: 75px;
+    /* padding: 10px; */
+  }
+
+  button[id="logout-item"]:hover{
+    background-color: inherit;
+
+  }
+
+  h2[id="loginText"] {
+    margin-top: 0px;
+    margin-bottom: 20px;
+  }
+
+  .logo {
+    height: 50px;
+    width: 50px;
+    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/logo/favicon.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    cursor: pointer;
+  }
+
+  .user-info,
+  .title {
+    display: block;
+    align-items: center;
+  }
+
+  
+  input[id="lastNameInput"],
+  input[id="firstNameInput"],
+  input[id="regPasswordInput"],
+  input[id="confirmPasswordInput"] {
+    width: 50%;
+  }
+
+  .userDetsText input,
+  .passText input{
+    padding: 5px;
+  }
+
+  .profilPicLogin {
+    position: relative;
+    left: 20px;
+  }
+
+  canvas[id="profilePicCanvas"] {
+    left: 20px;
+    height: 85px;
+  }
+
+  /* .button {
+    opacity: 0.15;
+  }
+  
+  .button.active {
+    opacity: 0.5;
+  } */
+
+  /* .button:hover {
+    opacity: 0.95;
+  } */
+
+}
+
+@media (max-width: 472px){
+  .profileButtons {
+    /* position: relative; */
+    /* left: -30px;
+    gap: 4px; */
+    bottom: -58px;
+  }
+  
+  .newPassButt {    
+    bottom: 25px;
+    left: 75px;
+    gap: 10px;
+  }
+
 }
