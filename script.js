@@ -19,7 +19,7 @@ const mailingAddressSection = document.getElementById('mailingAddress');
 const monthlyPriceElements = document.querySelectorAll('.monthly-price');
 const yearlyPriceElements = document.querySelectorAll('.yearly-price');
 const yearlyPriceCrossedElements = document.querySelectorAll('.yearly-price-crossed');
-const backendUrl = 'https://justiguide.org/';
+const backendUrl = 'http://127.0.0.1:8000/';
 const tabLinks = document.querySelectorAll('.sidebar a');
 const tabContents = document.querySelectorAll('.content .tab');
 const emailInput = document.getElementById('emailInput');
@@ -32,8 +32,8 @@ function getCookie(name) {
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) {
         const cookieData = parts.pop().split(';').shift();
-        const [username, firstName, lastName, email, profilePicUrl, user_location] = cookieData.split('|');
-        return { username, firstName, lastName, email, profilePicUrl, user_location };
+        const [username, firstName, lastName, email, user_location, profilePicUrl] = cookieData.split('|');
+        return { username, firstName, lastName, email, user_location, profilePicUrl };
     }
     // else {
     //     const username = 'rajanpande';
@@ -45,17 +45,6 @@ function getCookie(name) {
     // }
     return null;
 }
-
-// async function showUserPage() {
-//     document.getElementById("login-window").style.display = "none";
-//     const subscription = await getSubscription();
-//     const userTierElement = document.getElementById('user-tier');
-//     userTierElement.textContent = subscription
-//     loadTabContent('profile');
-//     document.getElementById("userPage").style.display = "block";
-//     document.getElementById("form").removeAttribute('style');
-
-// }
 
 function checkUser() {
     const email_id = emailInput.value;
@@ -107,8 +96,6 @@ function showLoginPasswordForm(email) {
 }
 
 function validatePassword(password, confirmPassword, passwordError, createAccountButton) {
-    // const password = regPasswordInput.value;
-    // const confirmPassword = confirmPasswordInput.value;
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
     if (password !== confirmPassword) {
@@ -176,7 +163,6 @@ function showRegistrationForm(email) {
 }
 
 function checkUsername(doneButton, username, usernameError) {
-    // const username = usernameInput.value;
     fetch(`${backendUrl}check_username/`, {
         method: 'POST',
         body: JSON.stringify({ username })
@@ -262,15 +248,14 @@ function showProfileForm() {
     usernameInput.addEventListener('input', () => {
         checkUsername(doneButton, usernameInput.value, usernameError);
     });
-    
+
     const formData = new FormData();
-    // profilePicInput.addEventListener('click', () => profilePicInput.click());
-    profilePicInput.addEventListener('change', ()=>{
+    profilePicInput.addEventListener('change', () => {
         updateProfilePic(profilePicInput, profilePicCanvas)
         const file = profilePicInput.files[0];
-        formData.append('profilePic', file)
-        formData.append('email_id', email)     
-        
+        formData.append('profilePic', file);
+        formData.append('email_id', email);
+
     });
     doneButton.addEventListener('click', () => {
         registerUser(email, firstNameInput.value, lastNameInput.value, regPasswordInput.value, usernameInput.value, locationInput.value);
@@ -278,57 +263,33 @@ function showProfileForm() {
             method: 'POST',
             body: formData
         })
-        .then(response  => response.json())
-        .then(data => {
-            if (data.resp){
-                newProfilePic = data.url;
-            }
-            else {
-                
-                console.log('Error uploading the pic: ', data.error)
-            }
-        })
-        .then(() => {
-            createLoginCookie(usernameInput.value, firstNameInput.value, lastNameInput.value, email, newProfilePic, locationInput.value);
-            loginContainer.setAttribute('style', 'display: none;');
-            showUserPage(usernameInput.value, firstNameInput.value, lastNameInput.value, email, newProfilePic, locationInput.value);
-        })
-        .catch(error => {
-            console.error('Error uploading the pic: ', error);
-        });
-        
+            .then(response => response.json())
+            .then(data => {
+                if (data.resp) {
+                    newProfilePic = data.url;
+                }
+                else {
+
+                    console.log('Error uploading the pic: ', data.error)
+                }
+            })
+            .catch(error => {
+                console.error('Error uploading the pic: ', error);
+            })
+            .finally(() => {
+                createLoginCookie(usernameInput.value, firstNameInput.value, lastNameInput.value, email, newProfilePic, locationInput.value);
+                updateUserData(firstNameInput.value, lastNameInput.value, usernameInput.value, locationInput.value, newProfilePic);
+                loginContainer.setAttribute('style', 'display: none;');
+                showUserPage(usernameInput.value, firstNameInput.value, lastNameInput.value, email, newProfilePic, locationInput.value);
+            });
+
     });
 
 
 }
 
-function registerUser(email, firstName, lastName, password, username, user_location = null, profilePic = "https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png") {
-    // const regEmailInput = document.getElementById('regEmailInput');
-    // const firstNameInput = document.getElementById('firstNameInput');
-    // const lastNameInput = document.getElementById('lastNameInput');
-    // const regPasswordInput = document.getElementById('regPasswordInput');
-    // const locationInput = document.getElementById('locationInput');
-    // const profilePicInput = document.getElementById('profilePicInput');
-
-    // // console.log(regEmailInput)
-
-    // const email = regEmailInput.value;
-    // const firstName = firstNameInput.value;
-    // const lastName = lastNameInput.value;
-    // const password = regPasswordInput.value;
-    // const location = locationInput.value;
-    // const profilePic = profilePicInput.files[0];
-    // console.log(profilePic)
-
-    // const formData = new FormData();
+function registerUser(email, firstName, lastName, password, username, user_location = "", profilePic = "https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png") {
     const formData = { email, firstName, lastName, password, user_location, profilePic, username }
-    // formData.append('email', email);
-    // formData.append('firstName', firstName);
-    // formData.append('lastName', lastName);
-    // formData.append('password', password);
-    // formData.append('location', location);
-    // formData.append('profilePic', profilePic);
-
     fetch(`${backendUrl}register/`, {
         method: 'POST',
         body: JSON.stringify(formData)
@@ -336,21 +297,10 @@ function registerUser(email, firstName, lastName, password, username, user_locat
         .then(response => response.json())
         .then(data => {
             console.log('User Registered!');
-            // Handle successful registration
         })
         .catch(error => console.error(error));
 }
 
-// function startApp() {
-//     gapi.load('auth2', function () {
-//       auth2 = gapi.auth2.init({
-//         client_id: "699627421105-5b2u0uckdbqievn40vjto4l04ih7v4pq.apps.googleusercontent.com",
-//         cookiepolicy: 'single_host_origin',
-//         plugin_name: "Dolores_Login",
-//       });
-//       attachSignin(document.getElementById('customBtn'));
-//     });
-//   }
 
 function showEmailForm() {
     loginContainer.innerHTML = `
@@ -367,18 +317,8 @@ function showEmailForm() {
             <span class="buttonText">Sign in with Google</span>
         </button>
     `;
-    const emailInput = document.getElementById('emailInput');
-    const emailButton = document.getElementById('emailButton');
-    const googleButton = document.getElementById('googleButton');
-
-    // emailButton.addEventListener('click', checkUser);
-    // googleButton.addEventListener('click', startApp);
 }
 
-// function signInWithGoogle() {
-//     // Implement Google Sign-In functionality
-//     console.log('Sign in with Google');
-// }
 
 function login() {
     const emailInput = document.querySelector('input[type="email"]');
@@ -404,11 +344,6 @@ function login() {
 
         })
         .catch(error => console.error(error));
-
-
-
-    // Implement login functionality
-    // console.log('Login with email:', email, 'and password:', password);
 }
 
 function showUserPage(username, firstName, lastName, email, profilePicUrl, user_location) {
@@ -416,7 +351,6 @@ function showUserPage(username, firstName, lastName, email, profilePicUrl, user_
     profileContainer.removeAttribute('style');
     const tabLinks = document.querySelectorAll('.sidebar a');
     const tabContents = document.querySelectorAll('.content .tab');
-
     const userData = {
         profilePic: profilePicUrl,
         username: username,
@@ -429,22 +363,23 @@ function showUserPage(username, firstName, lastName, email, profilePicUrl, user_
         link.addEventListener('click', e => {
             e.preventDefault();
             const targetTab = e.target.getAttribute('data-tab');
-
-            // Remove active class from all links and content divs
             tabLinks.forEach(link => link.classList.remove('active'));
             tabContents.forEach(content => content.classList.remove('active'));
-
-            // Add active class to clicked link and corresponding content div
             e.target.classList.add('active');
-            document.getElementById(targetTab).classList.add('active');
-
-            // Load content for the selected tab
+            const contentDiv = document.querySelector('.content');
+            contentDiv.innerHTML = '';
+            const newTabContent = document.createElement('div');
+            newTabContent.id = targetTab;
+            newTabContent.classList.add('tab', 'active');
+            contentDiv.appendChild(newTabContent);
+            // document.getElementById(targetTab).classList.add('active');
             loadTabContent(targetTab, userData);
         });
     });
+    const chatButton = document.getElementById('chat');
+    chatButton.removeAttribute('style');
     loadTabContent('profile', userData);
-    document.getElementById("form").removeAttribute('style');
-    addUser(backendUrl, firstName, lastName, email, username, user_location, password=null, profilePic=profilePicUrl);
+    addUser(backendUrl, firstName, lastName, email, username, user_location, password = null, profilePic = profilePicUrl);
 
 
 }
@@ -584,8 +519,6 @@ function signOut() {
 
 function closeSignOutModal() {
     document.getElementById('signout-modal').style.display = 'none';
-    // loadTabContent('profile', userData);
-
 }
 
 function confirmSignOut() {
@@ -673,7 +606,69 @@ function setActiveButton(clickedButton) {
             if (!chatHistory.classList.contains('active')) {
                 chatHistory.classList.add('active');
             }
-            document.getElementById("disclaimer").removeAttribute('style');
+            document.getElementById("disclaimer").removeAttribute('style'); 
+            messageInput.addEventListener('keyup', () => {
+                const message = messageInput.value.trim();
+                if (message) {
+                    sendButton.addEventListener('click', (event) => {
+                        event.preventDefault();
+                        if (messageInput.value != '') {
+                            addUserMessage(messageInput.value, getCookie('username').profilePicUrl);
+                            const messageVal = messageInput.value;
+                            addGeneratingMessage();
+                            fetch(`${backendUrl}get_response/`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    user_message: messageVal,
+                                    user: getCookie('username').username
+                                })
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    const botResponse = data.bot_response;
+                                    removeGeneratingMessage();
+                                    addBotMessage(botResponse);
+                                })
+                                .catch((error) => {
+                                    console.error('Error: ', error);
+                                });
+                            messageInput.value = '';
+                        }
+                    });
+                    messageInput.addEventListener('keydown', (event) => {
+                        if (event.key === 'Enter') {
+                            if (messageInput.value != '') {
+                                addUserMessage(messageInput.value, getCookie('username').profilePicUrl);
+                                const messageVal = messageInput.value;
+                                addGeneratingMessage();
+                                fetch(`${backendUrl}get_response/`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        user_message: messageVal,
+                                        user: getCookie('username').username
+                                    })
+                                })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        const botResponse = data.bot_response;
+                                        removeGeneratingMessage();
+                                        addBotMessage(botResponse);
+                                    })
+                                    .catch((error) => {
+                                        console.error('Error: ', error);
+                                    });
+                                messageInput.value = '';
+                            }
+                        }
+                    });
+                }
+            });
         } else if (clickedButton.id == 'form') {
             hideAll();
             if (!formWindow.classList.contains('active')) {
@@ -694,9 +689,9 @@ function setActiveButton(clickedButton) {
             nextButton.addEventListener('click', function (event) {
                 event.preventDefault();
                 mainInfo = {
-                    firstName: document.getElementById('firstName').value,
-                    middleName: document.getElementById('middleName').value,
-                    lastName: document.getElementById('lastName').value,
+                    firstName: document.getElementById('formfirstName').value,
+                    middleName: document.getElementById('formmiddleName').value,
+                    lastName: document.getElementById('formlastName').value,
                     // Add other fields as required
                 };
                 form.reset();
@@ -708,9 +703,9 @@ function setActiveButton(clickedButton) {
             submitButton.addEventListener('click', function (event) {
                 event.preventDefault();
                 spouseChildInfo = {
-                    firstName: document.getElementById('firstName').value,
-                    middleName: document.getElementById('middleName').value,
-                    lastName: document.getElementById('lastName').value,
+                    firstName: document.getElementById('formfirstName').value,
+                    middleName: document.getElementById('formmiddleName').value,
+                    lastName: document.getElementById('formlastName').value,
                     // Add fields for spouse/child information
                 };
                 const combinedInfo = {
@@ -751,33 +746,6 @@ function setActiveButton(clickedButton) {
                 if (!userPage) {
                     const { username, firstName, lastName, email, profilePicUrl, user_location } = loginCookie;
                     showUserPage(username, firstName, lastName, email, profilePicUrl, user_location);
-                    // const userData = {
-                    //     profilePic: profilePicUrl,
-                    //     username: username,
-                    //     firstName: firstName,
-                    //     lastName: lastName,
-                    //     location: 'Santa Clara'
-                    // };
-                    // tabLinks.forEach(link => {
-                    //     link.addEventListener('click', e => {
-                    //         e.preventDefault();
-                    //         const targetTab = e.target.getAttribute('data-tab');
-
-                    //         // Remove active class from all links and content divs
-                    //         tabLinks.forEach(link => link.classList.remove('active'));
-                    //         tabContents.forEach(content => content.classList.remove('active'));
-
-                    //         // Add active class to clicked link and corresponding content div
-                    //         e.target.classList.add('active');
-                    //         document.getElementById(targetTab).classList.add('active');
-
-                    //         // Load content for the selected tab
-                    //         loadTabContent(targetTab, userData);
-                    //     });
-                    // });
-                    // loadTabContent('profile');
-
-                    // createUserPage(username, firstName, lastName, email, profilePicUrl);
                 } else {
                     userPage.setAttribute('style', 'display: flex;');
                 }
@@ -802,9 +770,11 @@ function closeDisclaimer() {
 
 
 function createLoginCookie(username, firstName, lastName, email, profilePicUrl, user_location = null) {
+    user_location = user_location || '';
+    console.log('Login Cookie: ', user_location);
     const expirationDate = new Date();
     expirationDate.setDate(expirationDate.getDate() + 14);
-    const cookieValue = `username=${username}|${firstName}|${lastName}|${email}|${profilePicUrl}|${user_location}; expires=${expirationDate.toUTCString()}; path=/`;
+    const cookieValue = `username=${username}|${firstName}|${lastName}|${email}|${user_location}|${profilePicUrl}; expires=${expirationDate.toUTCString()}; path=/`;
     document.cookie = cookieValue;
 }
 
@@ -812,63 +782,18 @@ function attachSignin(element) {
     auth2.attachClickHandler(element, {},
         function (googleUser) {
             const profile = googleUser.getBasicProfile();
-            const username = profile.getId();
+            const email = profile.getEmail();
+            const username = email.split('@')[0];
             const firstName = profile.getGivenName();
             const lastName = profile.getFamilyName();
-            const email = profile.getEmail();
             const profilePicUrl = profile.getImageUrl();
-            createLoginCookie(username, firstName, lastName, email, profilePicUrl);
+            createLoginCookie(username, firstName, lastName, email, profilePicUrl, user_location = null);
             document.getElementById("login-window").setAttribute("style", "display: none");
-            showUserPage(username, firstName, lastName, email, profilePicUrl, user_location=null)
-            // const userData = {
-            //     profilePic: profilePicUrl,
-            //     username: username,
-            //     firstName: firstName,
-            //     lastName: lastName,
-            //     location: 'Santa Clara'
-            // };
-            // tabLinks.forEach(link => {
-            //     link.addEventListener('click', e => {
-            //         e.preventDefault();
-            //         const targetTab = e.target.getAttribute('data-tab');
-
-            //         // Remove active class from all links and content divs
-            //         tabLinks.forEach(link => link.classList.remove('active'));
-            //         tabContents.forEach(content => content.classList.remove('active'));
-
-            //         // Add active class to clicked link and corresponding content div
-            //         e.target.classList.add('active');
-            //         document.getElementById(targetTab).classList.add('active');
-
-            //         // Load content for the selected tab
-            //         loadTabContent(targetTab, userData);
-            //     });
-            // });
-            // loadTabContent('profile');
-            // createUserPage(username, firstName, lastName, email, profilePicUrl);
-            document.getElementById("userPage").setAttribute("style", "display: flex");
-            addUser(backendUrl, firstName, lastName, email, username=email.split('@')[0], location=null, password=null, profilePic=profilePicUrl);
-            // fetch(`${backendUrl}new_user/`, {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json'
-            //     },
-            //     body: JSON.stringify({ firstName, lastName, email })
-            // })
-            // .then(response => {
-            //     if (response.ok) {
-            //         console.log('User Added');
-            //     } else {
-            //         console.log('Error adding user: ', response.status);
-            //     }
-            // })
-            // .catch(error => {
-            //     console.log('Error: ', error)
-            // })
+            showUserPage(username, firstName, lastName, email, profilePicUrl, user_location = null)
         });
 }
 
-function addUser(backendUrl, firstName, lastName, email, username, user_location=null, password=null, profilePic="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png") {
+function addUser(backendUrl, firstName, lastName, email, username, user_location = null, password = null, profilePic = "https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png") {
     fetch(`${backendUrl}new_user/`, {
         method: 'POST',
         headers: {
@@ -887,110 +812,10 @@ function addUser(backendUrl, firstName, lastName, email, username, user_location
 
 }
 
-// function createUserPage(username, firstName, lastName, email, profilePicUrl) {
-//     addUser(backendUrl, firstName, lastName, email);
-//     const userPageElement = document.createElement('div');
-//     userPageElement.classList.add('userPage');
-//     userPageElement.id = 'userPage';
-//     userPageElement.innerHTML = `
-//       <div class="user-info">
-//         <img src="${profilePicUrl}" id="pic" class="profile-pic" />
-//         <div class="user-details">
-//           <div class="title">
-//             <p class="data-text"><strong>Name:</strong></p>
-//             <p class="data-text value">${firstName} ${lastName}</p>
-//           </div>
-//           <div class="title">
-//             <p class="data-text"><strong>Email:</strong></p>
-//             <p class="data-text value">${email}</p>
-//           </div>
-//           <div class="title">
-//             <p class="data-text"><strong>Current Plan:</strong></p>
-//             <p class="data-text value" id="user-tier"></p>
-//           </div>
-//         </div>
-//       </div>
-//       <div class="userPage-button">
-//         <button type="button" class="sign-out" onclick="signOut();">Sign Out</button>
-//         <button type="button" class="subscribe" onclick="subscription();">Upgrade</button>
-//       </div>
-//       <div id="signout-modal" class="signout-modal">
-//         <div class="signout-modal-content">
-//           <p class="data-text">Are you sure you want to sign out?</p>
-//           <button type="button" class="confirm-signout" onclick="confirmSignOut()">Yes</button>
-//           <button type="button" class="cancel-signout" onclick="closeSignOutModal()">Cancel</button>
-//         </div>
-//       </div>
-//     `;
-//     document.body.appendChild(userPageElement);
-// }
-
 buttons.forEach(button => button.addEventListener('click', () => setActiveButton(button)));
 
-const user_details = getCookie('username');
-let { username = 'unknown', firstName, lastName, email, profilePicUrl = "https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png" } = user_details || {};
-messageInput.addEventListener('keyup', () => {
-    const message = messageInput.value.trim();
-    if (message) {
-        sendButton.addEventListener('click', (event) => {
-            event.preventDefault();
-            if (messageInput.value != '') {
-                addUserMessage(messageInput.value, profilePicUrl);
-                const messageVal = messageInput.value;
-                addGeneratingMessage();
-                fetch(`${backendUrl}get_response/`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        user_message: messageVal,
-                        user: username
-                    })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        const botResponse = data.bot_response;
-                        removeGeneratingMessage();
-                        addBotMessage(botResponse);
-                    })
-                    .catch((error) => {
-                        console.error('Error: ', error);
-                    });
-                messageInput.value = '';
-            }
-        });
-        messageInput.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') {
-                if (messageInput.value != '') {
-                    addUserMessage(messageInput.value, profilePicUrl);
-                    const messageVal = messageInput.value;
-                    addGeneratingMessage();
-                    fetch(`${backendUrl}get_response/`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            user_message: messageVal,
-                            user: username
-                        })
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            const botResponse = data.bot_response;
-                            removeGeneratingMessage();
-                            addBotMessage(botResponse);
-                        })
-                        .catch((error) => {
-                            console.error('Error: ', error);
-                        });
-                    messageInput.value = '';
-                }
-            }
-        });
-    }
-});
+
+
 
 
 async function handlePlanButtonClick(event) {
@@ -1019,12 +844,9 @@ async function handlePlanButtonClick(event) {
 }
 
 function loadTabContent(tab, userData) {
-    const contentDiv = document.getElementById(tab);
-
-    // Clear existing content
+    // const contentDiv = document.getElementById(tab);
+    const contentDiv = document.querySelector(`#${tab}`);
     contentDiv.innerHTML = '';
-
-    // Load content based on the selected tab
     switch (tab) {
         case 'profile':
             loadProfileContent(contentDiv, userData);
@@ -1044,7 +866,8 @@ function loadTabContent(tab, userData) {
     }
 }
 
-function updateUserData(firstName, lastName, username, user_location, profilePicUrl="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png") {
+function updateUserData(firstName, lastName, username, user_location, profilePicUrl = "https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png") {
+    console.log('Here: ', user_location);
     const email_id = getCookie('username').email
     fetch(`${backendUrl}update_user/`, {
         method: 'POST',
@@ -1056,21 +879,13 @@ function updateUserData(firstName, lastName, username, user_location, profilePic
         .then(response => response.json())
         .then(data => {
             console.log('User Data Updated!');
-            // Handle successful registration
         })
         .catch(error => console.error(error));
 
 }
 
 function loadProfileContent(contentDiv, userData) {
-    // const userData = {
-    //     profilePic: 'https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png',
-    //     username: 'johndoe',
-    //     firstName: 'John',
-    //     lastName: 'Doe',
-    //     location: 'New York'
-    // };
-
+    user_location = userData.user_location || '';
     const profileForm = document.createElement('form');
     profileForm.className = 'userPage'
     profileForm.innerHTML = `
@@ -1090,7 +905,7 @@ function loadProfileContent(contentDiv, userData) {
                 <label>First Name: <input id="firstname" type="text" value="${userData.firstName}"></label>
                 <label>Last Name: <input id="lastname" type="text" value="${userData.lastName}"></label>
             </div>
-            <label>Location: <input id="location" type="text" value="${userData.user_location}"></label>
+            <label>Location: <input id="location" type="text" value="${user_location}"></label>
         </div>
     </div>
     <div class="profileButtons">
@@ -1106,40 +921,43 @@ function loadProfileContent(contentDiv, userData) {
         showPasswordForm()
     });
 
-    const saveChangesBtn = profileForm.querySelector('#saveChanges');    
+    const saveChangesBtn = profileForm.querySelector('#saveChanges');
     const email_id = getCookie('username').email
     const newUsername = profileForm.querySelector('#username');
     const newUsernameError = profileForm.querySelector('#usernameError')
     const firstNameInput = profileForm.querySelector('#firstname')
     const lastNameInput = profileForm.querySelector('#lastname')
     const locationInput = profileForm.querySelector('#location')
-    let newProfilePic = "https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png"
+    let newProfilePic = getCookie('username').profilePicUrl;
     const profilePicInput = profileForm.querySelector('#profilePicInput');
     const profilePicCanvas = profileForm.querySelector("#profilePicCanvas");
     profilePicInput.addEventListener('change', () => {
+        saveChangesBtn.disabled = true;
         updateProfilePic(profilePicInput, profilePicCanvas);
         const file = profilePicInput.files[0];
         const formData = new FormData();
         formData.append('profilePic', file)
         formData.append('email_id', email_id)
-        
+
         fetch(`${backendUrl}uploadProfilePic/`, {
             method: 'POST',
             body: formData
         })
-        .then(response  => response.json())
-        .then(data => {
-            if (data.resp){
-                newProfilePic = data.url
-            }
-            else {
-                
-                console.log('Error uploading the pic: ', data.error)
-            }
-        })
-        .catch(error => {
-            console.error('Error uploading the pic: ', error);
-        });
+            .then(response => response.json())
+            .then(data => {
+                if (data.resp) {
+                    newProfilePic = data.url
+                }
+                else {
+                    console.log('Error uploading the pic: ', data.error)
+                }
+            })
+            .catch(error => {
+                console.error('Error uploading the pic: ', error);
+            })
+            .finally(() => {
+                saveChangesBtn.disabled = false;
+            });
     });
 
     const inputFields = profileForm.querySelectorAll('input');
@@ -1153,9 +971,12 @@ function loadProfileContent(contentDiv, userData) {
         checkUsername(saveChangesBtn, newUsername.value, newUsernameError);
     })
 
-    saveChangesBtn.addEventListener('click', () => {
-        updateUserData(firstNameInput.value, lastNameInput.value, newUsername.value, locationInput.value, newProfilePic)
-        createLoginCookie(newUsername.value, firstNameInput.value, lastNameInput.value, email_id, newProfilePic, locationInput.value);
+    saveChangesBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        updateUserData(firstNameInput.value, lastNameInput.value, newUsername.value, locationInput.value, newProfilePic);
+        const newProfilePicUrl = `https://doloreschatbucket.s3.us-east-2.amazonaws.com/users/${newUsername.value}/profilePic/user.png`
+        createLoginCookie(newUsername.value, firstNameInput.value, lastNameInput.value, email_id, newProfilePicUrl, locationInput.value);
+        saveChangesBtn.style.display = 'none';
     })
 
     contentDiv.appendChild(profileForm);
@@ -1163,7 +984,6 @@ function loadProfileContent(contentDiv, userData) {
 
 function showPasswordForm() {
     const profileForm = document.querySelector('#profile form');
-    // console.log(profileForm)
     const contentDiv = document.getElementById('profile');
     const passwordForm = document.createElement('div');
     passwordForm.className = 'updPass'
@@ -1190,7 +1010,6 @@ function showPasswordForm() {
         validatePassword(passwordInput.value, confirmPasswordInput.value, passwordError, savePasswordBtn);
     });
     savePasswordBtn.addEventListener('click', () => {
-        // validatePassword(passwordInput.value, confirmPasswordInput.value, passwordError, createAccountButton);
         saveNewPassword(passwordInput.value)
     });
 
@@ -1217,11 +1036,8 @@ function saveNewPassword(password) {
         .then(response => response.json())
         .then(data => {
             console.log('User Password Updated!');
-            // Handle successful registration
         })
         .catch(error => console.error(error));
-
-    // ... send newPassword to the backend
 
     const passwordForm = document.querySelector('.updPass');
     passwordForm.remove();
@@ -1230,26 +1046,10 @@ function saveNewPassword(password) {
     profileForm.style.display = 'block';
 }
 
-function saveProfileChanges(e) {
-    e.preventDefault();
-
-    const firstName = document.querySelector('#profile form input[type="text"]').value;
-    const lastName = document.querySelectorAll('#profile form input[type="text"]')[1].value;
-    const user_location = document.querySelectorAll('#profile form input[type="text"]')[2].value;
-    // ... send firstName, lastName, location to the backend
-
-    const saveChangesBtn = document.querySelector('#saveChanges');
-    saveChangesBtn.style.display = 'none';
-}
 
 
 function loadFilesContent(contentDiv) {
     // Fetch files data from the backend
-    // const filesData = [
-    //     { title: 'File 1', url: 'file1.html', thumbnail: 'file1.jpg' },
-    //     { title: 'File 2', url: 'file2.html', thumbnail: 'file2.jpg' },
-    //     // ... add more files
-    // ];
     const filesData = []
 
     const gridContainer = document.createElement('div');
@@ -1311,21 +1111,20 @@ function loadFilesContent(contentDiv) {
     });
 
     fileInput.addEventListener('change', async (event) => {
-        const files = event.target.files;
-
-        // Create a FormData object to send the files to the backend
+        const files = fileInput.files;
         const formData = new FormData();
-
+        const email_id = getCookie('username').email;
         // Append each file to the FormData object
         for (const file of files) {
             formData.append('files', file);
+            formData.append('email_id', email_id)
         }
 
         try {
             // Send the FormData object to the backend using fetch
-            const response = await fetch(`${backendUrl}upload_forms/`, {
+            const response = await fetch(`${backendUrl}upload_files/`, {
                 method: 'POST',
-                body: formData,
+                body: formData
             });
 
             if (response.ok) {
@@ -1384,8 +1183,7 @@ function loadLawyersContent(contentDiv) {
 }
 
 function loadSupportContent(contentDiv) {
-    // Fetch user email from the backend
-    const userEmail = 'johndoe@example.com';
+    const userEmail = getCookie('username').email;
 
     const supportForm = document.createElement('form');
     supportForm.classList.add('supportFormIncl')
@@ -1418,7 +1216,6 @@ function loadFormsContent(contentDiv) {
     // const formsData = [
     //     { title: 'Form 1', url: 'form1.html', thumbnail: 'form1.jpg' },
     //     { title: 'Form 2', url: 'form2.html', thumbnail: 'form2.jpg' },
-    //     // ... add more forms
     // ];
     const formsData = []
     const gridContainer = document.createElement('div');
@@ -1483,17 +1280,12 @@ function loadFormsContent(contentDiv) {
 
     fileInput.addEventListener('change', async (event) => {
         const files = event.target.files;
-
-        // Create a FormData object to send the files to the backend
         const formData = new FormData();
-
-        // Append each file to the FormData object
         for (const file of files) {
             formData.append('files', file);
         }
 
         try {
-            // Send the FormData object to the backend using fetch
             const response = await fetch(`${backendUrl}upload_forms/`, {
                 method: 'POST',
                 body: formData,

@@ -45,7 +45,6 @@ p {
   height: 32px;
   width: 32px;
   border-radius: 16px;
-  /* background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png"); */
   background-repeat: no-repeat;
   background-size: cover;
 }
@@ -548,24 +547,6 @@ p [id="diffAdd"] {
   color: #FFFFFF;
 }
 
-/* .userPage {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  background-color: #fff;
-  padding: 20px;
-  min-width: 250px;
-  max-width: calc(100vw - 40px);
-  max-height: calc(100vh - 40px);
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: 24px;
-} */
-
-
 .user-info {
   margin: 20px
 }
@@ -619,7 +600,6 @@ p [id="diffAdd"] {
   border: none;
   border-radius: 20px;
   cursor: pointer;
-  /* margin-top: 15px; */
   margin-right: 25px;
 }
 
@@ -631,7 +611,6 @@ p [id="diffAdd"] {
   border: none;
   border-radius: 20px;
   cursor: pointer;
-  /* margin-top: 15px; */
 }
 
 .signout-modal {
@@ -648,11 +627,9 @@ p [id="diffAdd"] {
 
 
 .signout-modal-content {
-  /* backdrop-filter: blur(1px); */
   isolation: isolate;
   background-color: white;
   position: fixed;
-  /* margin: 15% auto; */
   padding: 20px;
   border: 1px solid #ccc;
   top: 50%;
@@ -712,10 +689,6 @@ form[id="registrationForm"] {
   gap: 10px;
 }
 
-/* .login-w {
-  text-align: center;
-} */
-
 .emailForm {
   text-align: center;
   align-items: center;
@@ -730,7 +703,6 @@ input[id="usernameInput"],
 input[id="locationInput"],
 input[type="password"] {
   padding: 10px;
-  /* margin: 10px; */
   margin-right: 10px;
   border: 1px solid #ccc;
   border-radius: 25px;
@@ -777,7 +749,6 @@ p[id="usernameError"] {
 }
 
 canvas[id="profilePicCanvas"] {
-  /* background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png"); */
   background-repeat: no-repeat;
   background-size: contain;
   border-radius: 90px;
@@ -824,11 +795,6 @@ h2[id="passwordText"] {
   justify-content: center;
   align-items: center;
 }
-
-/* .userDets {
-  display: flex;
-  flex-direction: column;
-} */
 
 .passForm {
   gap: 50px;
@@ -877,7 +843,6 @@ button[id="savePassword"]:disabled {
   cursor: pointer;
   align-items: center;
   justify-content: center;
-  /* gap: 10px; */
 }
 
 #separator {
@@ -901,7 +866,6 @@ button[id="savePassword"]:disabled {
   position: absolute;
   top: 50%;
   width: calc(50% - 30px);
-  /* Adjust the value as needed */
   height: 1px;
   background-color: #ccc;
   z-index: 0;
@@ -925,7 +889,6 @@ span.icon {
   align-items: center;
   width: 24px;
   height: 24px;
-  /* margin-right: 10px; */
   border-radius: 50px;
 }
 
@@ -939,9 +902,7 @@ button[id="emailButton"] {
   width: 48px;
   background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/login_icons/next-arrow.png");
   background-repeat: no-repeat;
-  /* background-position: center; */
   background-size: contain;
-  /* margin-top: 12px; */
   opacity: 0.7;
   cursor: pointer;
 
@@ -965,7 +926,6 @@ p[class="footerClass"] {
   transform: translateX(-50%);
   z-index: 1;
   white-space: nowrap;
-  /* overflow: hidden; */
   margin-left: 5px;
   margin-right: 5px;
 }
@@ -1061,7 +1021,6 @@ span.buttonText {
   position: relative;
   justify-content: center;
   align-items: center;
-  /* gap: 20px; */
   background-color: #fff;
   padding: 30px;
   width: fit-content;
@@ -1104,7 +1063,6 @@ span.buttonText {
 .plan-card:hover {
   transform: scale(1.1);
   background-color: #e4f1ff;
-  /* color: #ffffff; */
   z-index: 1;
 }
 
@@ -1210,16 +1168,19 @@ span.buttonText {
 }
 
 .content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
   flex: 1;
   padding: 20px;
   width: 100%;
-  /* height: 100%; */
+  height: 100%;
 }
+
 
 .profileInfo .userDetsText {
   display: flex;
   flex-direction: column;
-  /* gap: 20px; */
 }
 
 .userDetsText {
@@ -1257,9 +1218,9 @@ span.buttonText {
 
 .profileButtons,
 .newPassButt {
-  position: absolute;
-  /* align-items: center; */
+  position: fixed;
   gap: 25px;
+  height: 40px;
   bottom: 20px;
   width: 100%;
   display: flex;
@@ -1275,7 +1236,7 @@ span.buttonText {
   border-radius: 25px;
   background-color: #5080DE;
   font-family: inherit;
-  font-size: inherit;
+  font-size: auto;
   position: relative;
   left: 25px;
   right: 25px;
@@ -1308,8 +1269,9 @@ button[id="supportSubmit"] {
   border-radius: 25px;
   background-color: #5080DE;
   font-family: inherit;
-  position: relative;
-  /* bottom: 0; */
+  position: fixed;
+  /* left: 0px; */
+  bottom: 10px;
   justify-content: center;
   width: fit-content;
   font-size: inherit;
@@ -1337,7 +1299,6 @@ button[id="supportSubmit"] {
 
 .file-image {
   padding-bottom: 60%;
-  /* Adjust this value to control the aspect ratio */
   background-size: cover;
   background-position: center;
 }
@@ -1376,7 +1337,6 @@ button[id="supportSubmit"] {
 
 .form-image {
   padding-bottom: 60%;
-  /* Adjust this value to control the aspect ratio */
   background-size: cover;
   background-position: center;
 }
@@ -1408,7 +1368,6 @@ button[id="supportSubmit"] {
 }
 
 .add-title {
-  /* font-size: 14px; */
   text-align: center;
   font-size: small;
   color: #666;
@@ -1437,7 +1396,6 @@ button[id="supportSubmit"] {
 
 .lawyer-image {
   padding-bottom: 80%;
-  /* Adjust this value to control the aspect ratio */
   background-size: cover;
   background-position: center;
 }
@@ -1468,7 +1426,6 @@ input[id="supportEmail"],
 input[id="supportSubj"],
 textarea[id="supportMsg"] {
   max-width: 100%;
-  /* Add this line */
   outline: none;
   padding: 10px;
   border-radius: 25px;
@@ -1476,7 +1433,7 @@ textarea[id="supportMsg"] {
   border-width: thin;
   border-color: #ddd;
   box-sizing: border-box;
-  /* Add this line */
+  font-family: inherit;
 }
 
 
@@ -1491,7 +1448,7 @@ input[id="supportSubj"] {
 textarea[id="supportMsg"] {
   resize: none;
   width: 100%;
-  height: 20%;
+  height: 80%;
 }
 
 label[id="supportMsg"],
@@ -1534,7 +1491,6 @@ input[id="lastname"] {
 }
 
 .sidebar {
-  /* position: relative; */
   width: 25%;
   background-color: #f1f1f1;
   padding: 20px;
@@ -1597,7 +1553,6 @@ input[id="lastname"] {
 
 #logout-item a {
   color: inherit;
-  /* Add this line */
 }
 
 #logout-item:hover {
@@ -1605,34 +1560,23 @@ input[id="lastname"] {
   color: #ffff;
 }
 
-canvas[id="profilePicCanvas"] {
-  /* background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png"); */
-  background-repeat: no-repeat;
-  background-size: contain;
-  border-radius: 90px;
-}
-
-.profilePicText{
+.profilePicText {
   text-align: center;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1200px) {
   .profile-container {
     position: absolute;
     transform: translateX(50%);
-    /* left: -50vw; */
     left: -30%;
     width: calc(100vw - 40px);
     height: 35vh;
-    /* height: ; */
     max-width: 80vw;
   }
 
   .sidebar {
     width: 8%;
     align-items: center;
-    /* font-size: 12px; */
-    /* color: #444; */
   }
 
   .sidebar a.active {
@@ -1642,7 +1586,7 @@ canvas[id="profilePicCanvas"] {
     filter: invert(41%) sepia(61%) saturate(611%) hue-rotate(183deg) brightness(102%) contrast(91%);
   }
 
-  .profilePicText{    
+  .profilePicText {
     font-size: 12px;
   }
 
@@ -1650,70 +1594,56 @@ canvas[id="profilePicCanvas"] {
   a[data-tab="files"],
   a[data-tab="lawyers"],
   a[data-tab="support"],
-  a[data-tab="forms"]{
+  a[data-tab="forms"] {
     width: 20px;
     height: 20px;
     font-size: 0px;
-    /* background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/profileMain.png"); */
     background-repeat: no-repeat;
     background-size: contain;
     opacity: 0.6;
   }
 
-  a[data-tab="profile"]{
-    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/profileMain.png");    
-    /* color: #f1f1f1; */
+  a[data-tab="profile"] {
+    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/profileMain.png");
   }
 
-  a[data-tab="files"]{
-    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/files.png");    
-    color: #f1f1f1;
+  a[data-tab="files"] {
+    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/files.png");
   }
 
-  a[data-tab="lawyers"]{
-    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/lawyers.png");    
-    color: #f1f1f1;
+  a[data-tab="lawyers"] {
+    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/lawyers.png");
   }
 
-  a[data-tab="support"]{
-    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/support.png");    
-    color: #f1f1f1;
+  a[data-tab="support"] {
+    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/support.png");
   }
 
-  a[data-tab="forms"]{
-    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/forms.png");    
-    color: #f1f1f1;
+  a[data-tab="forms"] {
+    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/forms.png");
   }
 
 
   .profileButtons {
     position: relative;
-    bottom: -15px;
+    transform: translateY(100%);
+    bottom: 20px;
+    height: 40px;
     gap: 25px;
   }
-
-  /* .newPassButt {
-    bottom: -25px
-  } */
-  /* a.active{
-    color: #f1f1f1
-  } */
 
   button[id="subscribe"],
   button[id="saveChanges"],
   button[id="changePassword"],
   button[id="savePassword"],
-  button[id="cancelPassword"]{
+  button[id="cancelPassword"] {
     display: flex;
-    /* font-size: 12.5px; */
-    /* padding: 5px; */
     align-items: center;
     justify-content: center;
-    /* width: 75px; */
-    /* padding: 10px; */
+    flex-wrap: wrap;
   }
 
-  button[id="logout-item"]:hover{
+  button[id="logout-item"]:hover {
     background-color: inherit;
 
   }
@@ -1723,22 +1653,13 @@ canvas[id="profilePicCanvas"] {
     margin-bottom: 20px;
   }
 
-  .logo {
-    height: 50px;
-    width: 50px;
-    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/logo/favicon.png");
-    background-repeat: no-repeat;
-    background-size: cover;
-    cursor: pointer;
-  }
-
   .user-info,
   .title {
     display: block;
     align-items: center;
   }
 
-  
+
   input[id="lastNameInput"],
   input[id="firstNameInput"],
   input[id="regPasswordInput"],
@@ -1746,19 +1667,10 @@ canvas[id="profilePicCanvas"] {
     width: 50%;
   }
 
-  /* .userDetsText input,
-  .passText input{
-    padding: 5px;
-  } */
-
   .profilPicLogin {
     position: relative;
     left: 20px;
   }
-
-  /* canvas[id="profilePicCanvas"] {
-    left: 20px;
-  } */
 }
 
 
@@ -1795,12 +1707,10 @@ canvas[id="profilePicCanvas"] {
   .profile-container {
     position: absolute;
     transform: translateX(50%);
-    /* left: -50vw; */    
-    left: -30%;
-    width: calc(100vw - 40px);
-    height: 35vh;
-    /* height: ; */
-    /* max-width: 80vw; */
+    left: -40%;
+    max-width: 90vw;
+    width: calc(100vw - 20px);
+    height: 40vh;
   }
 
   .sidebar {
@@ -1808,7 +1718,7 @@ canvas[id="profilePicCanvas"] {
     font-size: 0px;
   }
 
-  .profilePicText{    
+  .profilePicText {
     font-size: 12px;
   }
 
@@ -1817,7 +1727,7 @@ canvas[id="profilePicCanvas"] {
   a[data-tab="files"],
   a[data-tab="lawyers"],
   a[data-tab="support"],
-  a[data-tab="forms"] {    
+  a[data-tab="forms"] {
     height: 6px;
     width: 6px;
     background-repeat: no-repeat;
@@ -1826,70 +1736,61 @@ canvas[id="profilePicCanvas"] {
     color: #f1f1f1;
   }
 
-  a[data-tab="profile"]{
-    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/profileMain.png");    
-    color: #f1f1f1;
+  a[data-tab="profile"] {
+    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/profileMain.png");
   }
 
-  a[data-tab="files"]{
-    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/files.png");    
-    color: #f1f1f1;
+  a[data-tab="files"] {
+    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/files.png");
   }
 
-  a[data-tab="lawyers"]{
-    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/lawyers.png");    
-    color: #f1f1f1;
+  a[data-tab="lawyers"] {
+    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/lawyers.png");
   }
 
-  a[data-tab="support"]{
-    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/support.png");    
-    color: #f1f1f1;
+  a[data-tab="support"] {
+    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/support.png");
   }
 
-  a[data-tab="forms"]{
-    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/forms.png");    
-    color: #f1f1f1;
+  a[data-tab="forms"] {
+    background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/forms.png");
   }
 
-  button[id="logout-item"]{
+  button[id="logout-item"] {
     background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/sidebar/logout-item.png");
     margin-bottom: 15px;
-    /* opacity: 1; */
   }
 
   .profileButtons {
-    position: relative;
-    left: -30px;
+    position: fixed;
+    left: 65px;
+    height: 40px;
+    bottom: 50px;
     gap: 4px;
-    bottom: -75px;
+    transform: translateY(100%);
   }
-  
+
   .newPassButt {
-    bottom: 25px;
-    left: 75px;
+    bottom: -85px;
+    left: -25px;
     gap: 10px;
   }
 
-
-  /* a.active{
-    color: #f1f1f1
-  } */
 
   button[id="subscribe"],
   button[id="saveChanges"],
   button[id="changePassword"],
   button[id="savePassword"],
-  button[id="cancelPassword"]{
+  button[id="cancelPassword"] {
     display: flex;
     font-size: 12.5px;
     padding: 5px;
     align-items: center;
     justify-content: center;
     width: 75px;
-    /* padding: 10px; */
   }
 
-  button[id="logout-item"]:hover{
+  button[id="logout-item"]:hover {
     background-color: inherit;
 
   }
@@ -1914,7 +1815,7 @@ canvas[id="profilePicCanvas"] {
     align-items: center;
   }
 
-  
+
   input[id="lastNameInput"],
   input[id="firstNameInput"],
   input[id="regPasswordInput"],
@@ -1923,7 +1824,7 @@ canvas[id="profilePicCanvas"] {
   }
 
   .userDetsText input,
-  .passText input{
+  .passText input {
     padding: 5px;
   }
 
@@ -1936,33 +1837,80 @@ canvas[id="profilePicCanvas"] {
     left: 20px;
     height: 85px;
   }
+}
 
-  /* .button {
-    opacity: 0.15;
+@media (max-width: 472px) {
+
+  .profileButtons {
+    position: fixed;
+    left: 50px;
+    height: 40px;
+    bottom: 50px;
   }
-  
-  .button.active {
-    opacity: 0.5;
-  } */
 
-  /* .button:hover {
-    opacity: 0.95;
-  } */
+  .newPassButt {
+    transform: translateY(100%);
+    position: fixed;
+    bottom: 50px;
+    left: 50px;
+    gap: 10px;
+  }
+
+  button[id="subscribe"],
+  button[id="saveChanges"],
+  button[id="changePassword"],
+  button[id="savePassword"],
+  button[id="cancelPassword"] {
+    font-size: 11px;
+  }
+
+
 
 }
 
-@media (max-width: 472px){
+@media (max-width: 375px) {
   .profileButtons {
-    /* position: relative; */
-    /* left: -30px;
-    gap: 4px; */
-    bottom: -58px;
+    display: flex;
+    flex-wrap: wrap-reverse;
+    bottom: 50px;
+    width: 70vw;
   }
-  
-  .newPassButt {    
-    bottom: 25px;
-    left: 75px;
-    gap: 10px;
+
+  button[id="subscribe"],
+  button[id="saveChanges"],
+  button[id="changePassword"],
+  button[id="savePassword"],
+  button[id="cancelPassword"] {
+    font-size: 10px;
+    width: fit-content;
+    height: fit-content;
   }
+
+  .profile-container {
+    width: 100%;
+  }
+
+  canvas[id="profilePicCanvas"] {
+    height: 50px;
+    top: 0px;
+  }
+
+  .userDetsText {
+    font-size: 10px;
+  }
+
+}
+
+@media (max-width:350px) and (max-height: 900px) {
+  .profile-container {
+    position: relative;
+    height: 50vh;
+    top: 15%
+  }
+
+  .profileButtons {
+    bottom: 10px;
+  }
+
 
 }

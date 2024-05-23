@@ -32,34 +32,29 @@
     href="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/favicon/favicon.ico">
 </head>
 
-<body>
+<body style="background: linear-gradient(116.82deg, #E0EEFB 0%, #DDE6F9 100%);">
   <div class="logo" onclick="window.location.href='https://www.justiguide.com'"></div>
   <div class="profile-container" id="profile-container">
     <div class="sidebar">
       <ul>
-        <li><a href="#" class="active" data-tab="profile">Profile Information</a></li>
-        <li><a href="#" data-tab="files">Files</a></li>
-        <li><a href="#" data-tab="lawyers">Lawyers</a></li>
-        <li><a href="#" data-tab="support">Support</a></li>
-        <li><a href="#" data-tab="forms">Forms</a></li>
+        <li id="profileMain"><a href="#" class="active" data-tab="profile">Profile Information</a></li>
+        <li id="filesMain"><a href="#" data-tab="files">Files</a></li>
+        <li id="lawyersMain"><a href="#" data-tab="lawyers">Lawyers</a></li>
+        <li id="supportMain"><a href="#" data-tab="support">Support</a></li>
+        <li id="formsMain"><a href="#" data-tab="forms">Forms</a></li>
       </ul>
       <button id="logout-item" onclick="signOut();">Logout</button>
     </div>
     <div class="content">
       <div id="profile" class="tab active">
-        <!-- Profile Information -->
       </div>
       <div id="files" class="tab">
-        <!-- Files -->
       </div>
       <div id="lawyers" class="tab">
-        <!-- Lawyers -->
       </div>
       <div id="support" class="tab">
-        <!-- Support -->
       </div>
       <div id="forms" class="tab">
-        <!-- Forms -->
       </div>
     </div>
     <div id="signout-modal" class="signout-modal">
@@ -74,7 +69,7 @@
     <a class="button active" id="user">
       <svg class="button-icon user"></svg>
     </a>
-    <a class="button" id="chat">
+    <a class="button" id="chat" style="display: none;">
       <svg class="button-icon chat"></svg>
     </a>
     <a class="button" id="form" style="display: none;">
@@ -122,11 +117,11 @@
       <div class="section">
         <div class="subsection">
           <label for="firstName">First Name:</label>
-          <input type="text" id="firstName" name="firstName" required>
+          <input type="text" id="formfirstName" name="firstName" required>
           <label for="middleName">Middle Name:</label>
-          <input type="text" id="middleName" name="middleName">
+          <input type="text" id="formmiddleName" name="middleName">
           <label for="lastName">Last Name:</label>
-          <input type="text" id="lastName" name="lastName" required>
+          <input type="text" id="formlastName" name="lastName" required>
         </div>
         <div class="subsection">
           <div class="sub-heading">Residence in US</div>
@@ -183,31 +178,22 @@
       </div>
     </form>
   </div>
-  <!-- <div class="login-window" id="login-window" style="display: none;">
-    <p class="greeting">Welcome to JustiGuide!</p>
-    <p class="sub-heading_user">Continue to login with your Google Account.</p>
-    <hr class="divider">
-    <div id="customBtn" class="customGPlusSignIn" onclick="startApp();">
-      <span class="icon"></span>
-      <span class="buttonText">Sign in with Google</span>
-    </div>
-  </div> -->
   <div class="login-window" id="login-window" style="display: none;">
     <div class="login-container">
-        <h2 id="loginText">Register/Login</h2>
-        <div class="emailForm" id="emailForm">
-            <input type="email" id="emailInput" placeholder="Enter your email">
-            <button id="emailButton" onclick="checkUser();"></button>
-        </div>
-        <div id="separator">
-            <span>OR</span>
-        </div>
-        <button id="googleButton" onclick="startApp();">                    
-            <span class="icon"></span>
-            <span class="buttonText">Sign in with Google</span>
-        </button>
+      <h2 id="loginText">Register/Login</h2>
+      <div class="emailForm" id="emailForm">
+        <input type="email" id="emailInput" placeholder="Enter your email">
+        <button id="emailButton" onclick="checkUser();"></button>
+      </div>
+      <div id="separator">
+        <span>OR</span>
+      </div>
+      <button id="googleButton" onclick="startApp();">
+        <span class="icon"></span>
+        <span class="buttonText">Sign in with Google</span>
+      </button>
     </div>
-</div>
+  </div>
   <div class="disclaimer" style="display: none;">
     <div class="window">
       <p class="disclaimerHead">
@@ -243,17 +229,23 @@
         <div class="plan-card current" id="basic">
           <h3 class="plan-name" id="basic">Basic</h3>
           <p class="plan-price">
-            <span class="monthly-price">$19.99/mon</span>
+            <span class="monthly-price">$39.99/mon</span>
             <span class="yearly-price" style="display: none;">
-              $16.66/mon
-              <del class="yearly-price-crossed">$19.99/mon</del>
+              $479.88/yr
+              <!-- <del class="yearly-price-crossed">$19.99/mon</del> -->
             </span>
           </p>
           <div class="plan-features">
             <ul>
-              <li><img src="icons/subs/features.png" alt="Checkmark" class="feature-icon">Feature 1</li>
-              <li><img src="icons/subs/features.png" alt="Checkmark" class="feature-icon">Feature 2</li>
-              <li><img src="icons/subs/features.png" alt="Checkmark" class="feature-icon">Feature 3</li>
+              <li><img src="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/subs/features.png"
+                  alt="Checkmark" class="feature-icon">Detailed Visa Application Guides</li>
+              <li><img src="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/subs/features.png"
+                  alt="Checkmark" class="feature-icon">Personalized relocation checklists</li>
+              <li><img src="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/subs/features.png"
+                  alt="Checkmark" class="feature-icon">Access to ReLo's network of relocation consultants (one
+                consultation per month)</li>
+              <li><img src="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/subs/features.png"
+                  alt="Checkmark" class="feature-icon">Automatic form-filling</li>
             </ul>
           </div>
           <button class="plan-button" id="current-plan">Current Plan</button>
@@ -261,18 +253,30 @@
         <div class="plan-card" id="plus">
           <h3 class="plan-name" id="plus">Plus</h3>
           <p class="plan-price">
-            <span class="monthly-price">$39.99/mon</span>
+            <span class="monthly-price">$69.99/mon</span>
             <span class="yearly-price" style="display: none;">
-              $33.33/mon
-              <del class="yearly-price-crossed">$39.99/mon</del>
+              $839.88/yr
+              <!-- <del class="yearly-price-crossed">$39.99/mon</del> -->
             </span>
           </p>
           <div class="plan-features">
             <ul>
-              <li><img src="icons/subs/features.png" alt="Checkmark" class="feature-icon">Feature 1</li>
-              <li><img src="icons/subs/features.png" alt="Checkmark" class="feature-icon">Feature 2</li>
-              <li><img src="icons/subs/features.png" alt="Checkmark" class="feature-icon">Feature 3</li>
-              <li><img src="icons/subs/features.png" alt="Checkmark" class="feature-icon">Feature 4</li>
+              <li><img src="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/subs/features.png"
+                  alt="Checkmark" class="feature-icon">All Basic Tier features</li>
+              <li><img src="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/subs/features.png"
+                  alt="Checkmark" class="feature-icon">Unlimited relocation consultations</li>
+              <li><img src="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/subs/features.png"
+                  alt="Checkmark" class="feature-icon">School and healthcare enrollment aid</li>
+              <li><img src="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/subs/features.png"
+                  alt="Checkmark" class="feature-icon">Legal visa/immigration advice</li>
+              <li><img src="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/subs/features.png"
+                  alt="Checkmark" class="feature-icon">Personalized career matching</li>
+              <li><img src="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/subs/features.png"
+                  alt="Checkmark" class="feature-icon">Priority support & case tracking</li>
+              <li><img src="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/subs/features.png"
+                  alt="Checkmark" class="feature-icon">Advanced document tools & automation</li>
+              <li><img src="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/subs/features.png"
+                  alt="Checkmark" class="feature-icon">Verified legal assistance access</li>
             </ul>
           </div>
           <button class="plan-button" onclick="handlePlanButtonClick(event);">Subscribe</button>
@@ -280,19 +284,24 @@
         <div class="plan-card" id="premium">
           <h3 class="plan-name" id="premium">Premium</h3>
           <p class="plan-price">
-            <span class="monthly-price">$59.99/mon</span>
+            <span class="monthly-price">$89.99/mon</span>
             <span class="yearly-price" style="display: none;">
-              $49.99/mon
-              <del class="yearly-price-crossed">$59.99/mon</del>
+              $1,079.88/yr
+              <!-- <del class="yearly-price-crossed">$59.99/mon</del> -->
             </span>
           </p>
           <div class="plan-features">
             <ul>
-              <li><img src="icons/subs/features.png" alt="Checkmark" class="feature-icon">Feature 1</li>
-              <li><img src="icons/subs/features.png" alt="Checkmark" class="feature-icon">Feature 2</li>
-              <li><img src="icons/subs/features.png" alt="Checkmark" class="feature-icon">Feature 3</li>
-              <li><img src="icons/subs/features.png" alt="Checkmark" class="feature-icon">Feature 4</li>
-              <li><img src="icons/subs/features.png" alt="Checkmark" class="feature-icon">Feature 5</li>
+              <li><img src="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/subs/features.png"
+                  alt="Checkmark" class="feature-icon">All Plus Tier features</li>
+              <li><img src="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/subs/features.png"
+                  alt="Checkmark" class="feature-icon">Personalized immigration advice</li>
+              <li><img src="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/subs/features.png"
+                  alt="Checkmark" class="feature-icon">Exclusive job opportunities</li>
+              <li><img src="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/subs/features.png"
+                  alt="Checkmark" class="feature-icon">Additional forms access</li>
+              <li><img src="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/subs/features.png"
+                  alt="Checkmark" class="feature-icon">Premium customer support</li>
             </ul>
           </div>
           <button class="plan-button" onclick="handlePlanButtonClick(event);">Subscribe</button>
@@ -300,62 +309,39 @@
         <div class="plan-card" id="enterprise">
           <h3 class="plan-name" id="enterprise">Enterprise</h3>
           <p class="plan-price">
-            <span class="monthly-price">$99.99/mon</span>
+            <span class="monthly-price">Contact support</span>
             <span class="yearly-price" style="display: none;">
-              $95.99/mon
-              <del class="yearly-price-crossed">$99.99/mon</del>
+              Contact support
+              <!-- <del class="yearly-price-crossed">$99.99/mon</del> -->
             </span>
           </p>
           <div class="plan-features">
             <ul>
-              <li><img src="icons/subs/features.png" alt="Checkmark" class="feature-icon">Feature 1</li>
-              <li><img src="icons/subs/features.png" alt="Checkmark" class="feature-icon">Feature 2</li>
-              <li><img src="icons/subs/features.png" alt="Checkmark" class="feature-icon">Feature 3</li>
+              <li><img src="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/subs/features.png"
+                  alt="Checkmark" class="feature-icon">Comprehensive Immigration Support (All Plus + Premium)</li>
+              <li><img src="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/subs/features.png"
+                  alt="Checkmark" class="feature-icon">Dedicated Account Management and Priority Support</li>
+              <li><img src="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/subs/features.png"
+                  alt="Checkmark" class="feature-icon">Tailored Relocation Packages & Volume Discounts</li>
+              <li><img src="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/subs/features.png"
+                  alt="Checkmark" class="feature-icon">Advanced Analytics & Tracking</li>
+              <li><img src="https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/subs/features.png"
+                  alt="Checkmark" class="feature-icon">Streamlined onboarding and document processing</li>
             </ul>
           </div>
-          <button class="plan-button" onclick="handlePlanButtonClick(event)">Subscribe</button>
+          <!-- <button class="plan-button" onclick="loadSupportContent('support')" disabled>Contact Support</button> -->
         </div>
       </div>
     </div>
   </div>
   <p class="footerClass" id="disclaimer" style="display: none;">JustiGuide is an AI assistant and is not giving you
     legal advice. Click <a class="footerClass" onclick="showDisclaimer();"><u>here</u> to know more.</p>
-
   <script src="script.js"></script>
   <script>
     const loggedInUser = getCookie('username');
     if (loggedInUser != null) {
-      const { username, firstName, lastName, email, profilePicUrl } = loggedInUser;
-      showUserPage(username, firstName, lastName, email, profilePicUrl);
-      // const tabLinks = document.querySelectorAll('.sidebar a');
-      // const tabContents = document.querySelectorAll('.content .tab');
-      // const userData = {
-      //   profilePic: profilePicUrl,
-      //   username: username,
-      //   firstName: firstName,
-      //   lastName: lastName,
-      //   location: 'Santa Clara'
-      // };
-      // tabLinks.forEach(link => {
-      //   link.addEventListener('click', e => {
-      //     e.preventDefault();
-      //     const targetTab = e.target.getAttribute('data-tab');
-
-      //     // Remove active class from all links and content divs
-      //     tabLinks.forEach(link => link.classList.remove('active'));
-      //     tabContents.forEach(content => content.classList.remove('active'));
-
-      //     // Add active class to clicked link and corresponding content div
-      //     e.target.classList.add('active');
-      //     document.getElementById(targetTab).classList.add('active');
-
-      //     // Load content for the selected tab
-      //     loadTabContent(targetTab, userData);
-      //   });
-      // });
-      // loadTabContent('profile', userData);
-      // createUserPage(username, firstName, lastName, email, profilePicUrl);
-      // showUserPage();
+      const { username, firstName, lastName, email, profilePicUrl, user_location } = loggedInUser;
+      showUserPage(username, firstName, lastName, email, profilePicUrl, user_location);
     } else {
       showLoginWindow();
       startApp();
