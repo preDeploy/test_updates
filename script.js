@@ -382,6 +382,8 @@ function showUserPage(username, firstName, lastName, email, profilePicUrl, user_
     });
     const chatButton = document.getElementById('chat');
     chatButton.removeAttribute('style');
+    // const formButton = document.getElementById('form');
+    // formButton.removeAttribute('style');
     loadTabContent('profile', userData);
     addUser(backendUrl, firstName, lastName, email, username, user_location, password = null, profilePic = profilePicUrl);
 
@@ -429,7 +431,7 @@ function updateCurrentPlan(userPlan) {
                 buttons[i].removeAttribute('id');
             }
             for (let i = 0; i < buttons.length; i++) {
-                buttons[i].textContent = 'Subscribe';
+                buttons[i].textContent = 'Start Free Trial';
             }
         }
         const currentPlanCard = document.getElementById(lowercasePlan);
@@ -539,6 +541,9 @@ function hideAll() {
     const chatWindow = document.querySelector('.chat-bar-container');
     const chatHistory = document.querySelector('.chat-container');
     document.getElementById("disclaimer").setAttribute('style', 'display: none')
+    const Assistant = document.querySelector('.assistant-toggle')
+    Assistant.setAttribute('style', 'display: none;')
+    // const assSwitch = document.querySelector('label[class="switch"]')
     if (chatWindow.classList.contains('active')) {
         chatWindow.classList.remove('active');
     }
@@ -548,6 +553,9 @@ function hideAll() {
     if (formWindow.classList.contains('active')) {
         formWindow.classList.remove('active');
     }
+    // if (assSwitch.classList.contains('active')) {
+    //     assSwitch.classList.remove('active');
+    // }
 
     const mainDownload = document.getElementById('download');
     const mainShare = document.getElementById('share');
@@ -583,7 +591,8 @@ async function subscription() {
     const userPlan = await getSubscription()
     updateCurrentPlan(userPlan)
     const planDurationRadios = document.querySelectorAll('input[name="plan-duration"]');
-    document.getElementById("login-window").setAttribute("style", "display: none");
+    document.getElementById("login-window").setAttribute("style", "display: none;");
+    hideAll();
     try {
         document.getElementById("profile-container").setAttribute("style", "display: none");
     }
@@ -630,13 +639,21 @@ async function setActiveButton(clickedButton) {
     if (parentClassList.contains("side-container") || parentClassList.contains("menu-container") || parentClassList.contains("chat-bar-container")) {
         clickedButton.classList.add('active');
         if (clickedButton.id == 'chat') {
-            hideAll();
+            hideAll();            
+            const sub = await getSubscription();
+            if (sub != 'Free' && sub != 'Basic'){
+                const Assistant = document.querySelector('.assistant-toggle');
+                Assistant.setAttribute('style', 'display: flex;');                
+            } else {
+                const chatContainer = document.querySelector('.chat-container');
+                chatContainer.style.top = '10vh';
+            }
             if (!chatWindow.classList.contains('active')) {
                 chatWindow.classList.add('active');
             }
             if (!chatHistory.classList.contains('active')) {
                 chatHistory.classList.add('active');
-            }            
+            }
             const toBlock = await getMessageNum();
             if (toBlock){
                 if (toBlock.bool){
@@ -654,6 +671,15 @@ async function setActiveButton(clickedButton) {
                     upgradeAlert.style.display = 'none';
                 });
             }
+            var assistantID = 'relo';
+            const toggleSwitch = document.getElementById('toggleSwitch');
+            toggleSwitch.addEventListener('change', function() {
+                if (this.checked){
+                    assistantID = 'dolores';
+                    console.log(assistantID)
+                }
+            })
+            console.log(assistantID)
             document.getElementById("disclaimer").removeAttribute('style'); 
             messageInput.addEventListener('keyup', () => {
                 const message = messageInput.value.trim();
@@ -671,7 +697,8 @@ async function setActiveButton(clickedButton) {
                                 },
                                 body: JSON.stringify({
                                     user_message: messageVal,
-                                    user: getCookie('username').username
+                                    user: getCookie('username').username,
+                                    assistant: assistantID
                                 })
                             })
                                 .then(response => response.json())

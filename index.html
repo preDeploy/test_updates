@@ -93,10 +93,21 @@
       <svg class="chat-icons send"></svg>
     </a>
   </div>
+  <div class="assistant-toggle" style="display: none;">
+    <span class="slider-text-left">ReLo</span>
+    <label class="switch">
+      <input type="checkbox" id="toggleSwitch">
+      <span class="slider">
+        <span class="slider-handle"></span>
+      </span>
+    </label>
+    <span class="slider-text-right">Dolores</span>
+  </div>
   <div class="chat-container">
     <div class="upgrade_alert" id="upgrade_alert" style="display: none;">
       <h2 id="alert_title"></h2>
       <p id="alert_content"></p>
+      <button id="upgrade-btn" onclick="subscription();">Start your free trial!</button>
       <button id="close-btn">Close</button>
     </div>
     <div class="chat-messages">

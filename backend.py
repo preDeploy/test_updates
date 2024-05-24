@@ -135,7 +135,8 @@ class User(Base):
 class Dolores():
     def __init__(self):
         self.OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-        self.OPENAI_ASSISTANT_ID = os.getenv('OPENAI_ASSISTANT_ID')
+        self.RELO_ASSISTANT_ID = os.getenv('RELO_ASSISTANT_ID')
+        self.DOLORES_ASSISTANT_ID = os.getenv('DOLORES_ASSISTANT_ID')
         self.context = {
             "user": '',
             "assistant": ''
@@ -158,7 +159,11 @@ class Dolores():
             return now
         return int(datetime.today().strftime('%Y%m%d'))
 
-    def assistant(self, user_input):
+    def assistant(self, user_input, assistant='relo'):
+        assistant_id = {
+            'relo': self.RELO_ASSISTANT_ID,
+            'dolores': self.DOLORES_ASSISTANT_ID,
+        }
         client = OpenAI(api_key=self.OPENAI_API_KEY)
         thread = client.beta.threads.create(
             messages=[
@@ -171,7 +176,7 @@ class Dolores():
 
         run = client.beta.threads.runs.create(
             thread_id=thread.id,
-            assistant_id=self.OPENAI_ASSISTANT_ID
+            assistant_id=assistant_id[assistant]
         )
         while run.status != "completed":
             run = client.beta.threads.runs.retrieve(
@@ -217,10 +222,10 @@ class Dolores():
         with open(self.location, 'w') as cFile:
             json.dump(self.context, cFile)
 
-    async def chat(self, user_input, user):
+    async def chat(self, user_input, user, assistant='relo'):
         self.user_input = user_input
         self.openJSON(user)
-        response = self.assistant(user_input).replace("\n", "<br>")
+        response = self.assistant(user_input, assistant).replace("\n", "<br>")
         self.bot_response = response
         return response
 
@@ -240,7 +245,7 @@ class Database():
         self.DB_USER=os.getenv('DB_USER')
         self.DB_PASSWORD=os.getenv('DB_PASSWORD')
         self.database_url = f'postgresql://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}'
-        print(self.database_url)
+        # print(self.database_url)
         self.engine = create_engine(self.database_url)
         self.SessionLocal = sessionmaker(
             autocommit=False, autoflush=False, bind=self.engine)
@@ -343,6 +348,11 @@ class Stripe():
     def checkOutSess(self, tier, duration, email):
         self.tier = tier
         self.email = email
+        # subscriptionData = {
+        #         "trial_settings": {"end_behavior": {"missing_payment_method": "pause"}},
+        #         "trial_period_days": 1,
+        #     }
+        subscriptionData={}
         checkoutSess = stripe.checkout.Session.create(
             payment_method_types=['card'],
             line_items=[
@@ -351,10 +361,7 @@ class Stripe():
                     'quantity': 1,
                 },
             ],
-            subscription_data={
-                "trial_settings": {"end_behavior": {"missing_payment_method": "pause"}},
-                "trial_period_days": 1,
-            },
+            subscription_data=subscriptionData,
             mode='subscription',
             success_url='https://justi.guide/success.html',
             cancel_url='https://justi.guide/error.html',
@@ -391,7 +398,9 @@ async def get_bot_response(request: Request):
     data = await request.json()
     user_message = data["user_message"]
     user = data["user"]
-    bot_response = await bot_responses.chat(user_message, user)
+    assistant = data['assistant']    
+    print(assistant)
+    bot_response = await bot_responses.chat(user_message, user, assistant)
     sql_db.add_messages(user, user_message, bot_response)
     response = {"bot_response": bot_response}
     asyncio.create_task(bot_responses.updateContext())
