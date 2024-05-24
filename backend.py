@@ -1,4 +1,5 @@
 from fastapi import Body, FastAPI, Request, HTTPException, Depends, File, UploadFile, Form
+from fastapi.responses import JSONResponse
 from typing import Optional, List
 from PIL import Image
 import io
@@ -10,13 +11,15 @@ from datetime import datetime
 import os
 import time
 import asyncio
-from sqlalchemy import MetaData, create_engine, Column, String, Table, inspect, text
+from sqlalchemy import MetaData, create_engine, Column, String, Table, inspect, text, select, literal_column
 from sqlalchemy.orm import sessionmaker, Session, declarative_base
 import stripe
 import boto3
+from boto3.s3.transfer import TransferConfig
 import re
 import string
 from pathlib import Path
+import csv
 
 Base = declarative_base()
 
@@ -62,6 +65,7 @@ class S3():
             self.bucket_name,
             file_dir,
         )
+        return f'https://doloreschatbucket.s3.us-east-2.amazonaws.com/{file_dir}'
 
     def getLegalName(self, filename):
         legal_chars = set(string.ascii_letters + string.digits + '._-')
@@ -108,7 +112,8 @@ class S3():
                       f'users/{username}/files/', f'users/{username}/forms/']
         for folder in newFolders:
             self.bucket.put_object(Key=folder, Body=b'')
-        # return username
+
+
 
 
 class User(Base):
@@ -239,6 +244,20 @@ class Database():
         finally:
             db.close()
 
+    def createTable(self, username):
+        inspector = inspect(self.engine)
+        if not inspector.has_table(username):
+            metadata = MetaData()
+            new_table = Table(
+                username,
+                metadata,
+                Column('user_messages', String),
+                Column('bot_messages', String),
+                Column('files', String),
+                Column('forms', String)
+            )
+            metadata.create_all(self.engine)
+
     def add_user(self, details, db):
         if details['user_location'] != '':
             location = details['user_location']
@@ -249,18 +268,7 @@ class Database():
         else:
             password = None
 
-        inspector = inspect(self.engine)
-        if not inspector.has_table(details['username']):
-            metadata = MetaData()
-            new_table = Table(
-                details['username'],
-                metadata,
-                Column('user_messages', String),
-                Column('bot_messages', String),
-                Column('files', String),
-                Column('forms', String)
-            )
-            metadata.create_all(self.engine)
+        self.createTable(details['username'])
         new_user = User(first_name=details['firstName'], last_name=details['lastName'], email=details['email'],
                         username=details['username'], profile_pic=details['profilePic'], password=password, location=location)
         db.add(new_user)
@@ -285,6 +293,29 @@ class Database():
         with self.engine.begin() as conn:
             insert_vals = f"INSERT INTO {username} (user_messages, bot_messages) VALUES (:user_message, :bot_message)"
             conn.execute(text(insert_vals), {"user_message": user_message, "bot_message": bot_message})
+    
+    def add_files(self, username, flag, file_link):
+        with self.engine.begin() as conn:
+            insert_vals = f"INSERT INTO {username} ({flag}) VALUES (:file_link)"
+            conn.execute(text(insert_vals), {"file_link": file_link})
+
+    def get_files(self, username, flag):
+        with self.engine.begin() as conn:
+            query = f"SELECT {flag} from {username}"
+            result = conn.execute(text(query))
+        files = [row[0] for row in result if row[0] is not None]
+        return files
+    
+    def free_limit(self, username):
+        query = text(f"SELECT COUNT(user_messages) AS non_null_count FROM {username} WHERE user_messages IS NOT NULL;")
+        with self.engine.connect() as conn:
+            result = conn.execute(query)
+            # print(result)
+            non_null_count = result.scalar()
+        return non_null_count
+
+        
+
 
 class Stripe():
     def __init__(self) -> None:
@@ -366,6 +397,8 @@ async def new_user(request: Request, db: Session = Depends(sql_db.get_db)):
     if not user:
         s3.createDir(data['username'])
         sql_db.add_user(data, db)
+    else:
+        sql_db.createTable(data['username'])
 
 
 @app.post('/create_checkoutsess/')
@@ -515,9 +548,9 @@ async def uploadProfilePic(profilePic: UploadFile = File(...), email_id: str = F
 
 
 @app.post('/upload_files/')
-async def upload_forms(files: List[UploadFile] = File(...), email_id: str = Form(...), db: Session = Depends(sql_db.get_db)):
+async def upload_forms(files: List[UploadFile] = File(...), email_id: str = Form(...), flag: str = Form(...), db: Session = Depends(sql_db.get_db)):
     user = db.query(User).filter(User.email == email_id).first()
-    destination_dir = f"users/{user.username}/files"
+    destination_dir = f"users/{user.username}/{flag}"
     for file in files:
         tmp_filename = s3.getLegalName(file.filename)
         temp_file_path = Path('/tmp') / tmp_filename
@@ -527,8 +560,78 @@ async def upload_forms(files: List[UploadFile] = File(...), email_id: str = Form
             content = await file.read()
             temp_file.write(content)
 
-        s3.upload_files(str(temp_file_path), s3_key)
+        file_url = s3.upload_files(str(temp_file_path), s3_key)
+        sql_db.add_files(user.username, flag, file_url)
         os.remove(str(temp_file_path))
+
+@app.post('/get_filesList/')
+async def get_filesList(email_id: str = Form(...), flag: str = Form(...), db: Session = Depends(sql_db.get_db)):
+    standard_iconPack = {
+        'mp3':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/audio.svg",
+        'wav':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/audio.svg",
+        'aac':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/audio.svg",
+        'flac':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/audio.svg",
+        'txt': "https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/doc.svg",
+        'doc': "https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/doc.svg",
+        'docx': "https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/doc.svg",
+        'rtf': "https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/doc.svg",
+        'odt': "https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/doc.svg",
+        'xlsx':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/spreadsheet.svg",
+        'xls':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/spreadsheet.svg",
+        'ods':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/spreadsheet.svg",
+        'jpeg':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/image.svg",
+        'jpg':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/image.svg",
+        'png':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/image.svg",
+        'gif':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/image.svg",
+        'bmp':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/image.svg",
+        'tiff':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/image.svg",
+        'svg':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/image.svg",
+        'pdf':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/pdf.svg",
+        'pptx':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/presentation.svg",
+        'ppt':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/presentation.svg",
+        'odp':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/presentation.svg",
+        'mp4':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/video.svg",
+        'avi':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/video.svg",
+        'mov':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/video.svg",
+        'flv':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/video.svg",
+        'wmv':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/video.svg",
+        'mkv':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/video.svg",
+        'zip':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/zip.svg",
+        'rar':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/zip.svg",
+        '7z':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/zip.svg",
+        'gz':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/zip.svg",
+        'tar':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/zip.svg"
+    }
+    unknownType = 'https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/unknown.svg'
+    user = db.query(User).filter(User.email == email_id).first()
+    tablename = user.username
+    fileList = sql_db.get_files(tablename, flag)
+    if len(fileList) >0:
+        thumbnails = [standard_iconPack.get(file.split('.')[-1], unknownType) for file in fileList]
+        filenames = [file.split('/')[-1] for file in fileList]
+        output_dic = [
+            {'title': title, 'url': url, 'thumbnail': thumbnail}
+            for title, url, thumbnail in zip(filenames, fileList, thumbnails)
+        ]
+        return JSONResponse(output_dic)
+    else:
+        return []
+    
+@app.post('/free_chatLimit/')
+async def free_chatLimit(request: Request, db: Session = Depends(sql_db.get_db)):
+    data = await request.json()
+    email_id = data['email_id']
+    user = db.query(User).filter(User.email==email_id).first()
+    num_messages = sql_db.free_limit(user.username)
+    print(num_messages)
+    if num_messages is not None and num_messages >= 4:
+        return {'result': True,
+                'num': num_messages}
+    else:
+        return {'result': False,
+                'num': num_messages}
+
+
 
 
 @app.get('/test/')
