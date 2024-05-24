@@ -20,14 +20,16 @@ import re
 import string
 from pathlib import Path
 import csv
+from dotenv import load_dotenv
 
 Base = declarative_base()
+load_dotenv()
 
 
 class S3():
     def __init__(self):
-        self.AWS_ACCESS_ID = ""
-        self.AWS_SECRET_KEY = ""
+        self.AWS_ACCESS_ID = os.getenv('AWS_ACCESS_ID')
+        self.AWS_SECRET_KEY = os.getenv('AWS_SECRET_KEY')
         self.s3 = boto3.client('s3', aws_access_key_id=self.AWS_ACCESS_ID,
                                aws_secret_access_key=self.AWS_SECRET_KEY)
         self.bucket_name = "doloreschatbucket"
@@ -132,8 +134,8 @@ class User(Base):
 
 class Dolores():
     def __init__(self):
-        self.OPENAI_API_KEY = ""
-        self.OPENAI_ASSISTANT_ID = ""
+        self.OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+        self.OPENAI_ASSISTANT_ID = os.getenv('OPENAI_ASSISTANT_ID')
         self.context = {
             "user": '',
             "assistant": ''
@@ -232,7 +234,13 @@ class Dolores():
 
 class Database():
     def __init__(self):
-        self.database_url = 'postgresql://dolores:JustiGuide!UserInfo2024@user-details.cf2y80iom48x.us-west-1.rds.amazonaws.com:5432/user_details'
+        self.DB_HOST=os.getenv('DB_HOST')
+        self.DB_PORT=os.getenv('DB_PORT')
+        self.DB_NAME=os.getenv('DB_NAME')
+        self.DB_USER=os.getenv('DB_USER')
+        self.DB_PASSWORD=os.getenv('DB_PASSWORD')
+        self.database_url = f'postgresql://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}'
+        print(self.database_url)
         self.engine = create_engine(self.database_url)
         self.SessionLocal = sessionmaker(
             autocommit=False, autoflush=False, bind=self.engine)
@@ -319,8 +327,8 @@ class Database():
 
 class Stripe():
     def __init__(self) -> None:
-        self.publishableKey = ''
-        self.secretKey = ''
+        self.publishableKey = os.getenv('publishableKey')
+        self.secretKey = os.getenv('secretKey')
         stripe.api_key = self.secretKey
         self.priceID = {
             'basic': {'monthly': 'price_1PGqbSP6cNlgDSsmJ8eZ9R8F', 'yearly': 'price_1PEJ0GP6cNlgDSsmNmInXFzC'},
@@ -579,6 +587,8 @@ async def get_filesList(email_id: str = Form(...), flag: str = Form(...), db: Se
         'xlsx':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/spreadsheet.svg",
         'xls':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/spreadsheet.svg",
         'ods':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/spreadsheet.svg",
+        'csv':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/spreadsheet.svg",
+        'tsv':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/spreadsheet.svg",
         'jpeg':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/image.svg",
         'jpg':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/image.svg",
         'png':"https://doloreschatbucket.s3.us-east-2.amazonaws.com/file_icons/image.svg",
@@ -630,8 +640,6 @@ async def free_chatLimit(request: Request, db: Session = Depends(sql_db.get_db))
     else:
         return {'result': False,
                 'num': num_messages}
-
-
 
 
 @app.get('/test/')
