@@ -657,4 +657,4 @@ async def test_func():
 
 if __name__ == "__main__":
     host = '0.0.0.0'
-    uvicorn.run("backend:app", reload=True)
+    uvicorn.run("backend:app", host=host, reload=True)
