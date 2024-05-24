@@ -739,10 +739,6 @@ p[id="passwordError"] {
 }
 
 
-p[id="usernameError"] {
-  font-size: xx-small;
-}
-
 #registrationForm {
   justify-content: center;
   gap: 10px
@@ -895,6 +891,7 @@ span.icon {
 .error {
   color: #ff0000;
   font-weight: bold;
+  font-size: xx-small;
 }
 
 button[id="emailButton"] {
@@ -1024,38 +1021,49 @@ span.buttonText {
   background-color: #fff;
   padding: 30px;
   width: fit-content;
+  max-width: 90vw;
   transform: translateX(-50%);
   left: 50%;
   top: 15%;
   border-radius: 30px;
   box-shadow: rgb(0, 0, 0, 0.1);
-  z-index: 3;
+  z-index: -1;
 }
 
+/* label[id="plan-selection"]{
+  font-size: 8px;
+} */
+
 .subscription-selection {
+  position: relative;
   display: inline-flex;
   gap: 50px;
   margin-top: 50px;
+  width: 100%;
 }
 
 .plan-selection {
   display: flex;
   flex-direction: column;
+  width: 10vw;
   gap: 10px;
 }
 
 .plan-cards {
   display: flex;
   gap: 25px;
+  width: 100%;
 }
 
 .plan-card {
+  position: relative;
   background-color: #e6e8eb;
   padding: 20px;
   border-radius: 20px;
   text-align: center;
   transition: transform 0.3s ease;
-  width: 250px;
+  width: 15vw;
+  max-width: 250px;
   display: flex;
   flex-direction: column;
 }
@@ -1086,6 +1094,7 @@ span.buttonText {
   margin-bottom: 20px;
   color: #444;
   flex-grow: 1;
+  font-size: small;
 }
 
 .plan-features ul {
@@ -1165,6 +1174,7 @@ span.buttonText {
   height: 40vh;
   background-color: #ffff;
   border-radius: 25px;
+  min-height: 350px;
 }
 
 .content {
@@ -1299,7 +1309,7 @@ button[id="supportSubmit"] {
 
 .file-image {
   padding-bottom: 60%;
-  background-size: cover;
+  background-size: contain;
   background-position: center;
 }
 
@@ -1337,8 +1347,42 @@ button[id="supportSubmit"] {
 
 .form-image {
   padding-bottom: 60%;
-  background-size: cover;
+  background-size: contain;
   background-position: center;
+}
+
+
+
+#upgrade_alert {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border-radius: 35px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  max-width: 400px;
+  min-width: 250px;
+}
+
+#upgrade_alert h2 {
+  margin-top: 0;
+}
+
+#upgrade_alert p {
+  margin-bottom: 20px;
+}
+
+#close-btn {
+  background-color: #e53935;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: inherit;
 }
 
 .form-title {
@@ -1478,6 +1522,12 @@ input[id="lastname"] {
   width: 80%;
 }
 
+.userDetsLogin{
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
 .userDets,
 .profileButtons,
 .userName {
@@ -1564,7 +1614,37 @@ input[id="lastname"] {
   text-align: center;
 }
 
+
 @media (max-width: 1200px) {
+  .plan-selection{
+    width: 5vw;
+  }
+  .subscription-container{
+    max-width: 80vw;
+  }
+  .plan-name{
+    font-size: 20px;
+  }
+
+  .plan-price{
+    font-size: 12px;
+  }
+
+  .plan-features{
+    font-size: 8px;
+  }
+
+  .plan-cards{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .plan-card{
+    min-width: 12vw;
+    width: 150px;
+  }
+
   .profile-container {
     position: absolute;
     transform: translateX(50%);
@@ -1676,6 +1756,9 @@ input[id="lastname"] {
 
 
 @media (max-width: 600px) {
+  /* .plan-card{
+    width: fit-content;
+  } */
   .message-bubble {
     max-width: calc(min(85vw, 250px));
   }
@@ -1869,6 +1952,19 @@ input[id="lastname"] {
 }
 
 @media (max-width: 375px) {
+  .plan-selection{
+    width: 150px;
+  }
+
+  .subscription-container{
+    padding:20px;
+  }
+
+  .subscription-selection{
+    left: -5px;
+    gap: 10px;
+  }
+
   .profileButtons {
     display: flex;
     flex-wrap: wrap-reverse;

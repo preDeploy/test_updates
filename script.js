@@ -25,7 +25,11 @@ const tabContents = document.querySelectorAll('.content .tab');
 const emailInput = document.getElementById('emailInput');
 const emailButton = document.getElementById('emailButton');
 const googleButton = document.getElementById('googleButton');
-const loginContainer = document.querySelector('.login-window')
+const loginContainer = document.querySelector('.login-window');
+const upgradeAlert = document.getElementById('upgrade_alert');
+const alertTitle = document.getElementById('alert_title');
+const alertContent = document.getElementById('alert_content');
+const closeBtn = document.getElementById('close-btn');
 
 function getCookie(name) {
     const value = `; ${document.cookie}`;
@@ -593,7 +597,34 @@ async function subscription() {
     });
 }
 
-function setActiveButton(clickedButton) {
+async function getMessageNum(){
+    const sub = await getSubscription();
+    console.log(sub)
+    if (sub == 'free' || sub == 'Free'){
+        const email_id = getCookie('username').email
+        try{
+            const response = await fetch(`${backendUrl}free_chatLimit/`, {
+                method: 'POST',
+                body: JSON.stringify({ email_id })
+            });
+            if (!response.ok){
+                console.error('HTTP error: ', response.status);
+            }
+            const data = await response.json();
+            const retVal = {
+                bool: data.result,
+                num: data.num
+            }
+            return retVal;
+        } catch (error) {
+            console.error('Error: ', error);
+        }
+    } else {
+        return null
+    }
+}
+
+async function setActiveButton(clickedButton) {
     buttons.forEach(button => button.classList.remove('active'));
     const parentClassList = clickedButton.parentElement.classList;
     if (parentClassList.contains("side-container") || parentClassList.contains("menu-container") || parentClassList.contains("chat-bar-container")) {
@@ -605,12 +636,29 @@ function setActiveButton(clickedButton) {
             }
             if (!chatHistory.classList.contains('active')) {
                 chatHistory.classList.add('active');
+            }            
+            const toBlock = await getMessageNum();
+            if (toBlock){
+                if (toBlock.bool){
+                    alertTitle.textContent = 'Upgrade your Subscription!';
+                    alertContent.textContent = 'You have reached the limit of free messages. To continue using the chat without any restrictions, please upgrade to the "Basic" tier.';
+                    sendButton.style.pointerEvents = 'none';
+                    sendButton.style.cursor = 'not-allowed';
+                    messageInput.disabled = true;
+                } else {
+                    alertTitle.textContent = 'Upgrade your Subscription!';
+                    alertContent.textContent = `You have ${4 - parseInt(toBlock.num)} messages left. To enjoy unlimited access to the chat, consider upgrading to the "Basic" tier.`;
+                }
+                upgradeAlert.style.display = 'block';
+                closeBtn.addEventListener('click', () => {
+                    upgradeAlert.style.display = 'none';
+                });
             }
             document.getElementById("disclaimer").removeAttribute('style'); 
             messageInput.addEventListener('keyup', () => {
                 const message = messageInput.value.trim();
                 if (message) {
-                    sendButton.addEventListener('click', (event) => {
+                    sendButton.addEventListener('click', async (event) => {
                         event.preventDefault();
                         if (messageInput.value != '') {
                             addUserMessage(messageInput.value, getCookie('username').profilePicUrl);
@@ -636,9 +684,26 @@ function setActiveButton(clickedButton) {
                                     console.error('Error: ', error);
                                 });
                             messageInput.value = '';
+                            const toBlock = await getMessageNum();
+                            if (toBlock){
+                                if (toBlock.bool){
+                                    alertTitle.textContent = 'Upgrade your Subscription!';
+                                    alertContent.textContent = 'You have reached the limit of free messages. To continue using the chat without any restrictions, please upgrade to the "Basic" tier.';
+                                    sendButton.style.pointerEvents = 'none';
+                                    sendButton.style.cursor = 'not-allowed';
+                                    messageInput.disabled = true;
+                                } else {
+                                    alertTitle.textContent = 'Upgrade your Subscription!';
+                                    alertContent.textContent = `You have ${4 - parseInt(toBlock.num)} messages left. To enjoy unlimited access to the chat, consider upgrading to the "Basic" tier.`;
+                                }
+                                upgradeAlert.style.display = 'block';
+                                closeBtn.addEventListener('click', () => {
+                                    upgradeAlert.style.display = 'none';
+                                });
+                            }
                         }
                     });
-                    messageInput.addEventListener('keydown', (event) => {
+                    messageInput.addEventListener('keydown', async (event) => {
                         if (event.key === 'Enter') {
                             if (messageInput.value != '') {
                                 addUserMessage(messageInput.value, getCookie('username').profilePicUrl);
@@ -664,6 +729,23 @@ function setActiveButton(clickedButton) {
                                         console.error('Error: ', error);
                                     });
                                 messageInput.value = '';
+                                const toBlock = await getMessageNum();
+                                if (toBlock){
+                                    if (toBlock.bool){
+                                        alertTitle.textContent = 'Upgrade your Subscription!';
+                                        alertContent.textContent = 'You have reached the limit of free messages. To continue using the chat without any restrictions, please upgrade to the "Basic" tier.';
+                                        sendButton.style.pointerEvents = 'none';
+                                        sendButton.style.cursor = 'not-allowed';
+                                        messageInput.disabled = true;
+                                    } else {
+                                        alertTitle.textContent = 'Upgrade your Subscription!';
+                                        alertContent.textContent = `You have ${4 - parseInt(toBlock.num)} messages left. To enjoy unlimited access to the chat, consider upgrading to the "Basic" tier.`;
+                                    }
+                                    upgradeAlert.style.display = 'block';
+                                    closeBtn.addEventListener('click', () => {
+                                        upgradeAlert.style.display = 'none';
+                                    });
+                                }
                             }
                         }
                     });
@@ -1048,9 +1130,10 @@ function saveNewPassword(password) {
 
 
 
-function loadFilesContent(contentDiv) {
+async function loadFilesContent(contentDiv) {
     // Fetch files data from the backend
-    const filesData = []
+    let filesData = await getFiles('files') || [];
+    console.log(filesData)
 
     const gridContainer = document.createElement('div');
     const gridTitle = document.createElement('h2');
@@ -1117,7 +1200,8 @@ function loadFilesContent(contentDiv) {
         // Append each file to the FormData object
         for (const file of files) {
             formData.append('files', file);
-            formData.append('email_id', email_id)
+            formData.append('flag', 'files');
+            formData.append('email_id', email_id);
         }
 
         try {
@@ -1129,6 +1213,7 @@ function loadFilesContent(contentDiv) {
 
             if (response.ok) {
                 console.log('Files uploaded successfully');
+                loadTabContent('files')
             } else {
                 console.error('Error uploading files');
             }
@@ -1138,11 +1223,36 @@ function loadFilesContent(contentDiv) {
     });
 }
 
+async function getFiles(flag){
+    const formData = new FormData();
+    const email_id = getCookie('username').email;
+    formData.append('email_id', email_id);
+    formData.append('flag', flag)
+    try{
+        const response = await fetch(`${backendUrl}get_filesList/`, {
+            method: 'POST',
+            body: formData,
+        });
+        if(!response.ok){
+            console.error(`HTTP error! Status: ${response.status}`)
+        }
+        const filesData = await response.json();
+        const fileData = filesData.map(file => ({
+            title: file.title,
+            url: file.url,
+            thumbnail: file.thumbnail
+        }));
+        return fileData;
+    } catch (error) {
+        console.error('Error fetching files: ', error)
+    }
+}
+
 function loadLawyersContent(contentDiv) {
     // Fetch lawyers data from the backend
     const lawyersData = [
-        { title: 'Lawyer 1', url: 'lawyer1.html', thumbnail: 'lawyer1.jpg' },
-        { title: 'Lawyer 2', url: 'lawyer2.html', thumbnail: 'lawyer2.jpg' },
+        // { title: 'Lawyer 1', url: 'lawyer1.html', thumbnail: 'lawyer1.jpg' },
+        // { title: 'Lawyer 2', url: 'lawyer2.html', thumbnail: 'lawyer2.jpg' },
         // ... add more lawyers
     ];
 
@@ -1211,13 +1321,13 @@ function loadSupportContent(contentDiv) {
     contentDiv.appendChild(supportForm);
 }
 
-function loadFormsContent(contentDiv) {
+async function loadFormsContent(contentDiv) {
     // Fetch forms data from the backend
     // const formsData = [
     //     { title: 'Form 1', url: 'form1.html', thumbnail: 'form1.jpg' },
     //     { title: 'Form 2', url: 'form2.html', thumbnail: 'form2.jpg' },
     // ];
-    const formsData = []
+    let formsData = await getFiles('forms') || [];
     const gridContainer = document.createElement('div');
     const gridTitle = document.createElement('h2');
     gridTitle.classList.add('formsList');
@@ -1231,11 +1341,12 @@ function loadFormsContent(contentDiv) {
 
         const formLink = document.createElement('a');
         formLink.href = form.url;
+        formLink.target = '_blank';
         formLink.classList.add('form-link');
 
         const formImage = document.createElement('div');
         formImage.classList.add('form-image');
-        formImage.style.backgroundImage = `url('${form.imageUrl}')`;
+        formImage.style.backgroundImage = `url('${form.thumbnail}')`;
 
         const formTitle = document.createElement('div');
         formTitle.classList.add('form-title');
@@ -1281,18 +1392,22 @@ function loadFormsContent(contentDiv) {
     fileInput.addEventListener('change', async (event) => {
         const files = event.target.files;
         const formData = new FormData();
+        const email_id = getCookie('username').email;
         for (const file of files) {
             formData.append('files', file);
+            formData.append('flag', 'forms');
+            formData.append('email_id', email_id);
         }
 
         try {
-            const response = await fetch(`${backendUrl}upload_forms/`, {
+            const response = await fetch(`${backendUrl}upload_files/`, {
                 method: 'POST',
                 body: formData,
             });
 
             if (response.ok) {
-                console.log('Files uploaded successfully');
+                console.log('Forms uploaded successfully');
+                loadTabContent('forms')
             } else {
                 console.error('Error uploading files');
             }

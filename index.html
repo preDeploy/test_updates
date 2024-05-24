@@ -33,14 +33,14 @@
 </head>
 
 <body style="background: linear-gradient(116.82deg, #E0EEFB 0%, #DDE6F9 100%);">
-  <div class="logo" onclick="window.location.href='https://www.justiguide.com'"></div>
+  <div class="logo" onclick="window.location.href='https://justi.guide'"></div>
   <div class="profile-container" id="profile-container">
     <div class="sidebar">
       <ul>
         <li id="profileMain"><a href="#" class="active" data-tab="profile">Profile Information</a></li>
         <li id="filesMain"><a href="#" data-tab="files">Files</a></li>
-        <li id="lawyersMain"><a href="#" data-tab="lawyers">Lawyers</a></li>
-        <li id="supportMain"><a href="#" data-tab="support">Support</a></li>
+        <!-- <li id="lawyersMain"><a href="#" data-tab="lawyers">Lawyers</a></li> -->
+        <!-- <li id="supportMain"><a href="#" data-tab="support">Support</a></li> -->
         <li id="formsMain"><a href="#" data-tab="forms">Forms</a></li>
       </ul>
       <button id="logout-item" onclick="signOut();">Logout</button>
@@ -94,6 +94,11 @@
     </a>
   </div>
   <div class="chat-container">
+    <div class="upgrade_alert" id="upgrade_alert" style="display: none;">
+      <h2 id="alert_title"></h2>
+      <p id="alert_content"></p>
+      <button id="close-btn">Close</button>
+    </div>
     <div class="chat-messages">
       <div class="bot-message">
         <div class="bot-profile">
@@ -216,11 +221,11 @@
     <h3 class="subscription-subtitle">Pricing Plans for every Budget</h3>
     <div class="subscription-selection">
       <div class="plan-selection">
-        <label>
+        <label id="plan-selection">
           <input type="radio" name="plan-duration" value="monthly" checked>
           Monthly
         </label>
-        <label>
+        <label id="plan-selection">
           <input type="radio" name="plan-duration" value="yearly">
           Yearly
         </label>
