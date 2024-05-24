@@ -1027,7 +1027,7 @@ span.buttonText {
   top: 15%;
   border-radius: 30px;
   box-shadow: rgb(0, 0, 0, 0.1);
-  z-index: -1;
+  z-index: 0;
 }
 
 /* label[id="plan-selection"]{
