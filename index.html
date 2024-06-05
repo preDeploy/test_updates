@@ -88,20 +88,29 @@
         </a> -->
   </div>
   <div class="chat-bar-container">
+    <a class="chat-buttons" id="assistant" style="display: none;">
+      <svg class="chat-icons assistant" id="assistant"></svg>
+    </a>
     <input type="text" id="user-input" placeholder="Enter your message">
     <a class="chat-buttons" id="send">
       <svg class="chat-icons send"></svg>
     </a>
   </div>
-  <div class="assistant-toggle" style="display: none;">
-    <span class="slider-text-left">ReLo</span>
-    <label class="switch">
-      <input type="checkbox" id="toggleSwitch">
-      <span class="slider">
-        <span class="slider-handle"></span>
-      </span>
-    </label>
-    <span class="slider-text-right">Dolores</span>
+  <div class="botOptions">
+    <div class="relo-selection">
+      <a class="botOptions-icons" id="relo">
+        <a class="botOption-name">
+          ReLo
+        </a>
+      </a>
+    </div>
+    <div class="dolores-selection">
+      <a class="botOptions-icons" id="dolores">
+        <a class="botOption-name">
+          Dolores
+        </a>
+      </a>
+    </div>
   </div>
   <div class="chat-container">
     <div class="upgrade_alert" id="upgrade_alert" style="display: none;">
@@ -122,78 +131,1716 @@
     </div>
   </div>
   <div class="form-container">
-    <form id="immigrationForm">
-      <div id="header">
-        <h1>Immigration Form</h1>
-        <div class="sub-heading">Information about you</div>
-        <div id="progressBar">
-          <div id="progress"></div>
+    <div class="part-selector">
+      <a class="button" id="form-parts">
+        <svg class="button-icon form-parts"></svg>
+      </a>
+      <div class="parts">
+        <div class="part-selection" id="active">
+          <a id="part-selection" class="part-a-i">Part A.I.</a>
+        </div>
+        <div class="part-selection">
+          <a id="part-selection" class="part-a-ii">Part A.II.</a>
+        </div>
+        <div class="part-selection">
+          <a id="part-selection" class="part-a-iii">Part A.III.</a>
+        </div>
+        <div class="part-selection">
+          <a id="part-selection" class="part-b">Part B</a>
+        </div>
+        <div class="part-selection">
+          <a id="part-selection" class="part-c">Part C</a>
+        </div>
+        <div class="part-selection">
+          <a id="part-selection" class="part-d">Part D</a>
+        </div>
+        <!-- <div class="part-selection">
+          <a id="part-selection" class="part-e">Part E</a>
+        </div> -->
+        <div class="part-selection">
+          <a id="part-selection" class="part-suppAB">Additional Information</a>
         </div>
       </div>
-      <div class="section">
-        <div class="subsection">
-          <label for="firstName">First Name:</label>
-          <input type="text" id="formfirstName" name="firstName" required>
-          <label for="middleName">Middle Name:</label>
-          <input type="text" id="formmiddleName" name="middleName">
-          <label for="lastName">Last Name:</label>
-          <input type="text" id="formlastName" name="lastName" required>
-        </div>
-        <div class="subsection">
-          <div class="sub-heading">Residence in US</div>
-          <label for="street">Street Number & Name:</label>
-          <input type="text" id="street" name="street" required>
-          <label for="city">City:</label>
-          <input type="text" id="city" name="city" required>
-          <label for="state">State:</label>
-          <input type="text" id="state" name="state" required>
-          <label for="zipCode">Zip Code:</label>
-          <input type="text" id="zipCode" name="zipCode" required>
-          <label for="telephone">Telephone Number:</label>
-          <input type="tel" id="telephone" name="telephone" required>
-          <p style="margin-top: 10px;">Different Mailing Address</p>
-          <div class="toggle-switch">
-            <input type="checkbox" id="differentAddress" class="toggle-switch-checkbox">
-            <label for="differentAddress" class="toggle-switch-label">
-              <span class="toggle-switch-inner"></span>
-              <span class="toggle-switch-switch"></span>
-            </label>
+    </div>
+    <div class="section-header">
+      <a id="part-a-i">Part A.I. Information About You</a>
+      <a id="part-a-ii" style="display: none;">Part A.II. Information About Your Spouse and Children</a>
+      <a id="part-a-iii" style="display: none;">Part A.III. Information About Your Background</a>
+      <a id="part-b" style="display: none;">Part B Information About Your Application</a>
+      <a id="part-c" style="display: none;">Part C Additional Information About Your Application</a>
+      <a id="part-d" style="display: none;">Part D Your Signature</a>
+      <!-- <a id="part-e" style="display: none;">Part E Declaration of Person Preparing Form</a> -->
+      <a id="part-suppAB" style="display: none;">Additional Information About Your Claim to Asylum</a>
+    </div>
+    <div class="section-subhead">
+      <p id="part-a-i">This section focuses on gathering essential details about you. It
+        collects basic identifying information</p>
+      <p id="part-a-ii" style="display: none;">If you are married or have children under the age of 21, this section
+        gathers similar information about your spouse and each child.</p>
+      <p id="part-a-iii" style="display: none;">This section expands on the your personal history and background</p>
+      <p id="part-b" style="display: none;">This part focuses on determining if you meet the basic eligibility
+        criteria for asylum.</p>
+      <p id="part-c" style="display: none;">In this part of the application, you'll describe in detail the reasons why
+        you are seeking asylum.</p>
+      <p id="part-d" style="display: none;">This part requires you to declare under penalty of perjury that the
+        information you have provided
+        is true and correct.</p>
+      <!-- <p id="part-e" style="display: none;">If you used an interpreter, other than your spouse, parent, child or
+        yourself, to help you complete the form, they must provide their contact information in this section.</p> -->
+      <p id="part-suppAB" style="display: none;">This section is for providing additional information about
+        children or past residences and employment history, if needed.</p>
+    </div>
+    <div class="scrollable-content">
+      <div class="section" id="part-a-i">
+        <div class="subsection" id="mainInformation">
+          <div class="subsection-description">
+            <a class="subsection-header" id="mainInfo-header">Main Information</a>
           </div>
-          <div id="mailingAddress" class="hidden">
-            <label for="mailingStreet">Street Number & Name:</label>
-            <input type="text" id="mailingStreet" name="mailingStreet">
-            <label for="mailingCity">City:</label>
-            <input type="text" id="mailingCity" name="mailingCity">
-            <label for="mailingState">State:</label>
-            <input type="text" id="mailingState" name="mailingState">
-            <label for="mailingZipCode">Zip Code:</label>
-            <input type="text" id="mailingZipCode" name="mailingZipCode">
-            <label for="mailingTelephone">Telephone Number:</label>
-            <input type="tel" id="mailingTelephone" name="mailingTelephone">
+          <div class="subsection-content">
+            <div class="text-input" id="full-width">
+              <label for="a-i-firstName" id="text-box">First Name</label>
+              <input type="text" id="a-i-firstName" class="textbox">
+            </div>
+            <div class="text-input" id="full-width">
+              <label for="a-i-middleName" id="text-box">Middle Name</label>
+              <input type="text" id="a-i-middleName" class="textbox">
+            </div>
+            <div class="text-input" id="full-width">
+              <label for="a-i-lastName" id="text-box">Complete Last Name</label>
+              <input type="text" id="a-i-lastName" class="textbox">
+            </div>
+            <div class="text-input" id="full-width">
+              <label for="a-i-aliases" id="text-box">What other names have you used (include maiden name and
+                aliases)?</label> <input type="text" id="a-i-aliases" class="textbox">
+            </div>
+            <div class="text-input" id="full-width">
+              <label for="a-i-anumber" id="text-box">Alien Registration Number(s) (A-number) (if any)</label>
+              <input type="text" id="a-i-anumber" class="textbox">
+            </div>
+            <div class="text-input" id="full-width">
+              <label for="a-i-ssn" id="text-box">US Social Security Number (if any)</label>
+              <input type="text" id="a-i-ssn" class="textbox">
+            </div>
+            <div class="text-input" id="full-width">
+              <label for="a-i-uscis" id="text-box">USCIS Online Account Number (if any)</label>
+              <input type="text" id="a-i-uscis" class="textbox">
+            </div>
           </div>
         </div>
-        <div class="subsection">
-          <div class="sub-heading">General Information</div>
-          <div class="radio-group">
-            <input type="radio" id="male" name="gender" value="male">
-            <label for="male">Male</label>
-            <input type="radio" id="female" name="gender" value="female">
-            <label for="female">Female</label>
+        <div class="subsection-end"></div>
+        <div class="subsection" id="residence">
+          <div class="subsection-description">
+            <a class="subsection-header" id="residence-header">Residence in the U.S. <i>(where you physically
+                reside)</i></a> <a class="subsection-subhead" id="residence-subhead">You must be residing in
+              the U.S. to submit this form</a>
+          </div>
+          <div class="subsection-content">
+            <div class="divided-text" id="three-one">
+              <div class="text-input" id="full-width">
+                <label for="a-i-street" id="text-box">Street Number and Name</label>
+                <input type="text" id="a-i-street" class="textbox">
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-i-apt" id="text-box">Apt. Number</label>
+                <input type="text" id="a-i-apt" class="textbox">
+              </div>
+            </div>
+            <div class="text-input" id="full-width">
+              <label for="a-i-city" id="text-box">City</label>
+              <input type="text" id="a-i-city" class="textbox">
+            </div>
+            <div class="text-input" id="full-width">
+              <label for="a-i-state" id="text-box">State</label>
+              <input type="text" id="a-i-state" class="textbox">
+            </div>
+            <div class="text-input" id="full-width">
+              <label for="a-i-zipCode" id="text-box">Zip Code</label>
+              <input type="text" id="a-i-zipCode" class="textbox">
+            </div>
+            <div class="text-input" id="full-width">
+              <label for="a-i-tel" id="text-box">Telephone Number</label>
+              <input type="text" id="a-i-tel" class="textbox">
+            </div>
+            <div class="toggle" id="diffMailAdd-toggle">
+              <label class="switch-toggle">
+                <input type="checkbox" id="diffMailAdd" value="yes">
+                <span class="slider-toggle"></span>
+              </label>
+              <label id="toggle-label">Different Mailing Address</label>
+            </div>
+            <div class="subsection-content" id="diffMailAdd-container">
+              <div class="divided-text" id="three-three-three">
+                <div class="text-input" id="full-width">
+                  <label for="a-i-mailCO" id="text-box">In Care Of <i>(optional)</i></label>
+                  <input type="text" id="a-i-mailCO" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                  <label for="a-i-mailStreet" id="text-box">Street Number and Name</label>
+                  <input type="text" id="a-i-mailStreet" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                  <label for="a-i-mailApt" id="text-box">Apt. Number</label>
+                  <input type="text" id="a-i-mailApt" class="textbox">
+                </div>
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-i-mailCity" id="text-box">City</label>
+                <input type="text" id="a-i-mailCity" class="textbox">
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-i-mailState" id="text-box">State</label>
+                <input type="text" id="a-i-mailState" class="textbox">
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-i-mailZipCode" id="text-box">Zip Code</label>
+                <input type="text" id="a-i-mailZipCode" class="textbox">
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-i-mailTel" id="text-box">Telephone Number</label>
+                <input type="text" id="a-i-mailTel" class="textbox">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="subsection-end"></div>
+        <div class="subsection" id="generalInformation">
+          <div class="subsection-description">
+            <a class="subsection-header" id="genInfo-header">General Information</a>
+          </div>
+          <div class="subsection-content">
+            <div class="divided-text" id="one-three">
+              <div class="radio-input" id="full-width">
+                <label for="a-i-gender" id="text-box">Gender:</label>
+                <div class="radio-group">
+                  <div class="radio-set">
+                    <input type="radio" value="male" name="gender" id="a-i-gender">
+                    <label for="male" id="radio-set">Male</label>
+                  </div>
+                  <div class="radio-set">
+                    <input type="radio" value="female" name="gender" id="a-i-gender">
+                    <label for="female" id="radio-set">Female</label>
+                  </div>
+                </div>
+              </div>
+              <div class="radio-input" id="full-width">
+                <label for="a-i-maritalSts" id="text-box">Marital Status:</label>
+                <div class="radio-group">
+                  <div class="radio-set">
+                    <input type="radio" value="single" name="maritalSts" id="a-i-maritalSts">
+                    <label for="single" id="radio-set">Single</label>
+                  </div>
+                  <div class="radio-set">
+                    <input type="radio" value="married" name="maritalSts" id="a-i-maritalSts">
+                    <label for="married" id="radio-set">Married</label>
+                  </div>
+                  <div class="radio-set">
+                    <input type="radio" value="divorced" name="maritalSts" id="a-i-maritalSts">
+                    <label for="divorced" id="radio-set">Divorced</label>
+                  </div>
+                  <div class="radio-set">
+                    <input type="radio" value="widowed" name="maritalSts" id="a-i-maritalSts">
+                    <label for="widowed" id="radio-set">Widowed</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="divided-text" id="one-three">
+              <div class="text-input" id="full-width">
+                <label for="a-i-dob" id="text-box">Date of Birth</label>
+                <input type="text" id="a-i-dob" class="textbox">
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-i-ccob" id="text-box">City and Country of Birth</label>
+                <input type="text" id="a-i-ccob" class="textbox">
+              </div>
+            </div>
+            <div class="divided-text" id="one-one">
+              <div class="text-input" id="full-width">
+                <label for="a-i-citizenship" id="text-box">Present Nationality (Citizenship)</label>
+                <input type="text" id="a-i-citizenship" class="textbox">
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-i-nationality" id="text-box">Nationality at Birth</label>
+                <input type="text" id="a-i-nationality" class="textbox">
+              </div>
+            </div>
+            <div class="divided-text" id="one-one">
+              <div class="text-input" id="full-width">
+                <label for="a-i-race" id="text-box">Race, Ethnic, or Tribal Group</label>
+                <input type="text" id="a-i-race" class="textbox">
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-i-religion" id="text-box">Religion</label>
+                <input type="text" id="a-i-religion" class="textbox">
+              </div>
+            </div>
+            <div class="radio-input" id="full-width">
+              <label for="a-i-immiProceedings" id="text-box">Select the option that applies:</label>
+              <div class="radio-group" id="vertical">
+                <div class="radio-set">
+                  <input type="radio" value="never" name="immiProceedings" id="a-i-immiProceedings">
+                  <label for="immiProceedings" id="radio-set">I have never been in Immigration Court proceedings</label>
+                </div>
+                <div class="radio-set">
+                  <input type="radio" value="now" name="immiProceedings" id="a-i-immiProceedings">
+                  <label for="immiProceedings" id="radio-set">I
+                    am now in Immigration Court proceedings</label>
+                </div>
+                <div class="radio-set">
+                  <input type="radio" value="past" name="immiProceedings" id="a-i-immiProceedings">
+                  <label for="immiProceedings" id="radio-set">I
+                    am <b>not</b> now in Immigration Court proceedings, but I have been
+                    in the past</label>
+                </div>
+              </div>
+            </div>
+            <div class="divided-text" id="one-one">
+              <div class="text-input" id="full-width">
+                <label for="a-i-leftDate" id="text-box">When did you last leave your country?</label>
+                <input type="text" id="a-i-leftDate" class="textbox">
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-i-i94" id="text-box">What is your current I-94 Number, if any?</label>
+                <input type="text" id="a-i-i94" class="textbox">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="subsection-end"></div>
+        <div class="subsection" id="us-entries">
+          <div class="subsection-description">
+            <a class="subsection-header" id="usEntries-header">U.S. Entries</a> <a class="subsection-subhead"
+              id="usEntries-subhead">List each entry into the U.S. beginning with the most recent entry. List
+              date (mm/dd/yyyy), place and your status for each entry.</a>
+          </div>
+          <div class="subsection-content">
+            <div class="currentEntry">
+              <div class="text-input" id="full-width">
+                <label for="a-i-currDate" id="text-box">Date</label>
+                <input type="text" id="a-i-currDate" class="textbox">
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-i-currPlace" id="text-box">Place</label>
+                <input type="text" id="a-i-currPlace" class="textbox">
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-i-currSts" id="text-box">Status</label>
+                <input type="text" id="a-i-currSts" class="textbox">
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-i-currExp" id="text-box">Date Status Expires</label>
+                <input type="text" id="a-i-currExp" class="textbox">
+              </div>
+            </div>
+            <div class="midsubsection-seperator"></div>
+            <div class="additional-entries" id="additional-entry-0">
+              <div class="text-input" id="full-width">
+                <label for="a-i-date-0" id="text-box">Date</label>
+                <input type="text" id="a-i-date-0" class="textbox">
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-i-place-0" id="text-box">Place</label>
+                <input type="text" id="a-i-place-0" class="textbox">
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-i-status-0" id="text-box">Status</label>
+                <input type="text" id="a-i-status-0" class="textbox">
+              </div>
+            </div>
+            <div class="add-entries" id="add-USentries">
+              <button id="add-entryButton">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="subsection-end"></div>
+        <div class="subsection" id="passportInfo">
+          <div class="subsection-description">
+            <a class="subsection-header" id="passportInfo-header">Passport Information</a>
+          </div>
+          <div class="subsection-content">
+            <div class="text-input" id="full-width">
+              <label for="a-i-passportInfo" id="text-box">What country issued your last passport or travel
+                document?</label> <input type="text" id="a-i-passportInfo" class="textbox">
+            </div>
+            <div class="divided-text" id="three-three-three">
+              <div class="text-input" id="full-width">
+                <label for="a-i-passportNum" id="text-box">Passort Number</label>
+                <input type="text" id="a-i-passportNum" class="textbox">
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-i-traveDocNum" id="text-box">Travel Document Number</label>
+                <input type="text" id="a-i-traveDocNum" class="textbox">
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-i-expDate" id="text-box">Expiration Date</label>
+                <input type="text" id="a-i-expDate" class="textbox">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="subsection-end"></div>
+        <div class="subsection" id="language">
+          <div class="subsection-description">
+            <a class="subsection-header" id="language-header">Language</a>
+          </div>
+          <div class="subsection-content">
+            <div class="text-input" id="full-width">
+              <label for="a-i-nativeLang" id="text-box">What is your native language (include dialect, if
+                applicable)?</label>
+              <input type="text" id="a-i-nativeLang" class="textbox">
+            </div>
+            <div class="toggle" id="fluency">
+              <label class="switch-toggle">
+                <input type="checkbox" id="eng_fluency" value="yes">
+                <span class="slider-toggle"></span>
+              </label>
+              <label id="toggle-label">I am fluent in English</label>
+            </div>
+            <div class="text-input" id="full-width">
+              <label for="a-i-otherFluency" id="text-box">What other languages do you speak fluently?</label>
+              <input type="text" id="a-i-otherFluency" class="textbox">
+            </div>
           </div>
         </div>
       </div>
-      <div class="download-button-container">
-        <button id="next">Next</button>
-        <button id="submit" style="display: none;">Submit</button>
+      <div class="section-end" id="part-a-i">
+        <button id="next-formButton">Next</button>
       </div>
-    </form>
-    <form id="downloadForm" style="display: none;">
-      <input type="hidden" name="data">
-      <div class="download-button-container">
-        <button id="downloadButton">Download</button>
+      <div class="section" id="part-a-ii" style="display: none;">
+        <div class="subsection" id="spouse">
+          <div class="subsection-description">
+            <a class="subsection-header" id="spouseInfo-header">Your Spouse</a>
+          </div>
+          <div class="subsection-content">
+            <div class="toggle" id="spouseCheck">
+              <label class="switch-toggle">
+                <input type="checkbox" id="spouseCheck" value="no">
+                <span class="slider-toggle"></span>
+              </label>
+              <label id="toggle-label">I am not married</label>
+            </div>
+            <div class="spouse">
+              <div class="text-input" id="full-width">
+                <label for="a-ii-spouse-firstName" id="text-box">First Name</label>
+                <input type="text" id="a-ii-spouse-firstName" class="textbox">
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-ii-spouse-middleName" id="text-box">Middle Name</label>
+                <input type="text" id="a-ii-spouse-middleName" class="textbox">
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-ii-spouse-lastName" id="text-box">Complete Last Name</label>
+                <input type="text" id="a-ii-spouse-lastName" class="textbox">
+              </div>
+              <div class="divided-text" id="one-three">
+                <div class="text-input" id="full-width">
+                  <label for="a-ii-spouse-dob" id="text-box">Date of Birth</label>
+                  <input type="text" id="a-ii-spouse-dob" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                  <label for="a-ii-spouse-ccob" id="text-box">City and Country of Birth</label>
+                  <input type="text" id="a-ii-spouse-ccob" class="textbox">
+                </div>
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-ii-spouse-aliases" id="text-box">Other names used (include maiden name and
+                  aliases)</label>
+                <input type="text" id="a-ii-spouse-aliases" class="textbox">
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-ii-spouse-anumber" id="text-box">Alien Registration Number(s) (A-number) (if
+                  any)</label>
+                <input type="text" id="a-ii-spouse-anumber" class="textbox">
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-ii-spouse-ssn" id="text-box">US Social Security Number (if any)</label>
+                <input type="text" id="a-ii-spouse-ssn" class="textbox">
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-ii-spouse-id" id="text-box">Passport/ID Card Number (if any)</label>
+                <input type="text" id="a-ii-spouse-id" class="textbox">
+              </div>
+              <div class="divided-text" id="one-three">
+                <div class="text-input" id="full-width">
+                  <label for="a-ii-spouse-dom" id="text-box">Date of Marriage</label>
+                  <input type="text" id="a-ii-spouse-dom" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                  <label for="a-ii-spouse-pom" id="text-box">Place of Marriage</label>
+                  <input type="text" id="a-ii-spouse-pom" class="textbox">
+                </div>
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-ii-spouse-citizenship" id="text-box">Nationality (Citizenship)</label>
+                <input type="text" id="a-ii-spouse-citizenship" class="textbox">
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-ii-spouse-race" id="text-box">Race, Ethnic, or Tribal Group</label>
+                <input type="text" id="a-ii-spouse-race" class="textbox">
+              </div>
+              <div class="divided-text" id="one-three">
+                <div class="radio-input" id="full-width">
+                  <label for="a-ii-spouse-gender" id="text-box">Gender:</label>
+                  <div class="radio-group">
+                    <div class="radio-set">
+                      <input type="radio" value="male" name="spouse-gender" id="a-ii-spouse-gender">
+                      <label for="male" id="radio-set">Male</label>
+                    </div>
+                    <div class="radio-set">
+                      <input type="radio" value="female" name="spouse-gender" id="a-ii-spouse-gender">
+                      <label for="female" id="radio-set">Female</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="radio-input" id="full-width">
+                  <label for="a-ii-spouse-UScheck" id="text-box">Is this person in the U.S.?</label>
+                  <div class="radio-group">
+                    <div class="radio-set">
+                      <input type="radio" value="yes" name="spouseLoc" id="a-ii-spouse-UScheck">
+                      <label for="yes" id="radio-set">Yes</label>
+                    </div>
+                    <div class="radio-set">
+                      <input type="radio" value="no" name="spouseLoc" id="a-ii-spouse-UScheck">
+                      <label for="no" id="radio-set">No</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-ii-spouse-currLoc" id="text-box">Specify your spouse's location</label>
+                <input type="text" id="a-ii-spouse-currLoc" class="textbox">
+              </div>
+              <div class="divided-text" id="one-three">
+                <div class="text-input" id="full-width">
+                  <label for="a-ii-spouse-lastEntry-date" id="text-box">Date of last entry into the US</label>
+                  <input type="text" id="a-ii-spouse-lastEntry-date" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                  <label for="a-ii-spouse-lastEntry-place" id="text-box">Place of last entry into the
+                    US</label>
+                  <input type="text" id="a-ii-spouse-lastEntry-place" class="textbox">
+                </div>
+              </div>
+              <div class="divided-text" id="three-three-three">
+                <div class="text-input" id="full-width">
+                  <label for="a-ii-spouse-i94" id="text-box">I-94 Number (if any)</label>
+                  <input type="text" id="a-ii-spouse-i94" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                  <label for="a-ii-spouse-lastEntry-status" id="text-box">Status when last admitted (Visa
+                    type, if any)</label>
+                  <input type="text" id="a-ii-spouse-lastEntry-status" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                  <label for="a-ii-spouse-currSts" id="text-box">Current Status</label>
+                  <input type="text" id="a-ii-spouse-currSts" class="textbox">
+                </div>
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-ii-spouse-currExp" id="text-box">What is the expiration date of his/her authorized
+                  stay, if any?</label>
+                <input type="text" id="a-ii-spouse-currExp" class="textbox">
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-ii-spouse-prevArrival" id="text-box">If previously in U.S., date of previous
+                  arrival</label>
+                <input type="text" id="a-ii-spouse-prevArrival" class="textbox">
+              </div>
+              <div class="divided-text" id="one-one">
+                <div class="radio-input" id="full-width">
+                  <label for="a-ii-spouse-immiProc" id="text-box">Is your spouse in Immigration Court
+                    proceedings?</label>
+                  <div class="radio-group">
+                    <div class="radio-set">
+                      <input type="radio" value="yes" name="spouse-immiProc" id="a-ii-spouse-immiProc"> <label for="yes"
+                        id="radio-set">Yes</label>
+                    </div>
+                    <div class="radio-set">
+                      <input type="radio" value="no" name="spouse-immiProc" id="a-ii-spouse-immiProc"> <label
+                        for="female" id="radio-set">No</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="radio-input" id="full-width">
+                  <label for="a-ii-spouse-inclusion" id="text-box">If in the US, is your spouse to be included
+                    in this application?</label>
+                  <div class="radio-group">
+                    <div class="radio-set">
+                      <input type="radio" value="yes" name="spouse-incl" id="a-ii-spouse-inclusion">
+                      <label for="yes" id="radio-set">Yes</label>
+                    </div>
+                    <div class="radio-set">
+                      <input type="radio" value="no" name="spouse-incl" id="a-ii-spouse-inclusion">
+                      <label for="no" id="radio-set">No</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="subsection-end"></div>
+        <div class="subsection" id="children">
+          <div class="subsection-description">
+            <a class="subsection-header" id="childrenInfo-header">Your Children</a> <a class="subsection-subhead"
+              id="childrenInfo-subhead">List <b>all</b> of your children,
+              regardless of age, location, or marital status. If have more than one, press plus to have
+              additional questions for the next child</a>
+          </div>
+          <div class="subsection-content">
+            <div class="toggle" id="childrenCheck">
+              <label class="switch-toggle">
+                <input type="checkbox" id="childrenCheckInp" value="no">
+                <span class="slider-toggle"></span>
+              </label>
+              <label id="toggle-label">I do not
+                have any children</label>
+            </div>
+            <div class="children">
+              <div class="text-input" id="full-width">
+                <label for="a-ii-childrenNum" id="text-box">Total number of children</label>
+                <input type="text" id="a-ii-childrenNum" class="textbox">
+              </div>
+              <div class="midsubsection-seperator"></div>
+              <div class="child" id="child-0">
+                <div class="text-input" id="full-width">
+                  <label for="a-ii-child-0-firstName" id="text-box">First Name</label>
+                  <input type="text" id="a-ii-child-0-firstName" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                  <label for="a-ii-child-0-middleName" id="text-box">Middle Name</label>
+                  <input type="text" id="a-ii-child-0-middleName" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                  <label for="a-ii-child-0-lastName" id="text-box">Complete Last Name</label>
+                  <input type="text" id="a-ii-child-0-lastName" class="textbox">
+                </div>
+                <div class="divided-text" id="one-three">
+                  <div class="radio-input" id="full-width">
+                    <label for="a-ii-child-0-gender" id="text-box">Gender:</label>
+                    <div class="radio-group">
+                      <div class="radio-set">
+                        <input type="radio" value="male" name="child-0-gender" id="a-ii-child-0-gender">
+                        <label for="male" id="radio-set">Male</label>
+                      </div>
+                      <div class="radio-set">
+                        <input type="radio" value="female" name="child-0-gender" id="a-ii-child-0-gender">
+                        <label for="female" id="radio-set">Female</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="radio-input" id="full-width">
+                    <label for="a-ii-child-0-maritalSts" id="text-box">Marital Status:</label>
+                    <div class="radio-group">
+                      <div class="radio-set">
+                        <input type="radio" value="single" name="child-0-maritalSts" id="a-ii-child-0-maritalSts">
+                        <label for="single" id="radio-set">Single</label>
+                      </div>
+                      <div class="radio-set">
+                        <input type="radio" value="married" name="child-0-maritalSts" id="a-ii-child-0-maritalSts">
+                        <label for="married" id="radio-set">Married</label>
+                      </div>
+                      <div class="radio-set">
+                        <input type="radio" value="divorced" name="child-0-maritalSts" id="a-ii-child-0-maritalSts">
+                        <label for="divorced" id="radio-set">Divorced</label>
+                      </div>
+                      <div class="radio-set">
+                        <input type="radio" value="widowed" name="child-0-maritalSts" id="a-ii-child-0-maritalSts">
+                        <label for="widowed" id="radio-set">Widowed</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="text-input" id="full-width">
+                  <label for="a-ii-child-0-anumber" id="text-box">Alien Registration Number(s) (A-Number) (if
+                    any)</label> <input type="text" id="a-ii-child-0-anumber" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                  <label for="a-ii-child-0-ssn" id="text-box">US Social Security Number (if any)</label>
+                  <input type="text" id="a-ii-child-0-ssn" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                  <label for="a-ii-child-0-id" id="text-box">Passport/ID Card Number (if any)</label> <input type="text"
+                    id="a-ii-child-0-id" class="textbox">
+                </div>
+                <div class="divided-text" id="one-three">
+                  <div class="text-input" id="full-width">
+                    <label for="a-ii-child-0-dob" id="text-box">Date of Birth</label> <input type="text"
+                      id="a-ii-child-0-dob" class="textbox">
+                  </div>
+                  <div class="text-input" id="full-width">
+                    <label for="a-ii-child-0-ccob" id="text-box">City and Country of Birth</label> <input type="text"
+                      id="a-ii-child-0-ccob" class="textbox">
+                  </div>
+                </div>
+                <div class="divided-text" id="three-three-three">
+                  <div class="text-input" id="full-width">
+                    <label for="a-ii-child-0-citizenship" id="text-box">Nationality (Citizenship)</label>
+                    <input type="text" id="a-ii-child-0-citizenship" class="textbox">
+                  </div>
+                  <div class="text-input" id="full-width">
+                    <label for="a-ii-child-0-race" id="text-box">Race, Ethnic or Tribal Group</label> <input type="text"
+                      id="a-ii-child-0-race" class="textbox">
+                  </div>
+                  <!-- <div class="text-input" id="full-width">
+                    <label for="a-ii-child-0-religion" id="text-box">Religion</label> <input type="text"
+                      id="a-ii-child-0-religion" class="textbox">
+                  </div> -->
+                </div>
+                <div class="radio-input" id="full-width">
+                  <label for="a-ii-child-0-UScheck" id="text-box">Is this child in the U.S.?</label>
+                  <div class="radio-group">
+                    <div class="radio-set">
+                      <input type="radio" value="yes" name="child-0-childUS" id="a-ii-child-0-UScheck">
+                      <label for="yes" id="radio-set">Yes</label>
+                    </div>
+                    <div class="radio-set">
+                      <input type="radio" value="no" name="child-0-childUS" id="a-ii-child-0-UScheck">
+                      <label for="no" id="radio-set">No</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="text-input" id="full-width">
+                  <label for="a-ii-child-0-loc" id="text-box">Specify this child's location</label> <input type="text"
+                    id="a-ii-child-0-loc" class="textbox">
+                </div>
+                <div class="divided-text" id="one-three">
+                  <div class="text-input" id="full-width">
+                    <label for="a-ii-child-0-lastEntry-date" id="text-box">Date of last entry into the
+                      US</label> <input type="text" id="a-ii-child-0-lastEntry-date" class="textbox">
+                  </div>
+                  <div class="text-input" id="full-width">
+                    <label for="a-ii-child-0-lastEntry-place" id="text-box">Place of last entry into the
+                      US</label> <input type="text" id="a-ii-child-0-lastEntry-place" class="textbox">
+                  </div>
+                </div>
+                <div class="divided-text" id="three-three-three">
+                  <div class="text-input" id="full-width">
+                    <label for="a-ii-child-0-i94" id="text-box">I-94 Number (if any)</label>
+                    <input type="text" id="a-ii-child-0-i94" class="textbox">
+                  </div>
+                  <div class="text-input" id="full-width">
+                    <label for="a-ii-child-0-lastEntry-status" id="text-box">Status when last admitted (Visa
+                      type, if any)</label>
+                    <input type="text" id="a-ii-child-0-lastEntry-status" class="textbox">
+                  </div>
+                  <div class="text-input" id="full-width">
+                    <label for="a-ii-child-0-currSts" id="text-box">Current status</label>
+                    <input type="text" id="a-ii-child-0-currSts" class="textbox">
+                  </div>
+                </div>
+                <div class="text-input" id="full-width">
+                  <label for="a-ii-child-0-currExp" id="text-box">What is the expiration date of his/her
+                    authorized stay, if any?</label>
+                  <input type="text" id="a-ii-child-0-currExp" class="textbox">
+                </div>
+                <div class="divided-text" id="one-one">
+                  <div class="radio-input" id="full-width">
+                    <label for="a-ii-child-0-immiProc" id="text-box">Is your child in Immigration Court
+                      proceedings</label>
+                    <div class="radio-group">
+                      <div class="radio-set">
+                        <input type="radio" value="yes" name="child-0-immiProc" id="a-ii-child-0-immiProc"> <label
+                          for="yes" id="radio-set">Yes</label>
+                      </div>
+                      <div class="radio-set">
+                        <input type="radio" value="no" name="child-0-immiProc" id="a-ii-child-0-immiProc"> <label
+                          for="no" id="radio-set">No</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="radio-input" id="full-width">
+                    <label for="a-ii-child-0-inclusion" id="text-box">If in the U.S., is this child to be
+                      included in this application</label>
+                    <div class="radio-group">
+                      <div class="radio-set">
+                        <input type="radio" value="yes" name="child-0-inclusion" id="a-ii-child-0-inclusion"> <label
+                          for="yes" id="radio-set">Yes</label>
+                      </div>
+                      <div class="radio-set">
+                        <input type="radio" value="no" name="child-0-inclusion" id="a-ii-child-0-inclusion"> <label
+                          for="no" id="radio-set">No</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="add-entries" id="add-children">
+                <button id="add-entryButton">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </form>
+      <div class="section-end" id="part-a-ii" style="display: none;">
+        <button id="next-formButton">Next</button>
+      </div>
+      <div class="section" id="part-a-iii" style="display: none;">
+        <div class="subsection" id="prevAddresses">
+          <div class="subsection-description">
+            <a class="subsection-header" id="prevAdd-header">Addresses before coming to the US</a> <a
+              class="subsection-subhead" id="prevAdd-subhead">List your last address where you lived before
+              coming to the United States. If this is not the country where you fear persecution, also list
+              the last address in the country where you fear persecution. (List Address, City/Town,
+              Department, Province, or State and Country).</a>
+          </div>
+          <div class="subsection-content">
+            <div class="address" id="address-0">
+              <div class="divided-text" id="three-three-three">
+                <div class="text-input" id="full-width">
+                  <label for="a-iii-address-0-country" id="text-box">Country</label> <input type="text"
+                    id="a-iii-address-0-country" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                  <label for="a-iii-address-0-state" id="text-box">Department, Province or State</label>
+                  <input type="text" id="a-iii-address-0-state" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                  <label for="a-iii-address-0-city" id="text-box">City/Town</label> <input type="text"
+                    id="a-iii-address-0-city" class="textbox">
+                </div>
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-iii-address-0-street" id="text-box">Number and Street (provide if any)</label>
+                <input type="text" id="a-iii-address-0-street" class="textbox">
+              </div>
+              <div class="divided-text" id="one-one">
+                <div class="text-input" id="full-width">
+                  <label for="a-iii-address-0-date-from" id="text-box">Dates From</label> <input type="text"
+                    id="a-iii-address-0-date-from" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                  <label for="a-iii-address-0-date-to" id="text-box">Dates To</label> <input type="text"
+                    id="a-iii-address-0-date-to" class="textbox">
+                </div>
+              </div>
+            </div>
+            <div class="add-entries" id="prevAddressesButton">
+              <button id="add-entryButton">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="subsection-end"></div>
+        <div class="subsection" id="prevResidences">
+          <div class="subsection-description">
+            <a class="subsection-header" id="prevRes-header">Residences</a> <a class="subsection-subhead"
+              id="prevRes-subhead">Provide the following information about your residences during the past 5
+              years. List your present address first.</a>
+          </div>
+          <div class="subsection-content">
+            <div class="residence" id="residence-0">
+              <div class="divided-text" id="three-three-three">
+                <div class="text-input" id="full-width">
+                  <label for="a-iii-residence-0-country" id="text-box">Country</label> <input type="text"
+                    id="a-iii-residence-0-country" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                  <label for="a-iii-residence-0-state" id="text-box">Department, Province or State</label>
+                  <input type="text" id="a-iii-residence-0-state" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                  <label for="a-iii-residence-0-city" id="text-box">City/Town</label> <input type="text"
+                    id="a-iii-residence-0-city" class="textbox">
+                </div>
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-iii-residence-0-street" id="text-box">Number and Street (provide if
+                  any)</label> <input type="text" id="a-iii-residence-0-street" class="textbox">
+              </div>
+              <div class="divided-text" id="one-one">
+                <div class="text-input" id="full-width">
+                  <label for="a-iii-residence-0-date-from" id="text-box">Dates From</label> <input type="text"
+                    id="a-iii-residence-0-date-from" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                  <label for="a-iii-residence-0-date-to" id="text-box">Dates To</label> <input type="text"
+                    id="a-iii-residence-0-date-to" class="textbox">
+                </div>
+              </div>
+            </div>
+            <div class="add-entries" id="prevRes">
+              <button id="add-entryButton">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="subsection-end"></div>
+        <div class="subsection" id="educationHistory">
+          <div class="subsection-description">
+            <a class="subsection-header" id="educationHistory-header">Education</a> <a class="subsection-subhead"
+              id="educationHistory-subhead">Provide the following information about
+              your education, beginning with the most recent school that you attended.</a>
+          </div>
+          <div class="subsection-content">
+            <div class="education" id="education-0">
+              <div class="divided-text" id="one-one">
+                <div class="text-input" id="full-width">
+                  <label for="a-iii-education-0-name" id="text-box">Name of School</label> <input type="text"
+                    id="a-iii-education-0-name" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                  <label for="a-iii-education-0-type" id="text-box">Type of School</label> <input type="text"
+                    id="a-iii-education-0-type" class="textbox">
+                </div>
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-iii-education-0-loc" id="text-box">Location (Address)</label> <input type="text"
+                  id="a-iii-education-0-loc" class="textbox">
+              </div>
+              <div class="divided-text" id="one-one">
+                <div class="text-input" id="full-width">
+                  <label for="a-iii-education-0-dates-from" id="text-box">Dates From</label> <input type="text"
+                    id="a-iii-education-0-dates-from" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                  <label for="a-iii-education-0-dates-to" id="text-box">Dates To</label> <input type="text"
+                    id="a-iii-education-0-dates-to" class="textbox">
+                </div>
+              </div>
+            </div>
+            <div class="add-entries" id="eduHistory">
+              <button id="add-entryButton">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="subsection-end"></div>
+        <div class="subsection" id="employmentHistory">
+          <div class="subsection-description">
+            <a class="subsection-header" id="employmentHistory-header">Employment</a> <a class="subsection-subhead"
+              id="employmentHistory-subhead">Provide the following information
+              about your employment during the past 5 years. List your present employment first.</a>
+          </div>
+          <div class="subsection-content">
+            <div class="employment" id="employment-0">
+              <div class="text-input" id="full-width">
+                <label for="a-iii-employment-0-occ" id="text-box">Your Occupation</label> <input type="text"
+                  id="a-iii-employment-0-occ" class="textbox">
+              </div>
+              <div class="divided-text" id="one-one">
+                <div class="text-input" id="full-width">
+                  <label for="a-iii-employment-0-name" id="text-box">Name of Employer</label> <input type="text"
+                    id="a-iii-employment-0-name" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                  <label for="a-iii-employment-0-address" id="text-box">Address of Employer</label> <input type="text"
+                    id="a-iii-employment-0-address" class="textbox">
+                </div>
+              </div>
+              <div class="divided-text" id="one-one">
+                <div class="text-input" id="full-width">
+                  <label for="a-iii-employment-0-dates-from" id="text-box">Dates From</label> <input type="text"
+                    id="a-iii-employment-0-dates-from" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                  <label for="a-iii-employment-0-dates-to" id="text-box">Dates To</label> <input type="text"
+                    id="a-iii-employment-0-dates-to" class="textbox">
+                </div>
+              </div>
+            </div>
+            <div class="add-entries" id="emplHistory">
+              <button id="add-entryButton">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="subsection-end"></div>
+        <div class="subsection" id="family">
+          <div class="subsection-description">
+            <a class="subsection-header" id="family-header">Parents and Siblings</a> <a class="subsection-subhead"
+              id="family-subhead">Provide the following information about your
+              parents and siblings (brothers and sisters). Check the box if the person is deceased.</a>
+          </div>
+          <div class="subsection-content">
+            <div class="mother">
+              <div class="subsection-description">
+                <a class="subsection-header" id="mother-header">Mother</a>
+              </div>
+              <div class="toggle" id="mother-dec">
+                <label class="switch-toggle">
+                  <input type="checkbox" id="mother-dec" value="yes">
+                  <span class="slider-toggle"></span>
+                </label>
+                <label id="toggle-label">Deceased</label>
+              </div>
+              <div class="divided-text" id="one-one">
+                <div class="text-input" id="full-width">
+                  <label for="a-iii-mother-name" id="text-box">Full Name</label> <input type="text"
+                    id="a-iii-mother-name" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                  <label for="a-iii-mother-ccob" id="text-box">City/Town and Country of Birth</label>
+                  <input type="text" id="a-iii-mother-ccob" class="textbox">
+                </div>
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-iii-mother-loc" id="text-box">Current Location</label> <input type="text"
+                  id="a-iii-mother-loc" class="textbox">
+              </div>
+            </div>
+            <div class="midsubsection-seperator"></div>
+            <div class="father">
+              <div class="subsection-description">
+                <a class="subsection-header" id="father-header">Father</a>
+              </div>
+              <div class="toggle" id="father-dec">
+                <label class="switch-toggle">
+                  <input type="checkbox" id="father-dec" value="yes">
+                  <span class="slider-toggle"></span>
+                </label>
+                <label id="toggle-label">Deceased</label>
+              </div>
+              <div class="divided-text" id="one-one">
+                <div class="text-input" id="full-width">
+                  <label for="a-iii-father-name" id="text-box">Full Name</label> <input type="text"
+                    id="a-iii-father-name" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                  <label for="a-iii-father-ccob" id="text-box">City/Town and Country of Birth</label>
+                  <input type="text" id="a-iii-father-ccob" class="textbox">
+                </div>
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-iii-father-loc" id="text-box">Current Location</label> <input type="text"
+                  id="a-iii-father-loc" class="textbox">
+              </div>
+            </div>
+            <div class="midsubsection-seperator"></div>
+            <div class="sibling" id="sibling-0">
+              <div class="subsection-description">
+                <a class="subsection-header" id="sibling-0-header">Sibling</a>
+              </div>
+              <div class="toggle" id="sibling-0-dec">
+                <label class="switch-toggle">
+                  <input type="checkbox" id="sibling-0-dec" value="yes">
+                  <span class="slider-toggle"></span>
+                </label>
+                <label id="toggle-label">Deceased</label>
+              </div>
+              <div class="divided-text" id="one-one">
+                <div class="text-input" id="full-width">
+                  <label for="a-iii-sibling-0-name" id="text-box">Full Name</label> <input type="text"
+                    id="a-iii-sibling-0-name" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                  <label for="a-iii-sibling-0-ccob" id="text-box">City/Town and Country of Birth</label>
+                  <input type="text" id="a-iii-sibling-0-ccob" class="textbox">
+                </div>
+              </div>
+              <div class="text-input" id="full-width">
+                <label for="a-iii-sibling-0-loc" id="text-box">Current Location</label> <input type="text"
+                  id="a-iii-sibling-0-loc" class="textbox">
+              </div>
+            </div>
+            <div class="add-entries" id="siblings">
+              <button id="add-entryButton">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="section-end" id="part-a-iii" style="display: none;">
+        <button id="next-formButton">Next</button>
+      </div>
+      <div class="section" id="part-b" style="display: none;">
+        <div class="section-note" id="part-b">
+          <div class="section-note-content">
+            <a class="sectionNote-header" id="part-b">Note</a> <a class="sectionNote-subhead" id="part-b">When
+              answering the following questions about your asylum or other protection claim (withholding of
+              removal under 241(b)(3) of the INA or withholding of removal under the Convention Against
+              Torture), you must provide a detailed and specific account of the basis of your claim to asylum
+              or other protection. To the best of your ability, provide specific dates, places, and
+              descriptions about each event or action described. You must attach documents evidencing the
+              general conditions in the country from which you are seeking asylum or other protection and the
+              specific facts on which you are relying to support your claim. If this documentation is
+              unavailable or you are not providing this documentation with your application, explain why in
+              your responses to the following questions.<br>
+              <br>
+              Refer to Instructions, Part 1: Filing Instructions, Section II, "Basis of Eligibility," Parts A
+              - D, Section V, Completing the Form," Part B, and Section VII, "Additional Evidence That You
+              Should Submit," for more information on completing this section of the form</a>
+          </div>
+        </div>
+        <div class="subsection" id="asylumReason">
+          <div class="checkbox-input" id="full-width">
+            <label for="b-reason" id="text-box">I am seeking asylum or withholding of removal based on:</label>
+            <div class="checkbox-group">
+              <div class="checkbox-set">
+                <input type="checkbox" value="race" id="reason"> <label for="race" id="checkbox-set">Race</label>
+              </div>
+              <div class="checkbox-set">
+                <input type="checkbox" value="religion" id="reason"> <label for="religion"
+                  id="checkbox-set">Religion</label>
+              </div>
+              <div class="checkbox-set">
+                <input type="checkbox" value="nationality" id="reason"> <label for="nationality"
+                  id="checkbox-set">Nationality</label>
+              </div>
+              <div class="checkbox-set">
+                <input type="checkbox" value="opinion" id="reason"> <label for="opinion" id="checkbox-set">Political
+                  opinion</label>
+              </div>
+              <div class="checkbox-set">
+                <input type="checkbox" value="membership" id="reason"> <label for="membership"
+                  id="checkbox-set">Membership in particular social group</label>
+              </div>
+              <div class="checkbox-set">
+                <input type="checkbox" value="torture" id="reason"> <label for="torture" id="checkbox-set">Torture
+                  convention</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="subsection-end"></div>
+        <div class="subsection" id="harmCheck">
+          <div class="radio-input" id="full-width">
+            <label for="b-harm" id="text-box">Have you, your family or close friends or colleagues ever
+              experienced harm or mistreatment or threads in past by anyone?</label>
+            <div class="radio-group">
+              <div class="radio-set">
+                <input type="radio" value="yes" name="harm" id="b-harmCheck"> <label for="yes"
+                  id="radio-set">Yes</label>
+              </div>
+              <div class="radio-set">
+                <input type="radio" value="no" name="harm" id="b-harmCheck"> <label for="no" id="radio-set">No</label>
+              </div>
+            </div>
+          </div>
+          <div class="harm-responses">
+            <div class="textarea-input" id="full-width">
+              <label for="b-harm-what" id="text-area">What happened?</label>
+              <textarea rows="4" id="b-harm-what" class="textarea"></textarea>
+            </div>
+            <div class="textarea-input" id="full-width">
+              <label for="b-harm-when" id="text-area">When the harm or mistreatment or threats occured?</label>
+              <textarea rows="4" id="b-harm-when" class="textarea"></textarea>
+            </div>
+            <div class="textarea-input" id="full-width">
+              <label for="b-harm-who" id="text-area">Who caused the harm or mistreatment or threats?</label>
+              <textarea rows="4" id="b-harm-who" class="textarea"></textarea>
+            </div>
+            <div class="textarea-input" id="full-width">
+              <label for="b-harm-why" id="text-area">Why you believe the harm or mistreatment or threats
+                occured?</label>
+              <textarea rows="4" id="b-harm-why" class="textarea"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="subsection-end"></div>
+        <div class="subsection" id="harmfear">
+          <div class="radio-input" id="full-width">
+            <label for="b-fear" id="text-box">Do you fear harm or mistreatment if you return to your home
+              country?</label>
+            <div class="radio-group">
+              <div class="radio-set">
+                <input type="radio" value="yes" name="fear" id="b-fearCheck"> <label for="yes"
+                  id="radio-set">Yes</label>
+              </div>
+              <div class="radio-set">
+                <input type="radio" value="no" name="fear" id="b-fearCheck"> <label for="no" id="radio-set">No</label>
+              </div>
+            </div>
+          </div>
+          <div class="fear-responses">
+            <div class="textarea-input" id="full-width">
+              <label for="b-fear-what" id="text-area">What harm or mistreatment you fear?</label>
+              <textarea rows="4" id="b-fear-what" class="textarea"></textarea>
+            </div>
+            <div class="textarea-input" id="full-width">
+              <label for="b-fear-who" id="text-area">Who you believe would harm or mistreat you?</label>
+              <textarea rows="4" id="b-fear-who" class="textarea"></textarea>
+            </div>
+            <div class="textarea-input" id="full-width">
+              <label for="b-fear-why" id="text-area">Why you believe you would or could be harmed or
+                mistreated?</label>
+              <textarea rows="4" id="b-fear-why" class="textarea"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="subsection-end"></div>
+        <div class="subsection" id="crime">
+          <div class="radio-input" id="full-width">
+            <label for="b-crime" id="text-box">Have you or your family members ever been accused, charged,
+              arrested, detained, interrogated, convicted and sentenced, or imprisoned in any country other
+              than the United States (including for an immigration law violation)?</label>
+            <div class="radio-group">
+              <div class="radio-set">
+                <input type="radio" value="yes" name="crime" id="b-crimeCheck"> <label for="yes"
+                  id="radio-set">Yes</label>
+              </div>
+              <div class="radio-set">
+                <input type="radio" value="no" name="crime" id="b-crimeCheck"> <label for="no" id="radio-set">No</label>
+              </div>
+            </div>
+          </div>
+          <div class="crime-responses">
+            <div class="textarea-input" id="full-width">
+              <label for="b-crime" id="text-area">Explain the circumstances and reasons for the action:</label>
+              <textarea rows="8" id="b-crimeResp" class="textarea"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="subsection-end"></div>
+        <div class="subsection" id="orgAss">
+          <div class="radio-input" id="full-width">
+            <label for="b-orgAss" id="text-box">Have you or your family members ever belonged to or been
+              associated with any organizations or groups in your home country, such as, but not limited to, a
+              political party, student group, labor union, religious organization, military or paramilitary
+              group, civil patrol, guerrilla organization, ethnic group, human rights group, or the press or
+              media?</label>
+            <div class="radio-group">
+              <div class="radio-set">
+                <input type="radio" value="yes" name="orgAss" id="b-orgAssCheck"> <label for="yes"
+                  id="radio-set">Yes</label>
+              </div>
+              <div class="radio-set">
+                <input type="radio" value="no" name="orgAss" id="b-orgAssCheck"> <label for="no"
+                  id="radio-set">No</label>
+              </div>
+            </div>
+          </div>
+          <div class="orgAss-responses">
+            <div class="textarea-input" id="full-width">
+              <label for="b-orgAss" id="text-area">Describe for each person the level of participation, any
+                leadership or other positions held, and the length of time you or your family members were
+                involved in each organization or activity.</label>
+              <textarea rows="8" id="b-orgAssResp" class="textarea"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="subsection-end"></div>
+        <div class="subsection" id="orgPart">
+          <div class="radio-input" id="full-width">
+            <label for="b-orgPart" id="text-box">Do you or your family members continue to participate in any
+              way in these organizations or groups?</label>
+            <div class="radio-group">
+              <div class="radio-set">
+                <input type="radio" value="yes" name="orgPart" id="b-orgPartCheck"> <label for="yes"
+                  id="radio-set">Yes</label>
+              </div>
+              <div class="radio-set">
+                <input type="radio" value="no" name="orgPart" id="b-orgPartCheck"> <label for="no"
+                  id="radio-set">No</label>
+              </div>
+            </div>
+          </div>
+          <div class="orgPart-responses">
+            <div class="textarea-input" id="full-width">
+              <label for="b-orgPart" id="text-area">Describe for each person the level of participation, any
+                leadership or other positions held, and the length of time you or your family members were
+                involved in each organization or activity.</label>
+              <textarea rows="8" id="b-orgPartResp" class="textarea"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="subsection-end"></div>
+        <div class="subsection" id="orgTorture">
+          <div class="radio-input" id="full-width">
+            <label for="b-orgTorture" id="text-box">Are you afraid of being subjected to torture in your home
+              country or any other country to which you may be returned?</label>
+            <div class="radio-group">
+              <div class="radio-set">
+                <input type="radio" value="yes" name="orgTorture" id="b-orgTortureCheck"> <label for="yes"
+                  id="radio-set">Yes</label>
+              </div>
+              <div class="radio-set">
+                <input type="radio" value="no" name="orgTorture" id="b-orgTortureCheck"> <label for="no"
+                  id="radio-set">No</label>
+              </div>
+            </div>
+          </div>
+          <div class="orgTorture-responses">
+            <div class="textarea-input" id="full-width">
+              <label for="b-orgTorture" id="text-area">Describe in detail the circumstances of your visit(s) (for
+                example, the date(s) of the trip(s), the purpose(s) of the trip(s), and the length of time you
+                remained in that country for the visit(s)).</label>
+              <textarea rows="8" id="b-orgTortureResp" class="textarea"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="section-end" id="part-b" style="display: none;">
+        <button id="next-formButton">Next</button>
+      </div>
+      <div class="section" id="part-c" style="display: none;">
+        <div class="subsection" id="prevApplCheck">
+          <div class="radio-input" id="full-width">
+            <label for="c-prevApplCheck" id="text-box">Have you, your spouse, your child(ren), your parents or
+              your siblings ever applied to the U.S. Government for refugee status, asylum, or withholding of
+              removal?</label>
+            <div class="radio-group">
+              <div class="radio-set">
+                <input type="radio" value="yes" name="prevApplCheck" id="c-prevApplCheck"> <label for="yes"
+                  id="radio-set">Yes</label>
+              </div>
+              <div class="radio-set">
+                <input type="radio" value="no" name="prevApplCheck" id="c-prevApplCheck"> <label for="no"
+                  id="radio-set">No</label>
+              </div>
+            </div>
+          </div>
+          <div class="prevApplCheck-responses">
+            <div class="textarea-input" id="full-width">
+              <label for="c-prevAppl" id="text-area">Explain the decision and what happened to any status you,
+                your spouse, your child(ren), your parents, or your siblings received as a result of that
+                decision. Indicate whether or not you were included in a parent or spouse's application. If so,
+                include your parent or spouse's A-number in your response. If you have been denied asylum by an
+                immigration judge or the Board of Immigration Appeals, describe any change(s) in conditions in
+                your country or your own personal circumstances since the date of the denial that may affect
+                your eligibility for asylum.</label>
+              <textarea rows="8" id="c-prevAppl" class="textarea"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="subsection-end"></div>
+        <div class="subsection" id="inCountry">
+          <div class="radio-input" id="full-width">
+            <label for="c-inCountry" id="text-box">After leaving the country from which you are claiming asylum,
+              did you or your spouse or child(ren) who are now in the United States travel through or reside
+              in any other country before entering the United States?</label>
+            <div class="radio-group">
+              <div class="radio-set">
+                <input type="radio" value="yes" name="inCountry" id="c-inCountry"> <label for="yes"
+                  id="radio-set">Yes</label>
+              </div>
+              <div class="radio-set">
+                <input type="radio" value="no" name="inCountry" id="c-inCountry"> <label for="no"
+                  id="radio-set">No</label>
+              </div>
+            </div>
+          </div>
+          <div class="radio-input" id="full-width">
+            <label for="c-lawfulStatus" id="text-box">Have you, your spouse, your child(ren), or other family
+              members, such as your parents or siblings, ever applied for or received any lawful status in any
+              country other than the one from which you are now claiming asylum?</label>
+            <div class="radio-group">
+              <div class="radio-set">
+                <input type="radio" value="yes" name="lawfulStatus" id="c-lawfulStatusCheck"> <label for="yes"
+                  id="radio-set">Yes</label>
+              </div>
+              <div class="radio-set">
+                <input type="radio" value="no" name="lawfulStatus" id="c-lawfulStatusCheck"> <label for="no"
+                  id="radio-set">No</label>
+              </div>
+            </div>
+          </div>
+          <div class="inCountry-responses">
+            <div class="textarea-input" id="full-width">
+              <label for="c-lawfulStatusExp" id="text-area">Provide for each person the following: the name of
+                each country and the length of stay, the person's status while there, the reasons for leaving,
+                whether or not the person is entitled to return for lawful residence purposes, and whether the
+                person applied for refugee status or for asylum while there, and if not, why he or she did not
+                do so?</label>
+              <textarea rows="8" id="c-lawfulStatusExp" class="textarea"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="subsection-end"></div>
+        <div class="subsection" id="causedHarmCheck">
+          <div class="radio-input" id="full-width">
+            <label for="c-causedHarmCheck" id="text-box">Have you, your spouse or your child(ren) ever ordered,
+              incited, assisted or otherwise participated in causing harm or suffering to any person because
+              of his or her race, religion, nationality, membership in a particular social group or belief in
+              a particular political opinion?</label>
+            <div class="radio-group">
+              <div class="radio-set">
+                <input type="radio" value="yes" name="causedHarmCheck" id="c-causedHarmCheck"> <label for="yes"
+                  id="radio-set">Yes</label>
+              </div>
+              <div class="radio-set">
+                <input type="radio" value="no" name="causedHarmCheck" id="c-causedHarmCheck"> <label for="no"
+                  id="radio-set">No</label>
+              </div>
+            </div>
+          </div>
+          <div class="causedHarmCheck-responses">
+            <div class="textarea-input" id="full-width">
+              <label for="c-causedHarm" id="text-area">Describe in detail each such incident and your own, your
+                spouse's, or your child(ren)'s involvement.</label>
+              <textarea rows="8" id="c-causedHarm" class="textarea"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="subsection-end"></div>
+        <div class="subsection" id="leftCountryCheck">
+          <div class="radio-input" id="full-width">
+            <label for="c-leftCountryCheck" id="text-box">After you left the country where you were harmed or
+              fear harm, did you return to that country?</label>
+            <div class="radio-group">
+              <div class="radio-set">
+                <input type="radio" value="yes" name="leftCountryCheck" id="c-leftCountryCheck"> <label for="yes"
+                  id="radio-set">Yes</label>
+              </div>
+              <div class="radio-set">
+                <input type="radio" value="no" name="leftCountryCheck" id="c-leftCountryCheck"> <label for="no"
+                  id="radio-set">No</label>
+              </div>
+            </div>
+          </div>
+          <div class="leftCountryCheck-responses">
+            <div class="textarea-input" id="full-width">
+              <label for="c-leftCountry" id="text-area">Describe in detail each such incident and your own, your
+                spouse's, or your child(ren)'s involvement.</label>
+              <textarea rows="8" id="c-leftCountry" class="textarea"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="subsection-end"></div>
+        <div class="subsection" id="oneYearCheck">
+          <div class="radio-input" id="full-width">
+            <label for="c-oneYearCheck" id="text-box">Are you filing this application more than 1 year after
+              your last arrival in the United States</label>
+            <div class="radio-group">
+              <div class="radio-set">
+                <input type="radio" value="yes" name="oneYearCheck" id="c-oneYearCheck"> <label for="yes"
+                  id="radio-set">Yes</label>
+              </div>
+              <div class="radio-set">
+                <input type="radio" value="no" name="oneYearCheck" id="c-oneYearCheck"> <label for="no"
+                  id="radio-set">No</label>
+              </div>
+            </div>
+          </div>
+          <div class="oneYearCheck-responses">
+            <div class="textarea-input" id="full-width">
+              <label for="c-oneYear" id="text-area">Explain why you did not file within the first year after you
+                arrived. You must be prepared to explain at your interview or hearing why you did not file your
+                asylum application within the first year after you arrived. For guidance in answering this
+                question, see Instructions, Part 1: Filing Instructions, Section V. "Completing the Form," Part
+                C.</label>
+              <textarea rows="8" id="c-oneYear" class="textarea"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="subsection-end"></div>
+        <div class="subsection" id="crimeCommCheck">
+          <div class="radio-input" id="full-width">
+            <label for="c-crimeCommCheck" id="text-box">Have you or any member of your family included in the
+              application ever committed any crime and/or been arrested, charged, convicted, or sentenced for
+              any crimes in the United States (including for an immigration law violation)?</label>
+            <div class="radio-group">
+              <div class="radio-set">
+                <input type="radio" value="yes" name="crimeCommCheck" id="c-crimeCommCheck"> <label for="yes"
+                  id="radio-set">Yes</label>
+              </div>
+              <div class="radio-set">
+                <input type="radio" value="no" name="crimeCommCheck" id="c-crimeCommCheck"> <label for="no"
+                  id="radio-set">No</label>
+              </div>
+            </div>
+          </div>
+          <div class="crimeCommCheck-responses">
+            <div class="textarea-input" id="full-width">
+              <label for="c-crimeComm" id="text-area">Specify in your response: what occurred and the
+                circumstances, dates, length of sentence received, location, the duration of the detention or
+                imprisonment, reason(s) for the detention or conviction, any formal charges that were lodged
+                against you or your relatives included in your application, and the reason(s) for release.
+                Attach documents referring to these incidents, if they are available, or an explanation of why
+                documents are not available</label>
+              <textarea rows="8" id="c-crimeComm" class="textarea"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="section-end" id="part-c" style="display: none;">
+        <button id="next-formButton">Next</button>
+      </div>
+      <div class="section" id="part-d" style="display: none;">
+        <div class="section-note" id="part-d">
+          <div class="section-note-content">
+            <a class="sectionNote-header" id="part-d">Note</a> <a class="sectionNote-subhead" id="part-d">I
+              certify, under penalty of perjury under the laws of the United States of America, that this
+              application and the evidence submitted with it are all true and correct. Title 18, United States
+              Code, Section 1546(a), provides in part: Whoever knowingly makes under oath, or as permitted
+              under penalty of perjury under Section 1746 of Title 28, United States Code, knowingly
+              subscribes as true, any false statement with respect to a material fact in any application,
+              affidavit, or other document required by the immigration laws or regulations prescribed
+              thereunder, or knowingly presents any such application, affidavit, or other document containing
+              any such false statement or which fails to contain any reasonable basis in law or fact - shall
+              be fined in accordance with this title or imprisoned for up to 25 years. I certify that I am
+              physically present in the United States or seeking admission at a Port of Entry when I execute
+              this application. I authorize the release of any information from my immigration record that
+              U.S. Citizenship and Immigration Services (USCIS) needs to determine eligibility for the benefit
+              I am seeking</a>
+          </div>
+        </div>
+        <div class="warning" id="part-d">
+          <div class="warning-content">
+            <a class="warning-header" id="part-d">Warning</a>
+            <a class="warning-subhead">Applicants who are in
+              the United States unlawfully are subject to removal if their asylum or withholding claims are
+              not granted by an asylum officer or an immigration judge. Any information provided in completing
+              this application may be used as a basis for the institution of, or as evidence in, removal
+              proceedings even if the application is later withdrawn. Applicants determined to have knowingly
+              made a frivolous application for asylum will be permanently ineligible for any benefits under
+              the Immigration and Nationality Act. You may not avoid a frivolous finding simply because
+              someone advised you to provide false information in your asylum application. If filing with
+              USCIS, unexcused failure to appear for an appointment to provide biometrics (such as
+              fingerprints) and your biographical information within the time allowed may result in an asylum
+              officer dismissing your asylum application or referring it to an immigration judge. Failure
+              without good cause to provide DHS with biometrics or other biographical information while in
+              removal proceedings may result in your application being found abandoned by the immigration
+              judge. See sections 208(d)(5)(A) and 208(d)(6) of the INA and 8 CFR sections 208.10, 1208.10,
+              208.20, 1003.47(d) and 1208.20.</a>
+          </div>
+        </div>
+        <div class="subsection-content">
+          <div class="subsection" id="applnCheck">
+            <div class="text-input" id="full-width">
+              <label for="d-completeName" id="text-box">Your complete name</label>
+              <input type="text" id="d-completeName" class="textbox">
+            </div>
+            <div class="text-input" id="full-width">
+              <label for="d-nativeName" id="text-box">Your name in your native alphabet</label>
+              <input type="text" id="d-nativeName" class="textbox">
+            </div>
+            <div class="radio-input" id="full-width">
+              <label for="d-assistanceCheck" id="text-box">Did your spouse, parent, or child(ren) assist you in
+                completing this application?</label>
+              <div class="radio-group">
+                <div class="radio-set">
+                  <input type="radio" value="yes" name="assistanceCheck" id="d-assistanceCheck"> <label for="yes"
+                    id="radio-set">Yes</label>
+                </div>
+                <div class="radio-set">
+                  <input type="radio" value="no" name="assistanceCheck" id="d-assistanceCheck"> <label for="no"
+                    id="radio-set">No</label>
+                </div>
+              </div>
+            </div>
+            <div class="assistant-list">
+              <div class="assistant" id="assistant-0">
+                <div class="divided-text" id="one-one">
+                  <div class="text-input" id="full-width">
+                    <label for="d-assistName-0" id="text-box">Name</label>
+                    <input type="text" id="d-assistName-0" class="textbox">
+                  </div>
+                  <div class="text-input" id="full-width">
+                    <label for="d-relationship-0" id="text-box">Relationship</label>
+                    <input type="text" id="d-relationship-0" class="textbox">
+                  </div>
+                </div>
+              </div>
+              <div class="add-entries" id="add-assistant">
+                <button id="add-entryButton">+</button>
+              </div>
+            </div>
+          </div>
+          <div class="subsection-end"></div>
+          <div class="subsection" id="additionalApplnCheck">
+            <div class="radio-input" id="full-width">
+              <label for="d-additionalApplnCheck" id="text-box">Did someone other than your spouse, parent, or
+                child(ren) prepare this application?</label>
+              <div class="radio-group">
+                <div class="radio-set">
+                  <input type="radio" value="yes" name="additionalApplnCheck" id="d-additionalApplnCheck">
+                  <label for="yes" id="radio-set">Yes</label>
+                </div>
+                <div class="radio-set">
+                  <input type="radio" value="no" name="additionalApplnCheck" id="d-additionalApplnCheck">
+                  <label for="no" id="radio-set">No</label>
+                </div>
+              </div>
+            </div>
+            <div class="radio-input" id="full-width">
+              <label for="d-reprCheck" id="text-box">Asylum applicants may be represented by counsel. Have you been
+                provided with a list of
+                persons who may be available to assist you, at little or no cost, with your asylum claim</label>
+              <div class="radio-group">
+                <div class="radio-set">
+                  <input type="radio" value="yes" name="reprCheck" id="d-reprCheck"> <label for="yes"
+                    id="radio-set">Yes</label>
+                </div>
+                <div class="radio-set">
+                  <input type="radio" value="no" name="reprCheck" id="d-reprCheck"> <label for="no"
+                    id="radio-set">No</label>
+                </div>
+              </div>
+            </div>
+            <div class="sign-input" id="part-d-applicant">
+              <div class="sign-text">
+                <a class="sign-title">
+                  Click here to browse your signature
+                </a>
+                <a class="sign-uploaded" style="display: none;">
+                  File selected:
+                </a>
+                <a class="sign-subtitle">
+                  <i>Accepted File Types: .jpg, .png only</i>
+                </a>
+              </div>
+              <input type="file" id="hiddenFileInput" accept=".jpg, .png" style="display: none;">
+            </div>
+            <div class="text-input" id="full-width">
+              <label for="d-sign-date" id="text-box">Date</label>
+              <input type="text" id="d-sign-date" class="textbox">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="section-end" id="part-d" style="display: none;">
+        <button id="next-formButton">Next</button>
+      </div>
+      <!-- <div class="section" id="part-e" style="display: none;">
+        <div class="sign-declaration" id="part-e">
+          <div class="decl-content">
+            <a class="decl-text">I declare that I have prepared this application at the request of the person named in
+              Part D, that the responses provided are based on all information of which I have knowledge, or which was
+              provided to me by the applicant, and that the completed application was read to the applicant in his or
+              her native language or a language he or she understands for verification before he or she signed the
+              application in my presence. I am aware that the knowing placement of false information on the Form I-589
+              may also subject me to civil penalties under 8 U.S.C. 1324c and/or criminal penalties under 18 U.S.C.
+              1546(a).
+            </a>
+          </div>
+        </div>
+        <div class="sign-input" id="part-e-preparer">
+          <div class="sign-text">
+            <a class="sign-title">
+              Click here to browse signature of the preparer
+            </a>
+            <a class="sign-uploaded" style="display: none;">
+              File selected:
+            </a>
+            <a class="sign-subtitle">
+              <i>Accepted File Types: .jpg, .png only</i>
+            </a>
+          </div>
+          <input type="file" id="hiddenFileInput" accept=".jpg, .png" style="display: none;">
+        </div>
+        <div class="divided-text" id="one-one">
+          <div class="text-input" id="full-width">
+            <label for="e-preparer-date" id="text-box">Complete Name of Preparer</label>
+            <input type="text" id="e-preparer-name" class="textbox">
+          </div>
+          <div class="text-input" id="full-width">
+            <label for="e-preparer-tel" id="text-box">Daytime Telephone Number</label>
+            <input type="text" id="e-preparer-tel" class="textbox">
+          </div>
+        </div>
+        <div class="divided-text" id="three-one">
+          <div class="text-input" id="full-width">
+            <label for="e-preparer-street" id="text-box">Address of Preparer: Street Number and Name</label>
+            <input type="text" id="e-preparer-street" class="textbox">
+          </div>
+          <div class="text-input" id="full-width">
+            <label for="e-preparer-apt" id="text-box">Apt. Number</label>
+            <input type="text" id="e-preparer-apt" class="textbox">
+          </div>
+        </div>
+        <div class="text-input" id="full-width">
+          <label for="e-preparer-city" id="text-box">City</label>
+          <input type="text" id="e-preparer-city" class="textbox">
+        </div>
+        <div class="text-input" id="full-width">
+          <label for="e-preparer-state" id="text-box">State</label>
+          <input type="text" id="e-preparer-state" class="textbox">
+        </div>
+        <div class="text-input" id="full-width">
+          <label for="e-preparer-zipCode" id="text-box">Zip Code</label>
+          <input type="text" id="e-preparer-zipCode" class="textbox">
+        </div>
+      </div>
+      <div class="section-end" id="part-e" style="display: none;">
+        <button id="next-formButton">Next</button>
+      </div> -->
+      <div class="section" id="part-suppAB" style="display: none;">
+        <div class="section-note" id="suppAB">
+          <div class="section-note-content">
+            <a class="sectionNote-header" id="suppAB">Note</a>
+            <a class="sectionNote-subhead" id="suppAB">Use this as a continuation page for any additional information
+              requested. Copy and complete as needed.</a>
+          </div>
+        </div>
+        <div class="subsection-content">
+          <div class="divided-text" id="three-one">
+            <div class="text-input" id="full-width">
+              <label for="suppAB-anumber" id="text-box">A-Number (if available)</label>
+              <input type="text" id="suppAB-anumber" class="textbox">
+            </div>
+            <div class="text-input" id="full-width">
+              <label for="suppAB-date" id="text-box">Date</label>
+              <input type="text" id="suppAB-date" class="textbox">
+            </div>
+
+          </div>
+          <div class="text-input" id="full-width">
+            <label for="suppAB-name" id="text-box">Applicant's Name</label>
+            <input type="text" id="suppAB-name" class="textbox">
+          </div>
+          <div class="suppAB-additional" id="suppAB-additional-0">
+            <div class="divided-text" id="one-three">
+              <div class="dropdown-input" id="full-width">
+                <label for="suppAB-part-0" id="drop-box">Part</label>
+                <select id="suppAB-part-0" class="dropbox" name="part">
+                  <option value="start"></option>
+                  <option value="part-a-i">Part A.I.</option>
+                  <option value="part-a-ii">Part A.II.</option>
+                  <option value="part-a-iii">Part A.III.</option>
+                  <option value="part-b">Part B</option>
+                  <option value="part-c">Part C</option>
+                  <option value="part-d">Part D</option>
+                  <option value="part-e">Part E</option>
+                </select>
+              </div>
+              <div class="dropdown-input" id="full-width">
+                <label for="suppAB-ques-0" id="drop-box">Question</label>
+                <select id="suppAB-ques-0" class="dropbox" name="question">
+                  <option value="start"></option>
+                  <option value="part-a-i-mainInfo">Main Information</option>
+                  <option value="part-a-i-residence">Residence</option>
+                  <option value="part-a-i-mailAdd">Mailing Address</option>
+                  <option value="part-a-i-genInfo">General Information</option>
+                  <option value="part-a-i-usEntries">U.S. Entries</option>
+                  <option value="part-a-i-passportInfo">Passport Information</option>
+                  <option value="part-a-i-lang">Language</option>
+                  <option value="part-a-ii-spouse">Spouse</option>
+                  <option value="part-a-ii-children">Children</option>
+                  <option value="part-a-iii-prevAdd">Addresses before coming to US</option>
+                  <option value="part-a-iii-prevRes">Residences</option>
+                  <option value="part-a-iii-edu">Education</option>
+                  <option value="part-a-iii-employment">Employment</option>
+                  <option value="part-a-iii-mother">Mother</option>
+                  <option value="part-a-iii-father">Father</option>
+                  <option value="part-a-iii-siblings">Siblings</option>
+                  <option value="part-b-reason">Reason for asylum</option>
+                  <option value="part-b-harm">Experience of harn or mistreatment</option>
+                  <option value="part-b-fear">Fear of harm or mistreatment</option>
+                  <option value="part-b-crime">Criminal activity</option>
+                  <option value="part-b-orgAss">Organizational Association</option>
+                  <option value="part-c-prevAppl">Previous applications</option>
+                  <option value="part-c-prevLoc">Previous asylum claims</option>
+                  <option value="part-c-causedHarm">Responsibility for Harm</option>
+                  <option value="part-c-retCountry">Return to previous countries</option>
+                  <option value="part-c-oneYear">Application after 1 year of last arrival
+                  </option>
+                  <option value="part-c-UScrimes">Criminal activity in the US</option>
+                  <option value="part-d-assistFam">Assistance by family</option>
+                  <option value="part-e-assistFam">Assistance by preparer</option>
+                </select>
+              </div>
+            </div>
+            <textarea rows="25" id="suppAB-resp-0" class="textarea"></textarea>
+          </div>
+          <div class="add-entries" id="suppAB-resp">
+            <button id="add-entryButton">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="section-end" id="part-suppAB" style="display: none;">
+        <button id="send-formButton">Send Form</button>
+      </div>
+    </div>
   </div>
+  <div class="downloadForm-container" style="display: none;">
+    <div class="downloadForm-content">
+      <div class="downloadForm-header">
+        <a id="downloadForm-title">Your form is being processed</a>
+      </div>
+      <div class="downloadForm-main">
+        <div class="downloadButton-button">
+          <button id="downloadForm">Download Form</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="login-window" id="login-window" style="display: none;">
     <div class="login-container">
       <h2 id="loginText">Register/Login</h2>
@@ -216,10 +1863,14 @@
         JusitGuide Disclaimer
       </p>
       <p class="disclaimerP">
-        JustiGuide is an AI-powered assistant designed to provide guidance and information to help you navigate your
-        relocation journey. Please be aware that JustiGuide does not offer legal advice, represent legal authority, or
-        substitute for the advice of an attorney. Our recommendations are based on general data and should not be taken
-        as specific advice tailored to your legal needs. For legal advice, please consult a qualified attorney in your
+        JustiGuide is an AI-powered assistant designed to provide guidance and information to help you navigate
+        your
+        relocation journey. Please be aware that JustiGuide does not offer legal advice, represent legal
+        authority, or
+        substitute for the advice of an attorney. Our recommendations are based on general data and should not be
+        taken
+        as specific advice tailored to your legal needs. For legal advice, please consult a qualified attorney in
+        your
         jurisdiction.
       </p>
       <a class="closeDisclaimer" onclick="closeDisclaimer();">

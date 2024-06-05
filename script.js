@@ -7,7 +7,6 @@ const formWindow = document.querySelector('.form-container');
 const chatMessages = document.querySelector('.chat-messages');
 const mainDownload = document.getElementById('download');
 const mainShare = document.getElementById('share');
-const form = document.getElementById('immigrationForm');
 const progressBar = document.getElementById('progress');
 const header = document.getElementById('header');
 const nextButton = document.getElementById('next');
@@ -19,7 +18,7 @@ const mailingAddressSection = document.getElementById('mailingAddress');
 const monthlyPriceElements = document.querySelectorAll('.monthly-price');
 const yearlyPriceElements = document.querySelectorAll('.yearly-price');
 const yearlyPriceCrossedElements = document.querySelectorAll('.yearly-price-crossed');
-const backendUrl = 'https://justiguide.org/';
+const backendUrl = 'http://127.0.0.1:8000/';
 const tabLinks = document.querySelectorAll('.sidebar a');
 const tabContents = document.querySelectorAll('.content .tab');
 const emailInput = document.getElementById('emailInput');
@@ -30,52 +29,57 @@ const upgradeAlert = document.getElementById('upgrade_alert');
 const alertTitle = document.getElementById('alert_title');
 const alertContent = document.getElementById('alert_content');
 const closeBtn = document.getElementById('close-btn');
+const assistantBtn = document.querySelector('a[id="assistant"]');
+const botOptions = document.querySelector('.botOptions');
+const reloOpt = document.querySelector('.relo-selection');
+const doloresOpt = document.querySelector('.dolores-selection');
+const downloadFormContainer = document.querySelector('.downloadForm-container');
 
 function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) {
-        const cookieData = parts.pop().split(';').shift();
-        const [username, firstName, lastName, email, user_location, profilePicUrl] = cookieData.split('|');
-        return { username, firstName, lastName, email, user_location, profilePicUrl };
-    }
-    // else {
-    //     const username = 'rajanpande';
-    //     const firstName = 'Rajan';
-    //     const lastName = 'Pande';
-    //     const email = 'panderajan1996@gmail.com';
-    //     const profilePicUrl = 'https://lh3.googleusercontent.com/a/ACg8ocLSpnnjCN1nbp0YmOax2v3KBzzedo_X9pxtXujLphgR_xqi9NuG7g=s288-c-no';
-    //     return { username, firstName, lastName, email, profilePicUrl };
-    // }
-    return null;
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) {
+    const cookieData = parts.pop().split(';').shift();
+    const [username, firstName, lastName, email, user_location, profilePicUrl] = cookieData.split('|');
+    return { username, firstName, lastName, email, user_location, profilePicUrl };
+  }
+  // else {
+  //     const username = 'rajanpande';
+  //     const firstName = 'Rajan';
+  //     const lastName = 'Pande';
+  //     const email = 'panderajan1996@gmail.com';
+  //     const profilePicUrl = 'https://lh3.googleusercontent.com/a/ACg8ocLSpnnjCN1nbp0YmOax2v3KBzzedo_X9pxtXujLphgR_xqi9NuG7g=s288-c-no';
+  //     return { username, firstName, lastName, email, profilePicUrl };
+  // }
+  return null;
 }
 
 function checkUser() {
-    const email_id = emailInput.value;
-    if (email_id) {
-        fetch(`${backendUrl}check_user/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email: email_id })
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.exists) {
-                    showLoginPasswordForm(email_id);
-                } else {
-                    showRegistrationForm(email_id);
-                }
-            })
-            .catch(error => console.error(error));
-    } else {
-        showRegistrationForm(email_id);
-    }
+  const email_id = emailInput.value;
+  if (email_id) {
+    fetch(`${backendUrl}check_user/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email: email_id })
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.exists) {
+          showLoginPasswordForm(email_id);
+        } else {
+          showRegistrationForm(email_id);
+        }
+      })
+      .catch(error => console.error(error));
+  } else {
+    showRegistrationForm(email_id);
+  }
 }
 
 function showLoginPasswordForm(email) {
-    const passwordForm = `
+  const passwordForm = `
         <div class="passForm">
             <div class="passDets">
                 <input type="email" value="${email}" disabled>
@@ -87,35 +91,35 @@ function showLoginPasswordForm(email) {
             </div>
         </div>
     `;
-    loginContainer.innerHTML = `
+  loginContainer.innerHTML = `
         <h2 id="passwordText">Login</h2>
         ${passwordForm}
     `;
-    const passwordInput = document.getElementById('passwordInput');
-    const backButton = document.getElementById('backButton');
-    const loginButton = document.getElementById('loginButton');
+  const passwordInput = document.getElementById('passwordInput');
+  const backButton = document.getElementById('backButton');
+  const loginButton = document.getElementById('loginButton');
 
-    backButton.addEventListener('click', showEmailForm);
-    loginButton.addEventListener('click', login);
+  backButton.addEventListener('click', showEmailForm);
+  loginButton.addEventListener('click', login);
 }
 
 function validatePassword(password, confirmPassword, passwordError, createAccountButton) {
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-    if (password !== confirmPassword) {
-        passwordError.textContent = 'Passwords do not match';
-        createAccountButton.disabled = true;
-    } else if (!passwordRegex.test(password)) {
-        passwordError.textContent = 'Password must be at least 8 characters long, contain at least one uppercase letter, one number, and one special character';
-        createAccountButton.disabled = true;
-    } else {
-        passwordError.textContent = '';
-        createAccountButton.disabled = false;
-    }
+  if (password !== confirmPassword) {
+    passwordError.textContent = 'Passwords do not match';
+    createAccountButton.disabled = true;
+  } else if (!passwordRegex.test(password)) {
+    passwordError.textContent = 'Password must be at least 8 characters long, contain at least one uppercase letter, one number, and one special character';
+    createAccountButton.disabled = true;
+  } else {
+    passwordError.textContent = '';
+    createAccountButton.disabled = false;
+  }
 }
 
 function showRegistrationForm(email) {
-    const registrationForm = `
+  const registrationForm = `
     <form id="registrationForm">
         <input type="email" id="regEmailInput" value="${email}" disabled>
         <div class="regName">
@@ -140,88 +144,88 @@ function showRegistrationForm(email) {
         <span class="buttonText">Sign in with Google</span>
     </button>-->
     `;
-    loginContainer.innerHTML = `
+  loginContainer.innerHTML = `
         <h2 id="regText">Register</h2>
         ${registrationForm}
     `;
-    const regEmailInput = document.getElementById('regEmailInput');
-    const firstNameInput = document.getElementById('firstNameInput');
-    const lastNameInput = document.getElementById('lastNameInput');
-    const regPasswordInput = document.getElementById('regPasswordInput');
-    const confirmPasswordInput = document.getElementById('confirmPasswordInput');
-    const passwordError = document.getElementById('passwordError');
-    const backButton = document.getElementById('backButton');
-    const createAccountButton = document.getElementById('createAccountButton');
+  const regEmailInput = document.getElementById('regEmailInput');
+  const firstNameInput = document.getElementById('firstNameInput');
+  const lastNameInput = document.getElementById('lastNameInput');
+  const regPasswordInput = document.getElementById('regPasswordInput');
+  const confirmPasswordInput = document.getElementById('confirmPasswordInput');
+  const passwordError = document.getElementById('passwordError');
+  const backButton = document.getElementById('backButton');
+  const createAccountButton = document.getElementById('createAccountButton');
 
-    backButton.addEventListener('click', showEmailForm);
-    regPasswordInput.addEventListener('input', () => {
-        validatePassword(regPasswordInput.value, confirmPasswordInput.value, passwordError, createAccountButton);
-    });
-    confirmPasswordInput.addEventListener('input', () => {
-        validatePassword(regPasswordInput.value, confirmPasswordInput.value, passwordError, createAccountButton);
-    });
+  backButton.addEventListener('click', showEmailForm);
+  regPasswordInput.addEventListener('input', () => {
+    validatePassword(regPasswordInput.value, confirmPasswordInput.value, passwordError, createAccountButton);
+  });
+  confirmPasswordInput.addEventListener('input', () => {
+    validatePassword(regPasswordInput.value, confirmPasswordInput.value, passwordError, createAccountButton);
+  });
 
 
 
-    createAccountButton.addEventListener('click', showProfileForm);
+  createAccountButton.addEventListener('click', showProfileForm);
 }
 
 function checkUsername(doneButton, username, usernameError) {
-    fetch(`${backendUrl}check_username/`, {
-        method: 'POST',
-        body: JSON.stringify({ username })
+  fetch(`${backendUrl}check_username/`, {
+    method: 'POST',
+    body: JSON.stringify({ username })
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.exists) {
+        usernameError.textContent = 'Username already exists';
+        doneButton.disabled = true;
+      } else {
+        usernameError.textContent = '';
+        doneButton.disabled = false;
+      }
     })
-        .then(response => response.json())
-        .then(data => {
-            if (data.exists) {
-                usernameError.textContent = 'Username already exists';
-                doneButton.disabled = true;
-            } else {
-                usernameError.textContent = '';
-                doneButton.disabled = false;
-            }
-        })
-        .catch(error => console.error(error));
+    .catch(error => console.error(error));
 }
 
 function updateProfilePic(profilePicInput, profilePicCanvas) {
-    const file = profilePicInput.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function () {
-            const img = new Image();
-            img.onload = function () {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                const size = Math.min(img.width, img.height);
-                canvas.width = canvas.height = 175;
-                ctx.save();
-                ctx.beginPath();
-                ctx.arc(87.5, 87.5, 87.5, 0, 2 * Math.PI);
-                ctx.closePath();
-                ctx.clip();
-                ctx.drawImage(img, (img.width - size) / 2, (img.height - size) / 2, size, size, 0, 0, 175, 175);
-                ctx.restore();
-                const dataURL = canvas.toDataURL(file.type);
-                profilePicCanvas.getContext('2d').clearRect(0, 0, 175, 175);
-                profilePicCanvas.getContext('2d').drawImage(canvas, 0, 0);
-            };
-            img.src = reader.result;
-        }
-        reader.readAsDataURL(file);
+  const file = profilePicInput.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function () {
+      const img = new Image();
+      img.onload = function () {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const size = Math.min(img.width, img.height);
+        canvas.width = canvas.height = 175;
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(87.5, 87.5, 87.5, 0, 2 * Math.PI);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(img, (img.width - size) / 2, (img.height - size) / 2, size, size, 0, 0, 175, 175);
+        ctx.restore();
+        const dataURL = canvas.toDataURL(file.type);
+        profilePicCanvas.getContext('2d').clearRect(0, 0, 175, 175);
+        profilePicCanvas.getContext('2d').drawImage(canvas, 0, 0);
+      };
+      img.src = reader.result;
     }
+    reader.readAsDataURL(file);
+  }
 }
 
 
 function showProfileForm() {
-    const profilePicUrl = "https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png"
-    const regEmailInput = document.getElementById('regEmailInput');
-    const firstNameInput = document.getElementById('firstNameInput');
-    const lastNameInput = document.getElementById('lastNameInput');
-    const regPasswordInput = document.getElementById('regPasswordInput');
-    const email = regEmailInput.value;
-    const username = email.split('@')[0];
-    const profileForm = `
+  const profilePicUrl = "https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png"
+  const regEmailInput = document.getElementById('regEmailInput');
+  const firstNameInput = document.getElementById('firstNameInput');
+  const lastNameInput = document.getElementById('lastNameInput');
+  const regPasswordInput = document.getElementById('regPasswordInput');
+  const email = regEmailInput.value;
+  const username = email.split('@')[0];
+  const profileForm = `
         <div class="profileFormLogin">
             <div class="profilPicLogin">
                 <input type="file" id="profilePicInput" accept="image/png, image/jpeg" style="display: none;">
@@ -238,76 +242,76 @@ function showProfileForm() {
         </div>
         <button id="doneButton">Done</button>
     `;
-    loginContainer.innerHTML = `
+  loginContainer.innerHTML = `
         <h2 id="profileText">Profile</h2>
         ${profileForm}
     `;
-    const usernameInput = document.getElementById('usernameInput');
-    const usernameError = document.getElementById('usernameError');
-    const locationInput = document.getElementById('locationInput');
-    const profilePicInput = document.getElementById('profilePicInput');
-    const profilePicCanvas = document.getElementById('profilePicCanvas');
-    const doneButton = document.getElementById('doneButton');
-    let newProfilePic = "https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png"
-    usernameInput.addEventListener('input', () => {
-        checkUsername(doneButton, usernameInput.value, usernameError);
-    });
+  const usernameInput = document.getElementById('usernameInput');
+  const usernameError = document.getElementById('usernameError');
+  const locationInput = document.getElementById('locationInput');
+  const profilePicInput = document.getElementById('profilePicInput');
+  const profilePicCanvas = document.getElementById('profilePicCanvas');
+  const doneButton = document.getElementById('doneButton');
+  let newProfilePic = "https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png"
+  usernameInput.addEventListener('input', () => {
+    checkUsername(doneButton, usernameInput.value, usernameError);
+  });
 
-    const formData = new FormData();
-    profilePicInput.addEventListener('change', () => {
-        updateProfilePic(profilePicInput, profilePicCanvas)
-        const file = profilePicInput.files[0];
-        formData.append('profilePic', file);
-        formData.append('email_id', email);
+  const formData = new FormData();
+  profilePicInput.addEventListener('change', () => {
+    updateProfilePic(profilePicInput, profilePicCanvas)
+    const file = profilePicInput.files[0];
+    formData.append('profilePic', file);
+    formData.append('email_id', email);
 
-    });
-    doneButton.addEventListener('click', () => {
-        registerUser(email, firstNameInput.value, lastNameInput.value, regPasswordInput.value, usernameInput.value, locationInput.value);
-        fetch(`${backendUrl}uploadProfilePic/`, {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.resp) {
-                    newProfilePic = data.url;
-                }
-                else {
+  });
+  doneButton.addEventListener('click', () => {
+    registerUser(email, firstNameInput.value, lastNameInput.value, regPasswordInput.value, usernameInput.value, locationInput.value);
+    fetch(`${backendUrl}uploadProfilePic/`, {
+      method: 'POST',
+      body: formData
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.resp) {
+          newProfilePic = data.url;
+        }
+        else {
 
-                    console.log('Error uploading the pic: ', data.error)
-                }
-            })
-            .catch(error => {
-                console.error('Error uploading the pic: ', error);
-            })
-            .finally(() => {
-                createLoginCookie(usernameInput.value, firstNameInput.value, lastNameInput.value, email, newProfilePic, locationInput.value);
-                updateUserData(firstNameInput.value, lastNameInput.value, usernameInput.value, locationInput.value, newProfilePic);
-                loginContainer.setAttribute('style', 'display: none;');
-                showUserPage(usernameInput.value, firstNameInput.value, lastNameInput.value, email, newProfilePic, locationInput.value);
-            });
+          console.log('Error uploading the pic: ', data.error)
+        }
+      })
+      .catch(error => {
+        console.error('Error uploading the pic: ', error);
+      })
+      .finally(() => {
+        updateUserData(firstNameInput.value, lastNameInput.value, usernameInput.value, locationInput.value, newProfilePic, email);
+        createLoginCookie(usernameInput.value, firstNameInput.value, lastNameInput.value, email, newProfilePic, locationInput.value);
+        loginContainer.setAttribute('style', 'display: none;');
+        showUserPage(usernameInput.value, firstNameInput.value, lastNameInput.value, email, newProfilePic, locationInput.value);
+      });
 
-    });
+  });
 
 
 }
 
 function registerUser(email, firstName, lastName, password, username, user_location = "", profilePic = "https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png") {
-    const formData = { email, firstName, lastName, password, user_location, profilePic, username }
-    fetch(`${backendUrl}register/`, {
-        method: 'POST',
-        body: JSON.stringify(formData)
+  const formData = { email, firstName, lastName, password, user_location, profilePic, username }
+  fetch(`${backendUrl}register/`, {
+    method: 'POST',
+    body: JSON.stringify(formData)
+  })
+    .then(response => response.json())
+    .then(data => {
+      console.log('User Registered!');
     })
-        .then(response => response.json())
-        .then(data => {
-            console.log('User Registered!');
-        })
-        .catch(error => console.error(error));
+    .catch(error => console.error(error));
 }
 
 
 function showEmailForm() {
-    loginContainer.innerHTML = `
+  loginContainer.innerHTML = `
         <h2 id="emailformText">Register/Login</h2>
         <div class="emailForm" id="emailForm">
             <input type="email" id="emailInput" placeholder="Enter your email">
@@ -325,144 +329,144 @@ function showEmailForm() {
 
 
 function login() {
-    const emailInput = document.querySelector('input[type="email"]');
-    const passwordInput = document.getElementById('passwordInput');
-    const email = emailInput.value;
-    const password = passwordInput.value;
-    fetch(`${backendUrl}check_login/`, {
-        method: 'POST',
-        body: JSON.stringify({
-            'email': email,
-            'password': password
-        })
+  const emailInput = document.querySelector('input[type="email"]');
+  const passwordInput = document.getElementById('passwordInput');
+  const email = emailInput.value;
+  const password = passwordInput.value;
+  fetch(`${backendUrl}check_login/`, {
+    method: 'POST',
+    body: JSON.stringify({
+      'email': email,
+      'password': password
     })
-        .then(response => response.json())
-        .then(data => {
-            if (data['resp'] == true) {
-                const { username, firstName, lastName, email, profilePicUrl, user_location } = data;
-                createLoginCookie(username, firstName, lastName, email, profilePicUrl, user_location);
-                document.getElementById("login-window").setAttribute("style", "display: none");
-                showUserPage(username, firstName, lastName, email, profilePicUrl, user_location)
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data['resp'] == true) {
+        const { username, firstName, lastName, email, profilePicUrl, user_location } = data;
+        createLoginCookie(username, firstName, lastName, email, profilePicUrl, user_location);
+        document.getElementById("login-window").setAttribute("style", "display: none");
+        showUserPage(username, firstName, lastName, email, profilePicUrl, user_location)
 
-            }
+      }
 
-        })
-        .catch(error => console.error(error));
+    })
+    .catch(error => console.error(error));
 }
 
 function showUserPage(username, firstName, lastName, email, profilePicUrl, user_location) {
-    const profileContainer = document.getElementById('profile-container');
-    profileContainer.removeAttribute('style');
-    const tabLinks = document.querySelectorAll('.sidebar a');
-    const tabContents = document.querySelectorAll('.content .tab');
-    const userData = {
-        profilePic: profilePicUrl,
-        username: username,
-        firstName: firstName,
-        lastName: lastName,
-        user_location: user_location,
-        email: email
-    };
-    tabLinks.forEach(link => {
-        link.addEventListener('click', e => {
-            e.preventDefault();
-            const targetTab = e.target.getAttribute('data-tab');
-            tabLinks.forEach(link => link.classList.remove('active'));
-            tabContents.forEach(content => content.classList.remove('active'));
-            e.target.classList.add('active');
-            const contentDiv = document.querySelector('.content');
-            contentDiv.innerHTML = '';
-            const newTabContent = document.createElement('div');
-            newTabContent.id = targetTab;
-            newTabContent.classList.add('tab', 'active');
-            contentDiv.appendChild(newTabContent);
-            // document.getElementById(targetTab).classList.add('active');
-            loadTabContent(targetTab, userData);
-        });
+  const profileContainer = document.getElementById('profile-container');
+  profileContainer.removeAttribute('style');
+  const tabLinks = document.querySelectorAll('.sidebar a');
+  const tabContents = document.querySelectorAll('.content .tab');
+  const userData = {
+    profilePic: profilePicUrl,
+    username: username,
+    firstName: firstName,
+    lastName: lastName,
+    user_location: user_location,
+    email: email
+  };
+  tabLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const targetTab = e.target.getAttribute('data-tab');
+      tabLinks.forEach(link => link.classList.remove('active'));
+      tabContents.forEach(content => content.classList.remove('active'));
+      e.target.classList.add('active');
+      const contentDiv = document.querySelector('.content');
+      contentDiv.innerHTML = '';
+      const newTabContent = document.createElement('div');
+      newTabContent.id = targetTab;
+      newTabContent.classList.add('tab', 'active');
+      contentDiv.appendChild(newTabContent);
+      // document.getElementById(targetTab).classList.add('active');
+      loadTabContent(targetTab, userData);
     });
-    const chatButton = document.getElementById('chat');
-    chatButton.removeAttribute('style');
-    // const formButton = document.getElementById('form');
-    // formButton.removeAttribute('style');
-    loadTabContent('profile', userData);
-    addUser(backendUrl, firstName, lastName, email, username, user_location, password = null, profilePic = profilePicUrl);
+  });
+  const chatButton = document.getElementById('chat');
+  chatButton.removeAttribute('style');
+  const formButton = document.getElementById('form');
+  formButton.removeAttribute('style');
+  loadTabContent('profile', userData);
+  addUser(backendUrl, firstName, lastName, email, username, user_location, password = null, profilePic = profilePicUrl);
 
 
 }
 
 async function getSubscription() {
-    const email_id = getCookie('username').email;
-    try {
-        const response = await fetch(`${backendUrl}user_sub/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email: email_id })
-        });
-        const data = await response.json();
-        return data.subscription;
-    } catch (error) {
-        console.error('Error: ', error);
-    }
+  const email_id = getCookie('username').email;
+  try {
+    const response = await fetch(`${backendUrl}user_sub/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email: email_id })
+    });
+    const data = await response.json();
+    return data.subscription;
+  } catch (error) {
+    console.error('Error: ', error);
+  }
 }
 
 function updateCurrentPlan(userPlan) {
-    let lowercasePlan;
-    if (typeof userPlan === 'string') {
-        lowercasePlan = userPlan.toLowerCase();
-    } else {
-        lowercasePlan = String(userPlan).toLowerCase();
+  let lowercasePlan;
+  if (typeof userPlan === 'string') {
+    lowercasePlan = userPlan.toLowerCase();
+  } else {
+    lowercasePlan = String(userPlan).toLowerCase();
+  }
+  const planCards = document.querySelectorAll('.plan-card');
+  if (planCards.length > 0) {
+    for (let i = 0; i < planCards.length; i++) {
+      planCards[i].classList.remove('current');
     }
-    const planCards = document.querySelectorAll('.plan-card');
-    if (planCards.length > 0) {
-        for (let i = 0; i < planCards.length; i++) {
-            planCards[i].classList.remove('current');
-        }
-        const buttons = [];
-        for (let i = 0; i < planCards.length; i++) {
-            const planCardButtons = planCards[i].querySelectorAll('.plan-button');
-            for (let j = 0; j < planCardButtons.length; j++) {
-                buttons.push(planCardButtons[j]);
-            }
-        }
-        if (buttons.length > 0) {
-            for (let i = 0; i < buttons.length; i++) {
-                buttons[i].removeAttribute('id');
-            }
-            for (let i = 0; i < buttons.length; i++) {
-                buttons[i].textContent = 'Start Free Trial';
-            }
-        }
-        const currentPlanCard = document.getElementById(lowercasePlan);
+    const buttons = [];
+    for (let i = 0; i < planCards.length; i++) {
+      const planCardButtons = planCards[i].querySelectorAll('.plan-button');
+      for (let j = 0; j < planCardButtons.length; j++) {
+        buttons.push(planCardButtons[j]);
+      }
+    }
+    if (buttons.length > 0) {
+      for (let i = 0; i < buttons.length; i++) {
+        buttons[i].removeAttribute('id');
+      }
+      for (let i = 0; i < buttons.length; i++) {
+        buttons[i].textContent = 'Start Free Trial';
+      }
+    }
+    const currentPlanCard = document.getElementById(lowercasePlan);
 
-        if (currentPlanCard) {
-            currentPlanCard.classList.add('current');
-            const currentPlanButton = currentPlanCard.querySelector('.plan-button');
-            if (currentPlanButton) {
-                currentPlanButton.id = 'current-plan';
-                currentPlanButton.textContent = 'Current Plan';
-            }
-        }
+    if (currentPlanCard) {
+      currentPlanCard.classList.add('current');
+      const currentPlanButton = currentPlanCard.querySelector('.plan-button');
+      if (currentPlanButton) {
+        currentPlanButton.id = 'current-plan';
+        currentPlanButton.textContent = 'Current Plan';
+      }
     }
+  }
 }
 
 function showLoginWindow() {
-    document.getElementById("login-window").style.display = "block";
-    try {
-        document.getElementById("profile-container").style.display = "none";
-    } catch {
+  document.getElementById("login-window").style.display = "block";
+  try {
+    document.getElementById("profile-container").style.display = "none";
+  } catch {
 
-    }
-    document.getElementById("download").style.display = "none";
-    document.getElementById("share").style.display = "none";
+  }
+  document.getElementById("download").style.display = "none";
+  document.getElementById("share").style.display = "none";
 }
 
 
 function addUserMessage(message, profilePicUrl) {
-    const messageElement = document.createElement('div');
-    messageElement.classList.add('user-message');
-    messageElement.innerHTML = `
+  const messageElement = document.createElement('div');
+  messageElement.classList.add('user-message');
+  messageElement.innerHTML = `
     <div class="user-profile">
       <svg class="user-avatar" id="userPic" style="background-image: url(${profilePicUrl})"></svg>
     </div>
@@ -470,14 +474,14 @@ function addUserMessage(message, profilePicUrl) {
       <p>${message}</p>
     </div>
   `;
-    chatMessages.appendChild(messageElement);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+  chatMessages.appendChild(messageElement);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 function addBotMessage(message) {
-    const messageElement = document.createElement('div');
-    messageElement.classList.add('bot-message');
-    messageElement.innerHTML = `
+  const messageElement = document.createElement('div');
+  messageElement.classList.add('bot-message');
+  messageElement.innerHTML = `
     <div class="bot-profile">
       <svg class="bot-avatar"></svg>
     </div>
@@ -485,14 +489,14 @@ function addBotMessage(message) {
       <p>${message}</p>
     </div>
   `;
-    chatMessages.appendChild(messageElement);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+  chatMessages.appendChild(messageElement);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 function addGeneratingMessage() {
-    const messageElement = document.createElement('div');
-    messageElement.classList.add('bot-message');
-    messageElement.innerHTML = `
+  const messageElement = document.createElement('div');
+  messageElement.classList.add('bot-message');
+  messageElement.innerHTML = `
     <div class="bot-profile loading">
       <svg class="bot-avatar loading"></svg>
     </div>
@@ -500,426 +504,1256 @@ function addGeneratingMessage() {
       <svg class="ellipsis-gif"></svg>
     </div>
   `;
-    chatMessages.appendChild(messageElement);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+  chatMessages.appendChild(messageElement);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 function removeGeneratingMessage() {
-    const botProfileElement = document.querySelector('.bot-profile.loading');
-    const botAvatarElement = document.querySelector('.bot-avatar.loading');
-    if (botProfileElement) {
-        botProfileElement.remove();
-        botAvatarElement.remove();
-    }
-    const messageBubbleElement = document.querySelector('.message-bubble.loading');
-    if (messageBubbleElement) {
-        messageBubbleElement.remove();
-    }
+  const botProfileElement = document.querySelector('.bot-profile.loading');
+  const botAvatarElement = document.querySelector('.bot-avatar.loading');
+  if (botProfileElement) {
+    botProfileElement.remove();
+    botAvatarElement.remove();
+  }
+  const messageBubbleElement = document.querySelector('.message-bubble.loading');
+  if (messageBubbleElement) {
+    messageBubbleElement.remove();
+  }
 }
 
 function signOut() {
-    document.getElementById('signout-modal').style.display = 'block';
-    document.getElementById('sides').style.zIndex = '0';
-    document.cookie = "username=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;";
+  document.getElementById('signout-modal').style.display = 'block';
+  document.getElementById('sides').style.zIndex = '0';
+  document.cookie = "username=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;";
 }
 
 function closeSignOutModal() {
-    document.getElementById('signout-modal').style.display = 'none';
+  document.getElementById('signout-modal').style.display = 'none';
 }
 
 function confirmSignOut() {
-    document.getElementById("profile-container").setAttribute("style", "display: none;");
-    closeSignOutModal();
-    document.getElementById("login-window").setAttribute("style", "display: block;");
-    startApp();
-    document.getElementById("form").style.display = "none";
-    location.reload();
+  document.getElementById("profile-container").setAttribute("style", "display: none;");
+  closeSignOutModal();
+  document.getElementById("login-window").setAttribute("style", "display: block;");
+  startApp();
+  document.getElementById("form").style.display = "none";
+  location.reload();
 }
 
 function hideAll() {
-    const formWindow = document.querySelector('.form-container');
-    const chatWindow = document.querySelector('.chat-bar-container');
-    const chatHistory = document.querySelector('.chat-container');
-    document.getElementById("disclaimer").setAttribute('style', 'display: none')
-    const Assistant = document.querySelector('.assistant-toggle')
-    Assistant.setAttribute('style', 'display: none;')
-    // const assSwitch = document.querySelector('label[class="switch"]')
-    if (chatWindow.classList.contains('active')) {
-        chatWindow.classList.remove('active');
-    }
-    if (chatHistory.classList.contains('active')) {
-        chatHistory.classList.remove('active');
-    }
-    if (formWindow.classList.contains('active')) {
-        formWindow.classList.remove('active');
-    }
-    // if (assSwitch.classList.contains('active')) {
-    //     assSwitch.classList.remove('active');
-    // }
+  const formWindow = document.querySelector('.form-container');
+  const chatWindow = document.querySelector('.chat-bar-container');
+  const chatHistory = document.querySelector('.chat-container');
+  downloadFormContainer.style.display = 'none';
+  document.getElementById("disclaimer").setAttribute('style', 'display: none')
+  if (chatWindow.classList.contains('active')) {
+    chatWindow.classList.remove('active');
+  }
+  if (chatHistory.classList.contains('active')) {
+    chatHistory.classList.remove('active');
+  }
+  if (formWindow.classList.contains('active')) {
+    formWindow.classList.remove('active');
+  }
+  const mainDownload = document.getElementById('download');
+  const mainShare = document.getElementById('share');
+  mainDownload.setAttribute('style', 'display: none;');
+  mainShare.setAttribute('style', 'display: none;');
+  document.getElementById("login-window").setAttribute("style", "display: none");
+  try {
+    document.getElementById("profile-container").setAttribute("style", "display: none");
+  }
+  catch {
 
-    const mainDownload = document.getElementById('download');
-    const mainShare = document.getElementById('share');
-    mainDownload.setAttribute('style', 'display: none;');
-    mainShare.setAttribute('style', 'display: none;');
-    document.getElementById("login-window").setAttribute("style", "display: none");
-    try {
-        document.getElementById("profile-container").setAttribute("style", "display: none");
-    }
-    catch {
-
-    }
-    document.getElementById("subscription-container").setAttribute("style", "display: none");
+  }
+  botOptions.setAttribute('style', 'display: none;')
+  document.getElementById("subscription-container").setAttribute("style", "display: none");
 }
 
 function updatePlanPrices() {
-    const selectedDuration = document.querySelector('input[name="plan-duration"]:checked').value;
+  const selectedDuration = document.querySelector('input[name="plan-duration"]:checked').value;
 
-    monthlyPriceElements.forEach((element) => {
-        element.style.display = selectedDuration === 'monthly' ? 'inline' : 'none';
-    });
+  monthlyPriceElements.forEach((element) => {
+    element.style.display = selectedDuration === 'monthly' ? 'inline' : 'none';
+  });
 
-    yearlyPriceElements.forEach((element) => {
-        element.style.display = selectedDuration === 'yearly' ? 'inline' : 'none';
-    });
+  yearlyPriceElements.forEach((element) => {
+    element.style.display = selectedDuration === 'yearly' ? 'inline' : 'none';
+  });
 
-    yearlyPriceCrossedElements.forEach((element) => {
-        element.style.display = selectedDuration === 'yearly' ? 'inline' : 'none';
-    });
+  yearlyPriceCrossedElements.forEach((element) => {
+    element.style.display = selectedDuration === 'yearly' ? 'inline' : 'none';
+  });
 }
 
 async function subscription() {
-    const userPlan = await getSubscription()
-    updateCurrentPlan(userPlan)
-    const planDurationRadios = document.querySelectorAll('input[name="plan-duration"]');
-    document.getElementById("login-window").setAttribute("style", "display: none;");
-    hideAll();
-    try {
-        document.getElementById("profile-container").setAttribute("style", "display: none");
-    }
-    catch {
+  const userPlan = await getSubscription()
+  updateCurrentPlan(userPlan)
+  const planDurationRadios = document.querySelectorAll('input[name="plan-duration"]');
+  document.getElementById("login-window").setAttribute("style", "display: none;");
+  hideAll();
+  try {
+    document.getElementById("profile-container").setAttribute("style", "display: none");
+  }
+  catch {
 
-    }
-    document.getElementById("subscription-container").removeAttribute("style")
-    updatePlanPrices();
-    planDurationRadios.forEach((radio) => {
-        radio.addEventListener('change', updatePlanPrices);
-    });
+  }
+  document.getElementById("subscription-container").removeAttribute("style")
+  updatePlanPrices();
+  planDurationRadios.forEach((radio) => {
+    radio.addEventListener('change', updatePlanPrices);
+  });
 }
 
-async function getMessageNum(){
-    const sub = await getSubscription();
-    console.log(sub)
-    if (sub == 'free' || sub == 'Free'){
-        const email_id = getCookie('username').email
-        try{
-            const response = await fetch(`${backendUrl}free_chatLimit/`, {
-                method: 'POST',
-                body: JSON.stringify({ email_id })
-            });
-            if (!response.ok){
-                console.error('HTTP error: ', response.status);
-            }
-            const data = await response.json();
-            const retVal = {
-                bool: data.result,
-                num: data.num
-            }
-            return retVal;
-        } catch (error) {
-            console.error('Error: ', error);
-        }
-    } else {
-        return null
+async function getMessageNum() {
+  const sub = await getSubscription();
+  if (sub == 'free' || sub == 'Free') {
+    const email_id = getCookie('username').email
+    try {
+      const response = await fetch(`${backendUrl}free_chatLimit/`, {
+        method: 'POST',
+        body: JSON.stringify({ email_id })
+      });
+      if (!response.ok) {
+        console.error('HTTP error: ', response.status);
+      }
+      const data = await response.json();
+      const retVal = {
+        bool: data.result,
+        num: data.num
+      }
+      return retVal;
+    } catch (error) {
+      console.error('Error: ', error);
     }
+  } else {
+    return null
+  }
+}
+
+function handleRadioButtonChange(event, extraElements) {
+  const selectedValue = event.target.value;
+  extraElements.forEach(element => {
+    element.style.display = 'none';
+  });
+  const elementsToShow = document.querySelectorAll(`.user-immiProc [id^="text-${selectedValue}"], .user-immiProc [for^="text-${selectedValue}"]`);
+  elementsToShow.forEach(element => {
+    element.style.display = 'block';
+  });
 }
 
 async function setActiveButton(clickedButton) {
-    buttons.forEach(button => button.classList.remove('active'));
-    const parentClassList = clickedButton.parentElement.classList;
-    if (parentClassList.contains("side-container") || parentClassList.contains("menu-container") || parentClassList.contains("chat-bar-container")) {
-        clickedButton.classList.add('active');
-        if (clickedButton.id == 'chat') {
-            hideAll();            
-            const sub = await getSubscription();
-            if (sub != 'Free' && sub != 'Basic'){
-                const Assistant = document.querySelector('.assistant-toggle');
-                Assistant.setAttribute('style', 'display: flex;');                
-            } else {
-                const chatContainer = document.querySelector('.chat-container');
-                chatContainer.style.top = '10vh';
+  const botIcon = document.querySelector('svg[id="assistant"]');
+  buttons.forEach(button => button.classList.remove('active'));
+  const parentClassList = clickedButton.parentElement.classList;
+  var assistantID = 'relo';
+  if (parentClassList.contains("side-container") || parentClassList.contains("menu-container") || parentClassList.contains("chat-bar-container")) {
+    clickedButton.classList.add('active');
+    if (clickedButton.id == 'chat') {
+      hideAll();
+      assistantBtn.addEventListener('click', function () {
+        if (botOptions.style.display == 'none') {
+          botOptions.style.display = 'block';
+          botIcon.style.backgroundImage = 'url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/chat/cross-button.png")';
+          botIcon.style.opacity = 0.2;
+        } else {
+          botOptions.style.display = 'none';
+          botIcon.style.backgroundImage = `url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/chat/unnamed_${assistantID}.png")`;
+          botIcon.style.opacity = 1;
+        }
+      })
+      const sub = await getSubscription();
+      if (sub != 'Free' && sub != 'Basic') {
+        assistantBtn.removeAttribute('style');
+      }
+      if (!chatWindow.classList.contains('active')) {
+        chatWindow.classList.add('active');
+      }
+      if (!chatHistory.classList.contains('active')) {
+        chatHistory.classList.add('active');
+      }
+      const toBlock = await getMessageNum();
+      if (toBlock) {
+        if (toBlock.bool) {
+          alertTitle.textContent = 'Upgrade your Subscription!';
+          alertContent.textContent = 'You have reached the limit of free messages. To continue using the chat without any restrictions, please upgrade to the "Basic" tier.';
+          sendButton.style.pointerEvents = 'none';
+          sendButton.style.cursor = 'not-allowed';
+          messageInput.disabled = true;
+        } else {
+          alertTitle.textContent = 'Upgrade your Subscription!';
+          alertContent.textContent = `You have ${4 - parseInt(toBlock.num)} messages left. To enjoy unlimited access to the chat, consider upgrading to the "Basic" tier.`;
+        }
+        upgradeAlert.style.display = 'block';
+        closeBtn.addEventListener('click', () => {
+          upgradeAlert.style.display = 'none';
+        });
+      }
+      botIcon.style.backgroundImage = 'url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/chat/unnamed_relo.png")';
+      const iconLoc = 'https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/chat/unnamed_';
+      botIcon.style.backgroundImage = `url('${iconLoc}${assistantID}.png')`;
+      reloOpt.addEventListener('click', function () {
+        assistantID = reloOpt.classList[0].split('-selection')[0];
+        botOptions.setAttribute('style', 'display: none;');
+        botIcon.style.backgroundImage = 'url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/chat/unnamed_relo.png")';
+        botIcon.style.opacity = 1;
+      })
+      doloresOpt.addEventListener('click', function () {
+        assistantID = doloresOpt.classList[0].split('-selection')[0];
+        botOptions.setAttribute('style', 'display: none;');
+        botIcon.style.backgroundImage = 'url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/chat/unnamed_dolores.png")'
+        botIcon.style.opacity = 1;
+      })
+      document.getElementById("disclaimer").removeAttribute('style');
+      messageInput.addEventListener('keyup', () => {
+        const message = messageInput.value.trim();
+        if (message) {
+          sendButton.addEventListener('click', async (event) => {
+            event.preventDefault();
+            if (messageInput.value != '') {
+              addUserMessage(messageInput.value, getCookie('username').profilePicUrl);
+              const messageVal = messageInput.value;
+              addGeneratingMessage();
+              fetch(`${backendUrl}get_response/`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  user_message: messageVal,
+                  user: getCookie('username').username,
+                  assistant: assistantID
+                })
+              })
+                .then(response => response.json())
+                .then(data => {
+                  const botResponse = data.bot_response;
+                  removeGeneratingMessage();
+                  addBotMessage(botResponse);
+                })
+                .catch((error) => {
+                  console.error('Error: ', error);
+                });
+              messageInput.value = '';
+              const toBlock = await getMessageNum();
+              if (toBlock) {
+                if (toBlock.bool) {
+                  alertTitle.textContent = 'Upgrade your Subscription!';
+                  alertContent.textContent = 'You have reached the limit of free messages. To continue using the chat without any restrictions, please upgrade to the "Basic" tier.';
+                  sendButton.style.pointerEvents = 'none';
+                  sendButton.style.cursor = 'not-allowed';
+                  messageInput.disabled = true;
+                } else {
+                  alertTitle.textContent = 'Upgrade your Subscription!';
+                  alertContent.textContent = `You have ${4 - parseInt(toBlock.num)} messages left. To enjoy unlimited access to the chat, consider upgrading to the "Basic" tier.`;
+                }
+                upgradeAlert.style.display = 'block';
+                closeBtn.addEventListener('click', () => {
+                  upgradeAlert.style.display = 'none';
+                });
+              }
             }
-            if (!chatWindow.classList.contains('active')) {
-                chatWindow.classList.add('active');
-            }
-            if (!chatHistory.classList.contains('active')) {
-                chatHistory.classList.add('active');
-            }
-            const toBlock = await getMessageNum();
-            if (toBlock){
-                if (toBlock.bool){
+          });
+          messageInput.addEventListener('keydown', async (event) => {
+            if (event.key === 'Enter') {
+              if (messageInput.value != '') {
+                addUserMessage(messageInput.value, getCookie('username').profilePicUrl);
+                const messageVal = messageInput.value;
+                addGeneratingMessage();
+                fetch(`${backendUrl}get_response/`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    user_message: messageVal,
+                    user: getCookie('username').username,
+                    assistant: assistantID
+                  })
+                })
+                  .then(response => response.json())
+                  .then(data => {
+                    const botResponse = data.bot_response;
+                    removeGeneratingMessage();
+                    addBotMessage(botResponse);
+                  })
+                  .catch((error) => {
+                    console.error('Error: ', error);
+                  });
+                messageInput.value = '';
+                const toBlock = await getMessageNum();
+                if (toBlock) {
+                  if (toBlock.bool) {
                     alertTitle.textContent = 'Upgrade your Subscription!';
                     alertContent.textContent = 'You have reached the limit of free messages. To continue using the chat without any restrictions, please upgrade to the "Basic" tier.';
                     sendButton.style.pointerEvents = 'none';
                     sendButton.style.cursor = 'not-allowed';
                     messageInput.disabled = true;
-                } else {
+                  } else {
                     alertTitle.textContent = 'Upgrade your Subscription!';
                     alertContent.textContent = `You have ${4 - parseInt(toBlock.num)} messages left. To enjoy unlimited access to the chat, consider upgrading to the "Basic" tier.`;
-                }
-                upgradeAlert.style.display = 'block';
-                closeBtn.addEventListener('click', () => {
+                  }
+                  upgradeAlert.style.display = 'block';
+                  closeBtn.addEventListener('click', () => {
                     upgradeAlert.style.display = 'none';
-                });
-            }
-            var assistantID = 'relo';
-            const toggleSwitch = document.getElementById('toggleSwitch');
-            toggleSwitch.addEventListener('change', function() {
-                if (this.checked){
-                    assistantID = 'dolores';
-                    console.log(assistantID)
+                  });
                 }
-            })
-            console.log(assistantID)
-            document.getElementById("disclaimer").removeAttribute('style'); 
-            messageInput.addEventListener('keyup', () => {
-                const message = messageInput.value.trim();
-                if (message) {
-                    sendButton.addEventListener('click', async (event) => {
-                        event.preventDefault();
-                        if (messageInput.value != '') {
-                            addUserMessage(messageInput.value, getCookie('username').profilePicUrl);
-                            const messageVal = messageInput.value;
-                            addGeneratingMessage();
-                            fetch(`${backendUrl}get_response/`, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({
-                                    user_message: messageVal,
-                                    user: getCookie('username').username,
-                                    assistant: assistantID
-                                })
-                            })
-                                .then(response => response.json())
-                                .then(data => {
-                                    const botResponse = data.bot_response;
-                                    removeGeneratingMessage();
-                                    addBotMessage(botResponse);
-                                })
-                                .catch((error) => {
-                                    console.error('Error: ', error);
-                                });
-                            messageInput.value = '';
-                            const toBlock = await getMessageNum();
-                            if (toBlock){
-                                if (toBlock.bool){
-                                    alertTitle.textContent = 'Upgrade your Subscription!';
-                                    alertContent.textContent = 'You have reached the limit of free messages. To continue using the chat without any restrictions, please upgrade to the "Basic" tier.';
-                                    sendButton.style.pointerEvents = 'none';
-                                    sendButton.style.cursor = 'not-allowed';
-                                    messageInput.disabled = true;
-                                } else {
-                                    alertTitle.textContent = 'Upgrade your Subscription!';
-                                    alertContent.textContent = `You have ${4 - parseInt(toBlock.num)} messages left. To enjoy unlimited access to the chat, consider upgrading to the "Basic" tier.`;
-                                }
-                                upgradeAlert.style.display = 'block';
-                                closeBtn.addEventListener('click', () => {
-                                    upgradeAlert.style.display = 'none';
-                                });
-                            }
-                        }
-                    });
-                    messageInput.addEventListener('keydown', async (event) => {
-                        if (event.key === 'Enter') {
-                            if (messageInput.value != '') {
-                                addUserMessage(messageInput.value, getCookie('username').profilePicUrl);
-                                const messageVal = messageInput.value;
-                                addGeneratingMessage();
-                                fetch(`${backendUrl}get_response/`, {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json'
-                                    },
-                                    body: JSON.stringify({
-                                        user_message: messageVal,
-                                        user: getCookie('username').username
-                                    })
-                                })
-                                    .then(response => response.json())
-                                    .then(data => {
-                                        const botResponse = data.bot_response;
-                                        removeGeneratingMessage();
-                                        addBotMessage(botResponse);
-                                    })
-                                    .catch((error) => {
-                                        console.error('Error: ', error);
-                                    });
-                                messageInput.value = '';
-                                const toBlock = await getMessageNum();
-                                if (toBlock){
-                                    if (toBlock.bool){
-                                        alertTitle.textContent = 'Upgrade your Subscription!';
-                                        alertContent.textContent = 'You have reached the limit of free messages. To continue using the chat without any restrictions, please upgrade to the "Basic" tier.';
-                                        sendButton.style.pointerEvents = 'none';
-                                        sendButton.style.cursor = 'not-allowed';
-                                        messageInput.disabled = true;
-                                    } else {
-                                        alertTitle.textContent = 'Upgrade your Subscription!';
-                                        alertContent.textContent = `You have ${4 - parseInt(toBlock.num)} messages left. To enjoy unlimited access to the chat, consider upgrading to the "Basic" tier.`;
-                                    }
-                                    upgradeAlert.style.display = 'block';
-                                    closeBtn.addEventListener('click', () => {
-                                        upgradeAlert.style.display = 'none';
-                                    });
-                                }
-                            }
-                        }
-                    });
-                }
-            });
-        } else if (clickedButton.id == 'form') {
-            hideAll();
-            if (!formWindow.classList.contains('active')) {
-                formWindow.classList.add('active');
+              }
             }
-            mainDownload.removeAttribute('style');
-            mainShare.removeAttribute('style');
-            let mainInfo = {};
-            let spouseChildInfo = {};
-
-            form.addEventListener('input', function () {
-                const totalFields = form.querySelectorAll('input').length;
-                const filledFields = form.querySelectorAll('input:valid').length;
-                const progress = (filledFields / totalFields) * 100;
-                progressBar.style.width = progress + '%';
-            });
-
-            nextButton.addEventListener('click', function (event) {
-                event.preventDefault();
-                mainInfo = {
-                    firstName: document.getElementById('formfirstName').value,
-                    middleName: document.getElementById('formmiddleName').value,
-                    lastName: document.getElementById('formlastName').value,
-                    // Add other fields as required
-                };
-                form.reset();
-                document.querySelector('.sub-heading').textContent = 'Spouse/Child Information';
-                nextButton.style.display = 'none';
-                submitButton.removeAttribute("style");
-            });
-
-            submitButton.addEventListener('click', function (event) {
-                event.preventDefault();
-                spouseChildInfo = {
-                    firstName: document.getElementById('formfirstName').value,
-                    middleName: document.getElementById('formmiddleName').value,
-                    lastName: document.getElementById('formlastName').value,
-                    // Add fields for spouse/child information
-                };
-                const combinedInfo = {
-                    ...mainInfo,
-                    ...spouseChildInfo
-                };
-                const combinedInfoJson = JSON.stringify(combinedInfo);
-                form.style.display = 'none';
-                downloadForm.style.display = 'flex';
-                downloadForm.querySelector('input[name="data"]').value = combinedInfoJson;
-            });
-
-            downloadButton.addEventListener('click', function () {
-                const combinedInfoJson = downloadForm.querySelector('input[name="data"]').value;
-                console.log(combinedInfoJson)
-                const blob = new Blob([combinedInfoJson], {
-                    type: 'application/json'
-                });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'immigration_info.json';
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-            });
-
-            differentAddressCheckbox.addEventListener('change', function () {
-                mailingAddressSection.classList.toggle('hidden');
-            });
-            // });
-        } else if (clickedButton.id == 'user') {
-            hideAll();
-            const loginCookie = getCookie('username');
-            if (loginCookie != null) {
-                const userPage = document.getElementById("profile-container");
-                if (!userPage) {
-                    const { username, firstName, lastName, email, profilePicUrl, user_location } = loginCookie;
-                    showUserPage(username, firstName, lastName, email, profilePicUrl, user_location);
-                } else {
-                    userPage.setAttribute('style', 'display: flex;');
-                }
-                const loginWindow = document.getElementById("login-window");
-                loginWindow.setAttribute('style', 'display: none;');
-            } else {
-                showLoginWindow();
-            }
-            const chatButton = document.getElementById('chat');
-            chatButton.removeAttribute('style');
+          });
         }
+      });
+    } else if (clickedButton.id == 'form') {
+      hideAll();
+      if (!formWindow.classList.contains('active')) {
+        formWindow.classList.add('active');
+      }
+      formWindow.removeAttribute('style');
+      const DsignInput = document.getElementById("part-d-applicant");
+      const DsignTitle = DsignInput.querySelector('.sign-title');
+      const DsignSubtitle = DsignInput.querySelector('.sign-subtitle');
+      const DsignSelected = DsignInput.querySelector('.sign-uploaded');
+      const DhiddenFileInput = DsignInput.querySelector("#hiddenFileInput");
+
+      const formParts = document.querySelector('.parts');
+      const formMenu = document.getElementById('form-parts');
+      var partSelectionElements = document.querySelectorAll('.part-selection');
+      const sectionHeader = document.querySelector('.section-header');
+      const sectionSubhead = document.querySelector('.section-subhead');
+      const allSections = document.querySelectorAll('.section, .section-end');
+      const sectionEndElements = document.querySelectorAll('.section-end');
+      const sectionOrder = ['part-a-i', 'part-a-ii', 'part-a-iii', 'part-b', 'part-c', 'part-d', 'part-suppAB'];
+      const diffMailAddCheckbox = document.getElementById("diffMailAdd");
+      const diffMailAddContainer = document.getElementById("diffMailAdd-container");
+
+
+      function openFormMenu() {
+        if (formParts.style.display == 'flex') {
+          formParts.style.display = 'none';
+          formMenu.style.opacity = 0.5;
+        } else {
+          formParts.style.display = 'flex';
+          formMenu.style.opacity = 1;
+        }
+      }
+
+      function toggleMailingAddress() {
+        if (diffMailAddCheckbox.checked) {
+          diffMailAddContainer.style.removeProperty('display') // Or "grid" or "flex" depending on your layout
+        } else {
+          diffMailAddContainer.style.display = "none";
+        }
+      }
+
+
+      diffMailAddCheckbox.addEventListener('change', toggleMailingAddress);
+      toggleMailingAddress();
+
+      function handlePartSelection(event) {
+        const clickedElement = event.currentTarget;
+        partSelectionElements.forEach(element => {
+          element.removeAttribute('id');
+        });
+        clickedElement.id = 'active';
+        const childAnchorClass = clickedElement.querySelector('a').className;
+        if (sectionHeader) {
+          for (const child of sectionHeader.children) {
+            if (child.tagName === 'A' && child.id === childAnchorClass) {
+              child.style.removeProperty('display');
+            } else {
+              child.style.display = 'none';
+            }
+          }
+        }
+        if (sectionSubhead) {
+          for (const child of sectionSubhead.children) {
+            if (child.tagName === 'P' && child.id === childAnchorClass) {
+              child.style.removeProperty('display');
+            } else {
+              child.style.display = 'none';
+            }
+          }
+        }
+        allSections.forEach(section => {
+          if (section.id === childAnchorClass) {
+            section.style.removeProperty('display');
+          } else {
+            section.style.display = 'none';
+          }
+        });
+
+      }
+      const formDataDictionary = {};
+      function handleSectionEndClick(event, counter = 1, mainId = null) {
+        let currentSectionId = null;
+        if (event === null) {
+          currentSectionId = mainId
+        } else {
+          currentSectionId = event.currentTarget.id;
+        }
+        const inputElements = document.querySelectorAll(`#${currentSectionId}.section input`);
+        inputElements.forEach((input) => {
+          const { type, id, value, checked, files } = input;
+          if (type === 'text') {
+            formDataDictionary[`${currentSectionId}-${id}`] = value;
+          } else if (type === 'radio') {
+            if (checked) {
+              formDataDictionary[`${currentSectionId}-${id}`] = value;
+            }
+          } else if (type === 'checkbox') {
+            if (!formDataDictionary[`${currentSectionId}-${id}`]) {
+              formDataDictionary[`${currentSectionId}-${id}`] = [];
+            }
+            if (checked) {
+              formDataDictionary[`${currentSectionId}-${id}`].push(value);
+            }
+            else if (id.includes('childrenCheck')) {
+              formDataDictionary[`${currentSectionId}-${id}`] = ['yes']
+            }
+          } else if (type === 'file') {
+            formDataDictionary[`${currentSectionId}-${id}`] = files[0]
+          }
+        });
+        const textareaElements = document.querySelectorAll(`#${currentSectionId}.section textarea`);
+        textareaElements.forEach((textarea) => {
+          const { id, value } = textarea;
+          formDataDictionary[`${currentSectionId}-${id}`] = value;
+        })
+        const selectElements = document.querySelectorAll(`#${currentSectionId}.section select`);
+        selectElements.forEach((select) => {
+          const { id, value } = select;
+          const selectedOption = Array.from(select.options).find(option => option.value === value);
+          const selectedOptionText = selectedOption ? selectedOption.textContent : '';
+          formDataDictionary[`${currentSectionId}-${id}`] = selectedOptionText;
+        })
+
+        const currentIndex = sectionOrder.indexOf(currentSectionId);
+        const nextIndex = (currentIndex + counter) % sectionOrder.length;
+        const nextSectionId = sectionOrder[nextIndex];
+        const nextPartSelection = document.querySelector(`.part-selection a[class="${nextSectionId}"]`);
+        if (nextPartSelection) {
+          nextPartSelection.click();
+        }
+        const scrollableContent = document.querySelector('.scrollable-content');
+        if (scrollableContent) {
+          scrollableContent.scrollTop = 0;
+        }
+      }
+      const submitButton = document.getElementById('send-formButton');
+
+
+      if (submitButton) {
+        const email_id = getCookie('username').email;
+        submitButton.addEventListener('click', async (event) => {
+          currId = event.target.parentElement.id
+          if (currId) {
+            const inputElements = document.querySelectorAll(`#${currId}.section input`);
+            inputElements.forEach((input) => {
+              const { type, id, value, checked, files } = input;
+              if (type === 'text') {
+                formDataDictionary[`${currId}-${id}`] = value;
+              } else if (type === 'radio') {
+                if (checked) {
+                  formDataDictionary[`${currId}-${id}`] = value;
+                }
+              } else if (type === 'checkbox') {
+                if (!formDataDictionary[`${currId}-${id}`]) {
+                  formDataDictionary[`${currId}-${id}`] = [];
+                }
+                if (checked) {
+                  formDataDictionary[`${currId}-${id}`].push(value);
+                }
+              } else if (type === 'file') {
+                formDataDictionary[`${currId}-${id}`] = files[0]
+              }
+            });
+            const textareaElements = document.querySelectorAll(`#${currId}.section textarea`);
+            textareaElements.forEach((textarea) => {
+              const { id, value } = textarea;
+              formDataDictionary[`${currId}-${id}`] = value;
+            })
+            const selectElements = document.querySelectorAll(`#${currId}.section select`);
+            selectElements.forEach((select) => {
+              const { id, value } = select;
+              const selectedOption = Array.from(select.options).find(option => option.value === value);
+              const selectedOptionText = selectedOption ? selectedOption.textContent : '';
+              formDataDictionary[`${currId}-${id}`] = selectedOptionText;
+            })
+          }
+          formWindow.style.display = 'none';
+          downloadFormContainer.removeAttribute('style');
+          try {
+            const formData = new FormData();
+            formData.append('email_id', email_id);
+            const textData = {};
+            const listData = {};
+            for (const sectionId in formDataDictionary) {
+              const value = formDataDictionary[sectionId];
+              if (sectionId.includes('hidden')) {
+                const keyList = sectionId.split('-')
+                const Input = document.getElementById(`${keyList[0]}-${keyList[1]}-applicant`)
+                const Inputfiles = Input.querySelector("#hiddenFileInput");
+                const newKey = sectionId.replaceAll("-", "");
+                const signImg = Inputfiles.files[0]
+                formData.append(newKey, signImg);
+
+              } else if (Array.isArray(value) && value.length == 1) {
+                if (value[0] != '') {
+                  textData[sectionId] = value[0];
+                }
+              } else if (Array.isArray(value) && value.length > 1) {
+                listData[sectionId] = value;
+
+              } else if (value != '') {
+                textData[sectionId] = value;
+              }
+            }
+            formData.append('texts', JSON.stringify(textData));
+            formData.append('lists', JSON.stringify(listData));
+            const downloadFormText = document.getElementById('downloadForm-title')
+            const downloadForm_Button = document.querySelector(".downloadButton-button #downloadForm")
+
+            const response = await fetch(`${backendUrl}get_formData/`, {
+              method: 'POST',
+              body: formData
+            });
+            if (response.ok) {
+              const responseData = await response.json();
+              downloadFormText.textContent = 'Form Created Successfully!'
+              downloadForm_Button.style.cursor = 'pointer';
+              downloadForm_Button.style.opacity = 1;
+              downloadForm_Button.onclick = `location.href=${responseData.uploaded}`
+              // console.log(responseData);
+            } else {
+              console.error(`HTTP error! Status: ${response.status}`)
+            }
+          } catch (error) {
+            console.error('Error submitting form: ', error)
+          }
+        });
+      }
+
+      partSelectionElements.forEach(element => {
+        element.addEventListener('click', handlePartSelection);
+      });
+
+      sectionEndElements.forEach(element => {
+        element.addEventListener('click', handleSectionEndClick);
+      });
+      formMenu.addEventListener('click', openFormMenu);
+      const addSuppABRespButton = document.getElementById("suppAB-resp");
+
+      let suppABCounter = 0;
+
+      addSuppABRespButton.addEventListener('click', () => {
+        suppABCounter++;
+        const separatorDiv = document.createElement('div');
+        separatorDiv.classList.add('midsubsection-seperator');
+        const suppABAdditionalDiv = document.createElement('div');
+        suppABAdditionalDiv.classList.add('suppAB-additional');
+        suppABAdditionalDiv.id = `suppAB-additional-${suppABCounter}`;
+        suppABAdditionalDiv.innerHTML = `
+                <div class="divided-text" id="one-three">
+                <div class="dropdown-input" id="full-width">
+                    <label for="suppAB-part-${suppABCounter}" id="drop-box">Part</label>
+                    <select id="suppAB-part-${suppABCounter}" class="dropbox" name="part">
+                    <option value="start"></option>
+                    <option value="part-a-i">Part A.I.</option>
+                    <option value="part-a-ii">Part A.II.</option>
+                    <option value="part-a-iii">Part A.III.</option>
+                    <option value="part-b">Part B</option>
+                    <option value="part-c">Part C</option>
+                    <option value="part-d">Part D</option>
+                    </select>
+                </div>
+                <div class="dropdown-input" id="full-width">
+                    <label for="suppAB-ques-${suppABCounter}" id="drop-box">Question</label>
+                    <select id="suppAB-ques-${suppABCounter}" class="dropbox" name="question">
+                    <option value="start"></option>
+                    <option value="part-a-i-mainInfo">Main Information</option>
+                    <option value="part-a-i-residence">Residence</option>
+                    <option value="part-a-i-mailAdd">Mailing Address</option>
+                    <option value="part-a-i-genInfo">General Information</option>
+                    <option value="part-a-i-usEntries">U.S. Entries</option>
+                    <option value="part-a-i-passportInfo">Passport Information</option>
+                    <option value="part-a-i-lang">Language</option>
+                    <option value="part-a-ii-spouse">Spouse</option>
+                    <option value="part-a-ii-children">Children</option>
+                    <option value="part-a-iii-prevAdd">Addresses before coming to US</option>
+                    <option value="part-a-iii-prevRes">Residences</option>
+                    <option value="part-a-iii-edu">Education</option>
+                    <option value="part-a-iii-employment">Employment</option>
+                    <option value="part-a-iii-mother">Mother</option>
+                    <option value="part-a-iii-father">Father</option>
+                    <option value="part-a-iii-siblings">Siblings</option>
+                    <option value="part-b-reason">Reason for asylum</option>
+                    <option value="part-b-harm">Experience of harn or mistreatment</option>
+                    <option value="part-b-fear">Fear of harm or mistreatment</option>
+                    <option value="part-b-crime">Criminal activity</option>
+                    <option value="part-b-orgAss">Organizational Association</option>
+                    <option value="part-c-prevAppl">Previous applications</option>
+                    <option value="part-c-prevLoc">Previous asylum claims</option>
+                    <option value="part-c-causedHarm">Responsibility for Harm</option>
+                    <option value="part-c-retCountry">Return to previous countries</option>
+                    <option value="part-c-oneYear">Application after 1 year of last arrival
+                    </option>
+                    <option value="part-c-UScrimes">Criminal activity in the US</option>
+                    <option value="part-d-assistFam">Assistance by family</option>
+                    </select>
+                </div>
+                </div>
+                <textarea rows="25" id="suppAB-resp-${suppABCounter}" class="textarea"></textarea>
+                `;
+        const suppABContainer = addSuppABRespButton.parentNode;
+        suppABContainer.insertBefore(separatorDiv, addSuppABRespButton);
+        suppABContainer.insertBefore(suppABAdditionalDiv, addSuppABRespButton);
+        const partDropdowns = document.querySelectorAll('.suppAB-additional #one-three.divided-text .dropdown-input select[name="part"]');
+        partDropdowns.forEach(dropdown => {
+          dropdown.addEventListener('change', handlePartChange);
+          handlePartChange({ target: dropdown });
+        });
+      });
+      const partDropdowns = document.querySelectorAll('.suppAB-additional #one-three.divided-text .dropdown-input select[name="part"]');
+      partDropdowns.forEach(dropdown => {
+        dropdown.addEventListener('change', handlePartChange);
+        handlePartChange({ target: dropdown });
+      });
+
+      const addUSEntriesButton = document.getElementById("add-USentries");
+      let usEntryCounter = 0;
+      addUSEntriesButton.addEventListener('click', () => {
+        usEntryCounter++;
+        const separatorDiv = document.createElement('div');
+        separatorDiv.classList.add('midsubsection-seperator');
+        const entryDiv = document.createElement('div');
+        entryDiv.classList.add('additional-entries');
+        entryDiv.id = `additional-entry-${usEntryCounter}`;
+        entryDiv.innerHTML = `
+                <div class="text-input" id="full-width">
+                <label for="a-i-date-${usEntryCounter}" id="text-box">Date</label>
+                <input type="text" id="a-i-date-${usEntryCounter}" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                <label for="a-i-place-${usEntryCounter}" id="text-box">Place</label>
+                <input type="text" id="a-i-place-${usEntryCounter}" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                <label for="a-i-status-${usEntryCounter}" id="text-box">Status</label>
+                <input type="text" id="a-i-status-${usEntryCounter}" class="textbox">
+                </div>
+                `;
+        const entriesContainer = addUSEntriesButton.parentNode;
+        entriesContainer.insertBefore(separatorDiv, addUSEntriesButton);
+        entriesContainer.insertBefore(entryDiv, addUSEntriesButton);
+      });
+
+      const addPrevAddressesButton = document.getElementById("prevAddressesButton");
+      const prevAddressesContainer = document.getElementById('address-0');
+      let addressCounter = 0;
+      addPrevAddressesButton.addEventListener('click', () => {
+        addressCounter++;
+        const separatorDiv = document.createElement('div');
+        separatorDiv.classList.add('midsubsection-seperator');
+        const addressDiv = document.createElement('div');
+        addressDiv.classList.add('address');
+        addressDiv.id = `address-${addressCounter}`;
+        addressDiv.innerHTML = `
+                <div class="divided-text" id="three-three-three">
+                <div class="text-input" id="full-width">
+                    <label for="a-iii-address-${addressCounter}-country" id="text-box">Country</label> <input type="text"
+                    id="a-iii-address-${addressCounter}-country" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                    <label for="a-iii-address-${addressCounter}-state" id="text-box">Department, Province or State</label>
+                    <input type="text" id="a-iii-address-${addressCounter}-state" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                    <label for="a-iii-address-${addressCounter}-city" id="text-box">City/Town</label> <input type="text"
+                    id="a-iii-address-${addressCounter}-city" class="textbox">
+                </div>
+                </div>
+                <div class="text-input" id="full-width">
+                <label for="a-iii-address-${addressCounter}-street" id="text-box">Number and Street (provide if any)</label>
+                <input type="text" id="a-iii-address-${addressCounter}-street" class="textbox">
+                </div>
+                <div class="divided-text" id="one-one">
+                <div class="text-input" id="full-width">
+                    <label for="a-iii-address-${addressCounter}-date-from" id="text-box">Dates From</label> <input type="text"
+                    id="a-iii-address-${addressCounter}-date-from" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                    <label for="a-iii-address-${addressCounter}-date-to" id="text-box">Dates To</label> <input type="text"
+                    id="a-iii-address-${addressCounter}-date-to" class="textbox">
+                </div>
+                </div>
+                `;
+        const addEntriesDiv = addPrevAddressesButton.parentNode;
+        addEntriesDiv.insertBefore(separatorDiv, addPrevAddressesButton);
+        addEntriesDiv.insertBefore(addressDiv, addPrevAddressesButton);
+      });
+
+      const addPrevResidencesButton = document.getElementById("prevRes");
+      const prevResidencesContainer = document.getElementById('residence-0');
+      let residenceCounter = 0;
+      addPrevResidencesButton.addEventListener('click', () => {
+        residenceCounter++;
+        const separatorDiv = document.createElement('div');
+        separatorDiv.classList.add('midsubsection-seperator');
+        const residenceDiv = document.createElement('div');
+        residenceDiv.classList.add('residence');
+        residenceDiv.id = `residence-${residenceCounter}`;
+        residenceDiv.innerHTML = `
+                <div class="divided-text" id="three-three-three">
+                <div class="text-input" id="full-width">
+                    <label for="a-iii-residence-${residenceCounter}-country" id="text-box">Country</label> <input type="text"
+                    id="a-iii-residence-${residenceCounter}-country" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                    <label for="a-iii-residence-${residenceCounter}-state" id="text-box">Department, Province or State</label>
+                    <input type="text" id="a-iii-residence-${residenceCounter}-state" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                    <label for="a-iii-residence-${residenceCounter}-city" id="text-box">City/Town</label> <input type="text"
+                    id="a-iii-residence-${residenceCounter}-city" class="textbox">
+                </div>
+                </div>
+                <div class="text-input" id="full-width">
+                <label for="a-iii-residence-${residenceCounter}-street" id="text-box">Number and Street (provide if
+                    any)</label> <input type="text" id="a-iii-residence-${residenceCounter}-street" class="textbox">
+                </div>
+                <div class="divided-text" id="one-one">
+                <div class="text-input" id="full-width">
+                    <label for="a-iii-residence-${residenceCounter}-date-from" id="text-box">Dates From</label> <input type="text"
+                    id="a-iii-residence-${residenceCounter}-date-from" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                    <label for="a-iii-residence-${residenceCounter}-date-to" id="text-box">Dates To</label> <input type="text"
+                    id="a-iii-residence-${residenceCounter}-date-to" class="textbox">
+                </div>
+                </div>
+                `;
+        const addEntriesDiv = addPrevResidencesButton.parentNode;
+        addEntriesDiv.insertBefore(separatorDiv, addPrevResidencesButton);
+        addEntriesDiv.insertBefore(residenceDiv, addPrevResidencesButton);
+      });
+
+      const addEduHistoryButton = document.getElementById("eduHistory");
+      const eduHistoryContainer = document.getElementById('education-0');
+
+      let eduCounter = 0;
+
+      addEduHistoryButton.addEventListener('click', () => {
+        eduCounter++;
+        const separatorDiv = document.createElement('div');
+        separatorDiv.classList.add('midsubsection-seperator');
+        const educationDiv = document.createElement('div');
+        educationDiv.classList.add('education');
+        educationDiv.id = `education-${eduCounter}`;
+        educationDiv.innerHTML = `
+                <div class="divided-text" id="one-one">
+                <div class="text-input" id="full-width">
+                    <label for="a-iii-education-${eduCounter}-name" id="text-box">Name of School</label> <input type="text"
+                    id="a-iii-education-${eduCounter}-name" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                    <label for="a-iii-education-${eduCounter}-type" id="text-box">Type of School</label> <input type="text"
+                    id="a-iii-education-${eduCounter}-type" class="textbox">
+                </div>
+                </div>
+                <div class="text-input" id="full-width">
+                <label for="a-iii-education-${eduCounter}-loc" id="text-box">Location (Address)</label> <input type="text"
+                    id="a-iii-education-${eduCounter}-loc" class="textbox">
+                </div>
+                <div class="divided-text" id="one-one">
+                <div class="text-input" id="full-width">
+                    <label for="a-iii-education-${eduCounter}-dates-from" id="text-box">Dates From</label> <input type="text"
+                    id="a-iii-education-${eduCounter}-dates-from" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                    <label for="a-iii-education-${eduCounter}-dates-to" id="text-box">Dates To</label> <input type="text"
+                    id="a-iii-education-${eduCounter}-dates-to" class="textbox">
+                </div>
+                </div>
+                `;
+        const addEntriesDiv = addEduHistoryButton.parentNode;
+        addEntriesDiv.insertBefore(separatorDiv, addEduHistoryButton);
+        addEntriesDiv.insertBefore(educationDiv, addEduHistoryButton);
+      });
+      const addEmplHistoryButton = document.getElementById("emplHistory");
+      const emplHistoryContainer = document.getElementById('employment-0');
+
+      let emplCounter = 0;
+
+      addEmplHistoryButton.addEventListener('click', () => {
+        emplCounter++;
+        const separatorDiv = document.createElement('div');
+        separatorDiv.classList.add('midsubsection-seperator');
+        const employmentDiv = document.createElement('div');
+        employmentDiv.classList.add('employment');
+        employmentDiv.id = `employment-${emplCounter}`;
+        employmentDiv.innerHTML = `
+                <div class="text-input" id="full-width">
+                <label for="a-iii-employment-${emplCounter}-occ" id="text-box">Your Occupation</label> <input type="text"
+                    id="a-iii-employment-${emplCounter}-occ" class="textbox">
+                </div>
+                <div class="divided-text" id="one-one">
+                <div class="text-input" id="full-width">
+                    <label for="a-iii-employment-${emplCounter}-name" id="text-box">Name of Employer</label> <input type="text"
+                    id="a-iii-employment-${emplCounter}-name" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                    <label for="a-iii-employment-${emplCounter}-address" id="text-box">Address of Employer</label> <input type="text"
+                    id="a-iii-employment-${emplCounter}-address" class="textbox">
+                </div>
+                </div>
+                <div class="divided-text" id="one-one">
+                <div class="text-input" id="full-width">
+                    <label for="a-iii-employment-${emplCounter}-dates-from" id="text-box">Dates From</label> <input type="text"
+                    id="a-iii-employment-${emplCounter}-dates-from" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                    <label for="a-iii-employment-${emplCounter}-dates-to" id="text-box">Dates To</label> <input type="text"
+                    id="a-iii-employment-${emplCounter}-dates-to" class="textbox">
+                </div>
+                </div>
+                `;
+        const addEntriesDiv = addEmplHistoryButton.parentNode;
+        addEntriesDiv.insertBefore(separatorDiv, addEmplHistoryButton);
+        addEntriesDiv.insertBefore(employmentDiv, addEmplHistoryButton);
+      });
+      const addSiblingsButton = document.getElementById("siblings");
+      const siblingsContainer = document.getElementById('sibling-0');
+      let siblingCounter = 0;
+
+      addSiblingsButton.addEventListener('click', () => {
+        siblingCounter++;
+        const separatorDiv = document.createElement('div');
+        separatorDiv.classList.add('midsubsection-seperator');
+        const siblingDiv = document.createElement('div');
+        siblingDiv.classList.add('sibling');
+        siblingDiv.id = `sibling-${siblingCounter}`;
+        siblingDiv.innerHTML = `
+                <div class="subsection-description">
+                <a class="subsection-header" id="sibling-${siblingCounter}-header">Sibling</a>
+                </div>
+                <div class="toggle" id="sibling-${siblingCounter}-dec">
+                <label class="switch-toggle">
+                    <input type="checkbox" id="sibling-${siblingCounter}-dec" value="yes">
+                    <span class="slider-toggle"></span>
+                </label>
+                <label id="toggle-label">Deceased</label>
+                </div>
+                <div class="divided-text" id="one-one">
+                <div class="text-input" id="full-width">
+                    <label for="a-iii-sibling-${siblingCounter}-name" id="text-box">Full Name</label> <input type="text"
+                    id="a-iii-sibling-${siblingCounter}-name" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                    <label for="a-iii-sibling-${siblingCounter}-ccob" id="text-box">City/Town and Country of Birth</label>
+                    <input type="text" id="a-iii-sibling-${siblingCounter}-ccob" class="textbox">
+                </div>
+                </div>
+                <div class="text-input" id="full-width">
+                <label for="a-iii-sibling-${siblingCounter}-loc" id="text-box">Current Location</label> <input type="text"
+                    id="a-iii-sibling-${siblingCounter}-loc" class="textbox">
+                </div>
+                `;
+        const addEntriesDiv = addSiblingsButton.parentNode;
+        addEntriesDiv.insertBefore(separatorDiv, addSiblingsButton);
+        addEntriesDiv.insertBefore(siblingDiv, addSiblingsButton);
+      });
+
+      const partBRadioButtons = document.querySelectorAll(
+        'input[name="orgTorture"], input[name="orgPart"], input[name="orgAss"], input[name="crime"], input[name="fear"], input[name="harm"]'
+      );
+      const responseDivs_B = document.querySelectorAll(
+        '.harm-responses, .orgTorture-responses, .orgPart-responses, .orgAss-responses, .crime-responses, .fear-responses'
+      );
+      function handlePartBRadioChange() {
+        responseDivs_B.forEach(div => {
+          div.style.display = 'none';
+        });
+        partBRadioButtons.forEach(radio => {
+          if (radio.checked && radio.value === 'yes') {
+            const responseDivId = `.${radio.name}-responses`;
+            const responseDiv = document.querySelector(responseDivId);
+            if (responseDiv) {
+              responseDiv.style.display = 'block';
+            }
+          }
+        });
+      }
+      partBRadioButtons.forEach(radio => {
+        radio.addEventListener('change', handlePartBRadioChange);
+      });
+      handlePartBRadioChange();
+      const partCRadioButtons = document.querySelectorAll(
+        'input[name="crimeCommCheck"], input[name="oneYearCheck"], input[name="leftCountryCheck"],' +
+        'input[name="causedHarmCheck"], input[name="lawfulStatus"], input[name="inCountry"], input[name="prevApplCheck"]'
+      );
+      const responseDivs_C = document.querySelectorAll(
+        '.crimeCommCheck-responses, .oneYearCheck-responses, .leftCountryCheck-responses,' +
+        '.causedHarmCheck-responses, .inCountry-responses, .prevApplCheck-responses'
+      );
+      function handlePartCRadioChange() {
+        responseDivs_C.forEach(div => {
+          div.style.display = 'none';
+        });
+        partCRadioButtons.forEach(radio => {
+          if (radio.name === "lawfulStatus" || radio.name === "inCountry") {
+            if (radio.checked && radio.value === 'yes') {
+              const inCountryDiv = document.querySelector('.inCountry-responses');
+              if (inCountryDiv) {
+                inCountryDiv.style.display = 'block';
+              }
+            }
+          } else if (radio.checked && radio.value === 'yes') {
+            const responseDivId = `.${radio.name}-responses`;
+            const responseDiv = document.querySelector(responseDivId);
+            if (responseDiv) {
+              responseDiv.style.display = 'block';
+            }
+          }
+        });
+      }
+      partCRadioButtons.forEach(radio => {
+        radio.addEventListener('change', handlePartCRadioChange);
+      });
+      handlePartCRadioChange();
+      const assistanceCheckRadios = document.querySelectorAll('input[name="assistanceCheck"]');
+      const assistantListDiv = document.querySelector('.assistant-list');
+      function toggleAssistantList(event = { target: assistanceCheckRadios[0] }) {
+        const selectedRadio = event.target;
+        if (selectedRadio.checked && selectedRadio.value === 'yes') {
+          assistantListDiv.style.display = 'block';
+        } else {
+          assistantListDiv.style.display = 'none';
+        }
+      }
+      assistanceCheckRadios.forEach(radio => {
+        radio.addEventListener('change', toggleAssistantList);
+      });
+      toggleAssistantList();
+      const addAssistantButton = document.getElementById("add-assistant");
+      const assistantContainer = document.querySelector('assistant-list');
+      let assistantCounter = 0;
+      addAssistantButton.addEventListener('click', () => {
+        assistantCounter++;
+        const separatorDiv = document.createElement('div');
+        separatorDiv.classList.add('midsubsection-seperator');
+        const assistantDiv = document.createElement('div');
+        assistantDiv.classList.add('assistant');
+        assistantDiv.id = `assistant-${assistantCounter}`;
+        assistantDiv.innerHTML = `
+                <div class="divided-text" id="one-one">
+                <div class="text-input" id="full-width">
+                    <label for="d-assistName-${assistantCounter}" id="text-box">Name</label>
+                    <input type="text" id="d-assistName-${assistantCounter}" class="textbox">
+                </div>
+                <div class="text-input" id="full-width">
+                    <label for="d-relationship-${assistantCounter}" id="text-box">Relationship</label>
+                    <input type="text" id="d-relationship-${assistantCounter}" class="textbox">
+                </div>
+                </div>
+                `;
+        const addEntriesDiv = addAssistantButton.parentNode;
+        addEntriesDiv.insertBefore(separatorDiv, addAssistantButton);
+        addEntriesDiv.insertBefore(assistantDiv, addAssistantButton);
+      });
+
+      const marriedToggle = document.querySelector("input[id='spouseCheck']");
+      const spouseDiv = document.querySelector(".spouse");
+      const childrenToggle = document.querySelector("input[id='childrenCheckInp']");
+      const childrenDiv = document.querySelector('.children')
+      function toggleSpouseInfo() {
+        if (marriedToggle.checked) {
+          spouseDiv.style.display = "none";
+        } else {
+          spouseDiv.style.display = "block";
+        }
+      }
+
+      function toggleChildrenInfo() {
+        if (childrenToggle.checked) {
+          childrenDiv.style.display = "none";
+        } else {
+          childrenDiv.style.display = "block";
+        }
+      }
+      marriedToggle.addEventListener('change', toggleSpouseInfo);
+      childrenToggle.addEventListener('change', toggleChildrenInfo);
+      toggleSpouseInfo();
+      toggleChildrenInfo();
+
+      const addChildrenButton = document.getElementById("add-children");
+      const childrenContainer = document.querySelector(".children");
+      let childCounter = 0;
+
+      addChildrenButton.addEventListener('click', () => {
+        childCounter++;
+        const separatorDiv = document.createElement('div');
+        separatorDiv.classList.add('midsubsection-seperator');
+        const childDiv = document.createElement('div');
+        childDiv.classList.add('child');
+        childDiv.id = `child-${childCounter}`;
+        childDiv.innerHTML = `
+                    <div class="text-input" id="full-width">
+                    <label for="a-ii-child-${childCounter}-firstName" id="text-box">First Name</label> <input type="text"
+                        id="a-ii-child-${childCounter}-firstName" class="textbox">
+                    </div>
+                    <div class="text-input" id="full-width">
+                    <label for="a-ii-child-${childCounter}-middleName" id="text-box">Middle Name</label> <input type="text"
+                        id="a-ii-child-${childCounter}-middleName" class="textbox">
+                    </div>
+                    <div class="text-input" id="full-width">
+                    <label for="a-ii-child-${childCounter}-lastName" id="text-box">Complete Last Name</label> <input type="text"
+                        id="a-ii-child-${childCounter}-lastName" class="textbox">
+                    </div>
+                    <div class="divided-text" id="one-three">
+                    <div class="radio-input" id="full-width">
+                        <label for="a-ii-child-${childCounter}-gender" id="text-box">Gender:</label>
+                        <div class="radio-group">
+                        <div class="radio-set">
+                            <input type="radio" value="male" name="child-${childCounter}-gender" id="a-ii-child-${childCounter}-gender"> <label for="male" id="radio-set">Male</label>
+                        </div>
+                        <div class="radio-set">
+                            <input type="radio" value="female" name="child-${childCounter}-gender" id="a-ii-child-${childCounter}-gender"> <label for="female"
+                            id="radio-set">Female</label>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="radio-input" id="full-width">
+                        <label for="a-ii-child-${childCounter}-maritalSts" id="text-box">Marital Status:</label>
+                        <div class="radio-group">
+                        <div class="radio-set">
+                            <input type="radio" value="single" name="child-${childCounter}-maritalSts" id="a-ii-child-${childCounter}-maritalSts"> <label for="single"
+                            id="radio-set">Single</label>
+                        </div>
+                        <div class="radio-set">
+                            <input type="radio" value="married" name="child-${childCounter}-maritalSts" id="a-ii-child-${childCounter}-maritalSts"> <label for="married"
+                            id="radio-set">Married</label>
+                        </div>
+                        <div class="radio-set">
+                            <input type="radio" value="divorced" name="child-${childCounter}-maritalSts" id="a-ii-child-${childCounter}-maritalSts"> <label for="divorced"
+                            id="radio-set">Divorced</label>
+                        </div>
+                        <div class="radio-set">
+                            <input type="radio" value="widowed" name="child-${childCounter}-maritalSts" id="a-ii-child-${childCounter}-maritalSts"> <label for="widowed"
+                            id="radio-set">Widowed</label>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="text-input" id="full-width">
+                    <label for="a-ii-child-${childCounter}-anumber" id="text-box">Alien Registration Number(s) (A-Number) (if
+                        any)</label> <input type="text" id="a-ii-child-${childCounter}-anumber" class="textbox">
+                    </div>
+                    <div class="text-input" id="full-width">
+                    <label for="a-ii-child-${childCounter}-ssn" id="text-box">US Social Security Number (if any)</label>
+                    <input type="text" id="a-ii-child-${childCounter}-ssn" class="textbox">
+                    </div>
+                    <div class="text-input" id="full-width">
+                    <label for="a-ii-child-${childCounter}-id" id="text-box">Passport/ID Card Number (if any)</label> <input type="text"
+                        id="a-ii-child-${childCounter}-id" class="textbox">
+                    </div>
+                    <div class="divided-text" id="one-three">
+                    <div class="text-input" id="full-width">
+                        <label for="a-ii-child-${childCounter}-dob" id="text-box">Date of Birth</label> <input type="text"
+                        id="a-ii-child-${childCounter}-dob" class="textbox">
+                    </div>
+                    <div class="text-input" id="full-width">
+                        <label for="a-ii-child-${childCounter}-ccob" id="text-box">City and Country of Birth</label> <input type="text"
+                        id="a-ii-child-${childCounter}-ccob" class="textbox">
+                    </div>
+                    </div>
+                    <div class="divided-text" id="three-three-three">
+                    <div class="text-input" id="full-width">
+                        <label for="a-ii-child-${childCounter}-citizenship" id="text-box">Nationality (Citizenship)</label>
+                        <input type="text" id="a-ii-child-${childCounter}-citizenship" class="textbox">
+                    </div>
+                    <div class="text-input" id="full-width">
+                        <label for="a-ii-child-${childCounter}-race" id="text-box">Race, Ethnic or Tribal Group</label> <input type="text"
+                        id="a-ii-child-${childCounter}-race" class="textbox">
+                    </div>
+                    </div>
+                    <div class="radio-input" id="full-width">
+                    <label for="a-ii-child-${childCounter}-UScheck" id="text-box">Is this child in the U.S.?</label>
+                    <div class="radio-group">
+                        <div class="radio-set">
+                        <input type="radio" value="yes" name="child-${childCounter}-childUS" id="a-ii-child-${childCounter}-UScheck"> <label for="yes" id="radio-set">Yes</label>
+                        </div>
+                        <div class="radio-set">
+                        <input type="radio" value="no" name="child-${childCounter}-childUS" id="a-ii-child-${childCounter}-UScheck"> <label for="no" id="radio-set">No</label>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="text-input" id="full-width">
+                    <label for="a-ii-child-${childCounter}-loc" id="text-box">Specify this child's location</label> <input type="text"
+                        id="a-ii-child-${childCounter}-loc" class="textbox">
+                    </div>
+                    <div class="divided-text" id="one-three">
+                    <div class="text-input" id="full-width">
+                        <label for="a-ii-child-${childCounter}-lastEntry-date" id="text-box">Date of last entry into the
+                        US</label> <input type="text" id="a-ii-child-${childCounter}-lastEntry-date" class="textbox">
+                    </div>
+                    <div class="text-input" id="full-width">
+                        <label for="a-ii-child-${childCounter}-lastEntry-place" id="text-box">Place of last entry into the
+                        US</label> <input type="text" id="a-ii-child-${childCounter}-lastEntry-place" class="textbox">
+                    </div>
+                    </div>
+                    <div class="divided-text" id="three-three-three">
+                    <div class="text-input" id="full-width">
+                        <label for="a-ii-child-${childCounter}-i94" id="text-box">I-94 Number (if any)</label> <input type="text"
+                        id="a-ii-child-${childCounter}-i94" class="textbox">
+                    </div>
+                    <div class="text-input" id="full-width">
+                        <label for="a-ii-child-${childCounter}-lastEntry-status" id="text-box">Status when last admitted (Visa
+                        type, if any)</label> <input type="text" id="a-ii-child-${childCounter}-lastEntry-status" class="textbox">
+                    </div>
+                    <div class="text-input" id="full-width">
+                        <label for="a-ii-child-${childCounter}-currSts" id="text-box">Current status</label> <input type="text"
+                        id="a-ii-child-${childCounter}-currSts" class="textbox">
+                    </div>
+                    </div>
+                    <div class="text-input" id="full-width">
+                    <label for="a-ii-child-${childCounter}-currExp" id="text-box">What is the expiration date of his/her
+                        authorized stay, if any?</label> <input type="text" id="a-ii-child-${childCounter}-currExp" class="textbox">
+                    </div>
+                    <div class="divided-text" id="one-one">
+                    <div class="radio-input" id="full-width">
+                        <label for="a-ii-child-${childCounter}-immiProc" id="text-box">Is your child in Immigration Court
+                        proceedings</label>
+                        <div class="radio-group">
+                        <div class="radio-set">
+                            <input type="radio" value="yes" name="child-${childCounter}-immiProc" id="a-ii-child-${childCounter}-immiProc"> <label for="yes" id="radio-set">Yes</label>
+                        </div>
+                        <div class="radio-set">
+                            <input type="radio" value="no" name="child-${childCounter}-immiProc" id="a-ii-child-${childCounter}-immiProc"> <label for="no" id="radio-set">No</label>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="radio-input" id="full-width">
+                        <label for="a-ii-child-${childCounter}-inclusion" id="text-box">If in the U.S., is this child to be
+                        included in this application</label>
+                        <div class="radio-group">
+                        <div class="radio-set">
+                            <input type="radio" value="yes" name="child-${childCounter}-inclusion" id="a-ii-child-${childCounter}-inclusion"> <label for="yes" id="radio-set">Yes</label>
+                        </div>
+                        <div class="radio-set">
+                            <input type="radio" value="no" name="child-${childCounter}-inclusion" id="a-ii-child-${childCounter}-inclusion"> <label for="no" id="radio-set">No</label>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                `;
+        childrenContainer.insertBefore(separatorDiv, addChildrenButton);
+        childrenContainer.insertBefore(childDiv, addChildrenButton);
+      });
+
+
+
+      DsignInput.addEventListener('click', () => {
+        DhiddenFileInput.click();
+      });
+
+      DhiddenFileInput.addEventListener('change', () => {
+        const DselectedFile = DhiddenFileInput.files[0];
+        DsignInput.style.borderStyle = 'solid';
+        DsignTitle.style.display = 'none';
+        DsignSubtitle.style.display = 'none';
+        DsignSelected.style.display = 'block';
+        DsignSelected.textContent += `${DselectedFile.name}`;
+      });
+      function handlePartChange(event) {
+        const partDropdown = event.target;
+        const additionalEntry = partDropdown.closest('.suppAB-additional');
+        const questionDropdown = additionalEntry.querySelector('select[name="question"]');
+        const questionOptions = Array.from(questionDropdown.options);
+
+        const selectedPart = `${partDropdown.value}-`;
+        questionOptions.forEach(option => {
+          const shouldShow = selectedPart === 'start' || option.value.includes(selectedPart);
+          option.style.display = shouldShow ? 'block' : 'none';
+        });
+      }
+    } else if (clickedButton.id == 'user') {
+      hideAll();
+      const loginCookie = getCookie('username');
+      if (loginCookie != null) {
+        const userPage = document.getElementById("profile-container");
+        if (!userPage) {
+          const { username, firstName, lastName, email, profilePicUrl, user_location } = loginCookie;
+          showUserPage(username, firstName, lastName, email, profilePicUrl, user_location);
+        } else {
+          userPage.setAttribute('style', 'display: flex;');
+        }
+        const loginWindow = document.getElementById("login-window");
+        loginWindow.setAttribute('style', 'display: none;');
+      } else {
+        showLoginWindow();
+      }
+      const chatButton = document.getElementById('chat');
+      chatButton.removeAttribute('style');
     }
+  }
 }
 
 function showDisclaimer() {
-    document.querySelector('.disclaimer').style.display = 'flex';
+  document.querySelector('.disclaimer').style.display = 'flex';
 }
 
 function closeDisclaimer() {
-    document.querySelector('.disclaimer').style.display = 'none';
+  document.querySelector('.disclaimer').style.display = 'none';
 }
 
 
-function createLoginCookie(username, firstName, lastName, email, profilePicUrl, user_location = null) {
-    user_location = user_location || '';
-    console.log('Login Cookie: ', user_location);
-    const expirationDate = new Date();
-    expirationDate.setDate(expirationDate.getDate() + 14);
-    const cookieValue = `username=${username}|${firstName}|${lastName}|${email}|${user_location}|${profilePicUrl}; expires=${expirationDate.toUTCString()}; path=/`;
-    document.cookie = cookieValue;
+async function createLoginCookie(username, firstName, lastName, email, profilePicUrl, user_location = null) {
+  const data = await getProfilePic(email_id);
+  if (data.result) {
+    profilePicUrl = data.profilePic;
+  }
+  user_location = user_location || '';
+  const expirationDate = new Date();
+  expirationDate.setDate(expirationDate.getDate() + 14);
+  const cookieValue = `username=${username}|${firstName}|${lastName}|${email}|${user_location}|${profilePicUrl}; expires=${expirationDate.toUTCString()}; path=/`;
+  document.cookie = cookieValue;
 }
 
 function attachSignin(element) {
-    auth2.attachClickHandler(element, {},
-        function (googleUser) {
-            const profile = googleUser.getBasicProfile();
-            const email = profile.getEmail();
-            const username = email.split('@')[0];
-            const firstName = profile.getGivenName();
-            const lastName = profile.getFamilyName();
-            const profilePicUrl = profile.getImageUrl();
-            createLoginCookie(username, firstName, lastName, email, profilePicUrl, user_location = null);
-            document.getElementById("login-window").setAttribute("style", "display: none");
-            showUserPage(username, firstName, lastName, email, profilePicUrl, user_location = null)
-        });
+  auth2.attachClickHandler(element, {},
+    function (googleUser) {
+      const profile = googleUser.getBasicProfile();
+      const email = profile.getEmail();
+      const username = email.split('@')[0];
+      const firstName = profile.getGivenName();
+      const lastName = profile.getFamilyName();
+      const profilePicUrl = profile.getImageUrl();
+      createLoginCookie(username, firstName, lastName, email, profilePicUrl, user_location = null);
+      document.getElementById("login-window").setAttribute("style", "display: none");
+      showUserPage(username, firstName, lastName, email, profilePicUrl, user_location = null)
+    });
 }
 
 function addUser(backendUrl, firstName, lastName, email, username, user_location = null, password = null, profilePic = "https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png") {
-    fetch(`${backendUrl}new_user/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ firstName, lastName, email, username, user_location, password, profilePic })
+  fetch(`${backendUrl}new_user/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ firstName, lastName, email, username, user_location, password, profilePic })
+  })
+    .then(response => {
+      if (!response.ok) {
+        console.log('Error adding user: ', response.status);
+      }
     })
-        .then(response => {
-            if (!response.ok) {
-                console.log('Error adding user: ', response.status);
-            }
-        })
-        .catch(error => {
-            console.log('Error: ', error)
-        })
+    .catch(error => {
+      console.log('Error: ', error)
+    })
 
 }
+
+
 
 buttons.forEach(button => button.addEventListener('click', () => setActiveButton(button)));
 
@@ -928,76 +1762,73 @@ buttons.forEach(button => button.addEventListener('click', () => setActiveButton
 
 
 async function handlePlanButtonClick(event) {
-    const button = event.target;
-    const tier = button.parentElement.querySelector('h3').id;
-    const duration = document.querySelector('input[name="plan-duration"]:checked').value;
-    const email = getCookie('username').email;
-    try {
-        const response = await fetch(`${backendUrl}create_checkoutsess/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ tier, duration, email })
-        });
+  const button = event.target;
+  const tier = button.parentElement.querySelector('h3').id;
+  const duration = document.querySelector('input[name="plan-duration"]:checked').value;
+  const email = getCookie('username').email;
+  try {
+    const response = await fetch(`${backendUrl}create_checkoutsess/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ tier, duration, email })
+    });
 
-        const data = await response.json();
-        const stripe = Stripe('pk_live_51PDwGXP6cNlgDSsmbpqe2mJUE2oYznCtT4AWzvNewWy2s1senClvQdBpGo7vhnnEmitiAIDHEqMszvg5bBPt7wEN00sHnbYPnG');
+    const data = await response.json();
+    const stripe = Stripe('pk_live_51PDwGXP6cNlgDSsmbpqe2mJUE2oYznCtT4AWzvNewWy2s1senClvQdBpGo7vhnnEmitiAIDHEqMszvg5bBPt7wEN00sHnbYPnG');
 
-        await stripe.redirectToCheckout({
-            sessionId: data.id
-        });
-    } catch (error) {
-        console.error('Error:', error);
-    }
+    await stripe.redirectToCheckout({
+      sessionId: data.id
+    });
+  } catch (error) {
+    console.error('Error:', error);
+  }
 }
 
 function loadTabContent(tab, userData) {
-    // const contentDiv = document.getElementById(tab);
-    const contentDiv = document.querySelector(`#${tab}`);
-    contentDiv.innerHTML = '';
-    switch (tab) {
-        case 'profile':
-            loadProfileContent(contentDiv, userData);
-            break;
-        case 'files':
-            loadFilesContent(contentDiv);
-            break;
-        case 'lawyers':
-            loadLawyersContent(contentDiv);
-            break;
-        case 'support':
-            loadSupportContent(contentDiv);
-            break;
-        case 'forms':
-            loadFormsContent(contentDiv);
-            break;
-    }
+  const contentDiv = document.querySelector(`#${tab}`);
+  contentDiv.innerHTML = '';
+  switch (tab) {
+    case 'profile':
+      loadProfileContent(contentDiv, userData);
+      break;
+    case 'files':
+      loadFilesContent(contentDiv);
+      break;
+    case 'lawyers':
+      loadLawyersContent(contentDiv);
+      break;
+    case 'support':
+      loadSupportContent(contentDiv);
+      break;
+    case 'forms':
+      loadFormsContent(contentDiv);
+      break;
+  }
 }
 
-function updateUserData(firstName, lastName, username, user_location, profilePicUrl = "https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png") {
-    console.log('Here: ', user_location);
-    const email_id = getCookie('username').email
-    fetch(`${backendUrl}update_user/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email_id, firstName, lastName, username, user_location, profilePicUrl })
+function updateUserData(firstName, lastName, username, user_location, profilePicUrl = "https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png", email_id = getCookie('username').email) {
+  fetch(`${backendUrl}update_user/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ email_id, firstName, lastName, username, user_location, profilePicUrl })
+  })
+    .then(response => response.json())
+    .then(data => {
+      console.log('User Data Updated!');
     })
-        .then(response => response.json())
-        .then(data => {
-            console.log('User Data Updated!');
-        })
-        .catch(error => console.error(error));
+    .catch(error => console.error(error));
 
 }
 
 function loadProfileContent(contentDiv, userData) {
-    user_location = userData.user_location || '';
-    const profileForm = document.createElement('form');
-    profileForm.className = 'userPage'
-    profileForm.innerHTML = `
+  user_location = userData.user_location || '';
+  const profileForm = document.createElement('form');
+  profileForm.className = 'userPage'
+  profileForm.innerHTML = `
     <h2 class="pagetitle">Main Information</h2>
     <div class="userDets">
         <div class="profilePic">
@@ -1025,78 +1856,78 @@ function loadProfileContent(contentDiv, userData) {
     </div>
   `;
 
-    const changePasswordBtn = profileForm.querySelector('#changePassword');
-    changePasswordBtn.addEventListener('click', () => {
-        showPasswordForm()
-    });
+  const changePasswordBtn = profileForm.querySelector('#changePassword');
+  changePasswordBtn.addEventListener('click', () => {
+    showPasswordForm()
+  });
 
-    const saveChangesBtn = profileForm.querySelector('#saveChanges');
-    const email_id = getCookie('username').email
-    const newUsername = profileForm.querySelector('#username');
-    const newUsernameError = profileForm.querySelector('#usernameError')
-    const firstNameInput = profileForm.querySelector('#firstname')
-    const lastNameInput = profileForm.querySelector('#lastname')
-    const locationInput = profileForm.querySelector('#location')
-    let newProfilePic = getCookie('username').profilePicUrl;
-    const profilePicInput = profileForm.querySelector('#profilePicInput');
-    const profilePicCanvas = profileForm.querySelector("#profilePicCanvas");
-    profilePicInput.addEventListener('change', () => {
-        saveChangesBtn.disabled = true;
-        updateProfilePic(profilePicInput, profilePicCanvas);
-        const file = profilePicInput.files[0];
-        const formData = new FormData();
-        formData.append('profilePic', file)
-        formData.append('email_id', email_id)
+  const saveChangesBtn = profileForm.querySelector('#saveChanges');
+  const email_id = getCookie('username').email
+  const newUsername = profileForm.querySelector('#username');
+  const newUsernameError = profileForm.querySelector('#usernameError')
+  const firstNameInput = profileForm.querySelector('#firstname')
+  const lastNameInput = profileForm.querySelector('#lastname')
+  const locationInput = profileForm.querySelector('#location')
+  let newProfilePic = getCookie('username').profilePicUrl;
+  const profilePicInput = profileForm.querySelector('#profilePicInput');
+  const profilePicCanvas = profileForm.querySelector("#profilePicCanvas");
+  profilePicInput.addEventListener('change', () => {
+    saveChangesBtn.disabled = true;
+    updateProfilePic(profilePicInput, profilePicCanvas);
+    const file = profilePicInput.files[0];
+    const formData = new FormData();
+    formData.append('profilePic', file)
+    formData.append('email_id', email_id)
 
-        fetch(`${backendUrl}uploadProfilePic/`, {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.resp) {
-                    newProfilePic = data.url
-                }
-                else {
-                    console.log('Error uploading the pic: ', data.error)
-                }
-            })
-            .catch(error => {
-                console.error('Error uploading the pic: ', error);
-            })
-            .finally(() => {
-                saveChangesBtn.disabled = false;
-            });
-    });
-
-    const inputFields = profileForm.querySelectorAll('input');
-    inputFields.forEach(input => {
-        input.addEventListener('input', () => {
-            saveChangesBtn.style.display = 'inline-block';
-        });
-    });
-
-    newUsername.addEventListener('change', () => {
-        checkUsername(saveChangesBtn, newUsername.value, newUsernameError);
+    fetch(`${backendUrl}uploadProfilePic/`, {
+      method: 'POST',
+      body: formData
     })
+      .then(response => response.json())
+      .then(data => {
+        if (data.resp) {
+          newProfilePic = data.url
+        }
+        else {
+          console.log('Error uploading the pic: ', data.error)
+        }
+      })
+      .catch(error => {
+        console.error('Error uploading the pic: ', error);
+      })
+      .finally(() => {
+        saveChangesBtn.disabled = false;
+      });
+  });
 
-    saveChangesBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        updateUserData(firstNameInput.value, lastNameInput.value, newUsername.value, locationInput.value, newProfilePic);
-        const newProfilePicUrl = `https://doloreschatbucket.s3.us-east-2.amazonaws.com/users/${newUsername.value}/profilePic/user.png`
-        createLoginCookie(newUsername.value, firstNameInput.value, lastNameInput.value, email_id, newProfilePicUrl, locationInput.value);
-        saveChangesBtn.style.display = 'none';
-    })
+  const inputFields = profileForm.querySelectorAll('input');
+  inputFields.forEach(input => {
+    input.addEventListener('input', () => {
+      saveChangesBtn.style.display = 'inline-block';
+    });
+  });
 
-    contentDiv.appendChild(profileForm);
+  newUsername.addEventListener('change', () => {
+    checkUsername(saveChangesBtn, newUsername.value, newUsernameError);
+  })
+
+  saveChangesBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    updateUserData(firstNameInput.value, lastNameInput.value, newUsername.value, locationInput.value, newProfilePic);
+    const newProfilePicUrl = `https://doloreschatbucket.s3.us-east-2.amazonaws.com/users/${newUsername.value}/profilePic/user.png`
+    createLoginCookie(newUsername.value, firstNameInput.value, lastNameInput.value, email_id, newProfilePicUrl, locationInput.value);
+    saveChangesBtn.style.display = 'none';
+  })
+
+  contentDiv.appendChild(profileForm);
 }
 
 function showPasswordForm() {
-    const profileForm = document.querySelector('#profile form');
-    const contentDiv = document.getElementById('profile');
-    const passwordForm = document.createElement('div');
-    passwordForm.className = 'updPass'
-    passwordForm.innerHTML = `
+  const profileForm = document.querySelector('#profile form');
+  const contentDiv = document.getElementById('profile');
+  const passwordForm = document.createElement('div');
+  passwordForm.className = 'updPass'
+  passwordForm.innerHTML = `
     <h2 class="passtitle">New Password</h2>
     <div class="passText">
         <label>New Password: <input id="password" type="password"></label>
@@ -1108,223 +1939,233 @@ function showPasswordForm() {
         <button type="button" id="cancelPassword">Cancel</button>
     </div>
   `;
-    const passwordInput = passwordForm.querySelector("#password");
-    const confirmPasswordInput = passwordForm.querySelector("#Confpassword");
-    const passwordError = passwordForm.querySelector("#passwordError");
-    const savePasswordBtn = passwordForm.querySelector('#savePassword');
-    passwordInput.addEventListener('input', () => {
-        validatePassword(passwordInput.value, confirmPasswordInput.value, passwordError, savePasswordBtn);
-    });
-    confirmPasswordInput.addEventListener('input', () => {
-        validatePassword(passwordInput.value, confirmPasswordInput.value, passwordError, savePasswordBtn);
-    });
-    savePasswordBtn.addEventListener('click', () => {
-        saveNewPassword(passwordInput.value)
-    });
+  const passwordInput = passwordForm.querySelector("#password");
+  const confirmPasswordInput = passwordForm.querySelector("#Confpassword");
+  const passwordError = passwordForm.querySelector("#passwordError");
+  const savePasswordBtn = passwordForm.querySelector('#savePassword');
+  passwordInput.addEventListener('input', () => {
+    validatePassword(passwordInput.value, confirmPasswordInput.value, passwordError, savePasswordBtn);
+  });
+  confirmPasswordInput.addEventListener('input', () => {
+    validatePassword(passwordInput.value, confirmPasswordInput.value, passwordError, savePasswordBtn);
+  });
+  savePasswordBtn.addEventListener('click', () => {
+    saveNewPassword(passwordInput.value)
+  });
 
-    const cancelBtn = passwordForm.querySelector('#cancelPassword');
-    cancelBtn.addEventListener('click', () => {
-        passwordForm.remove();
-        const profileForm = document.querySelector('#profile form');
-        profileForm.style.display = 'block';
-    });
+  const cancelBtn = passwordForm.querySelector('#cancelPassword');
+  cancelBtn.addEventListener('click', () => {
+    passwordForm.remove();
+    const profileForm = document.querySelector('#profile form');
+    profileForm.style.display = 'block';
+  });
 
-    profileForm.style.display = 'none';
-    contentDiv.appendChild(passwordForm);
+  profileForm.style.display = 'none';
+  contentDiv.appendChild(passwordForm);
 }
 
 function saveNewPassword(password) {
-    const email_id = getCookie('username').email
-    fetch(`${backendUrl}update_password/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email_id, password })
+  const email_id = getCookie('username').email
+  fetch(`${backendUrl}update_password/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ email_id, password })
+  })
+    .then(response => response.json())
+    .then(data => {
+      console.log('User Password Updated!');
     })
-        .then(response => response.json())
-        .then(data => {
-            console.log('User Password Updated!');
-        })
-        .catch(error => console.error(error));
+    .catch(error => console.error(error));
 
-    const passwordForm = document.querySelector('.updPass');
-    passwordForm.remove();
+  const passwordForm = document.querySelector('.updPass');
+  passwordForm.remove();
 
-    const profileForm = document.querySelector('#profile form');
-    profileForm.style.display = 'block';
+  const profileForm = document.querySelector('#profile form');
+  profileForm.style.display = 'block';
 }
 
 
 
 async function loadFilesContent(contentDiv) {
-    // Fetch files data from the backend
-    let filesData = await getFiles('files') || [];
-    console.log(filesData)
+  let filesData = await getFiles('files') || [];
 
-    const gridContainer = document.createElement('div');
-    const gridTitle = document.createElement('h2');
-    gridTitle.classList.add('filesList');
-    gridTitle.textContent = 'Your Files';
+  const gridContainer = document.createElement('div');
+  const gridTitle = document.createElement('h2');
+  gridTitle.classList.add('filesList');
+  gridTitle.textContent = 'Your Files';
 
-    const filesContainer = document.createElement('div');
-    filesContainer.classList.add('files-container');
-    filesData.forEach(file => {
-        const fileTile = document.createElement('div');
-        fileTile.classList.add('file-tile');
+  const filesContainer = document.createElement('div');
+  filesContainer.classList.add('files-container');
+  filesData.forEach(file => {
+    const fileTile = document.createElement('div');
+    fileTile.classList.add('file-tile');
 
-        const fileLink = document.createElement('a');
-        fileLink.href = file.url;
-        fileLink.target = '_blank';
-        fileLink.classList.add('file-link');
+    const fileLink = document.createElement('a');
+    fileLink.href = file.url;
+    fileLink.target = '_blank';
+    fileLink.classList.add('file-link');
 
-        const fileImage = document.createElement('div');
-        fileImage.classList.add('file-image');
-        fileImage.style.backgroundImage = `url('${file.thumbnail}')`;
+    const fileImage = document.createElement('div');
+    fileImage.classList.add('file-image');
+    fileImage.style.backgroundImage = `url('${file.thumbnail}')`;
 
-        const fileTitle = document.createElement('div');
-        fileTitle.classList.add('file-title');
-        fileTitle.textContent = file.title;
+    const fileTitle = document.createElement('div');
+    fileTitle.classList.add('file-title');
+    fileTitle.textContent = file.title;
 
-        fileLink.appendChild(fileImage);
-        fileLink.appendChild(fileTitle);
-        fileTile.appendChild(fileLink);
-        filesContainer.appendChild(fileTile);
-    });
+    fileLink.appendChild(fileImage);
+    fileLink.appendChild(fileTitle);
+    fileTile.appendChild(fileLink);
+    filesContainer.appendChild(fileTile);
+  });
 
-    const addTile = document.createElement('div');
-    addTile.classList.add('file-tile', 'add-tile');
+  const addTile = document.createElement('div');
+  addTile.classList.add('file-tile', 'add-tile');
 
-    const addIcon = document.createElement('div');
-    addIcon.classList.add('add-icon');
-    addIcon.textContent = '+';
+  const addIcon = document.createElement('div');
+  addIcon.classList.add('add-icon');
+  addIcon.textContent = '+';
 
-    const addTitle = document.createElement('div');
-    addTitle.classList.add('add-title');
-    addTitle.textContent = 'Add from Local Storage';
+  const addTitle = document.createElement('div');
+  addTitle.classList.add('add-title');
+  addTitle.textContent = 'Add from Local Storage';
 
-    addTile.appendChild(addIcon);
-    addTile.appendChild(addTitle);
-    filesContainer.appendChild(addTile);
+  addTile.appendChild(addIcon);
+  addTile.appendChild(addTitle);
+  filesContainer.appendChild(addTile);
 
-    gridContainer.appendChild(gridTitle);
-    gridContainer.appendChild(filesContainer);
-    contentDiv.appendChild(gridContainer);
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.multiple = true;
-    fileInput.style.display = 'none';
-    addTile.addEventListener('click', () => {
-        // Handle adding items from local storage
-        fileInput.click();
-        console.log('Adding items from local storage');
-    });
+  gridContainer.appendChild(gridTitle);
+  gridContainer.appendChild(filesContainer);
+  contentDiv.appendChild(gridContainer);
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.multiple = true;
+  fileInput.style.display = 'none';
+  addTile.addEventListener('click', () => {
+    fileInput.click();
+    console.log('Adding items from local storage');
+  });
 
-    fileInput.addEventListener('change', async (event) => {
-        const files = fileInput.files;
-        const formData = new FormData();
-        const email_id = getCookie('username').email;
-        // Append each file to the FormData object
-        for (const file of files) {
-            formData.append('files', file);
-            formData.append('flag', 'files');
-            formData.append('email_id', email_id);
-        }
-
-        try {
-            // Send the FormData object to the backend using fetch
-            const response = await fetch(`${backendUrl}upload_files/`, {
-                method: 'POST',
-                body: formData
-            });
-
-            if (response.ok) {
-                console.log('Files uploaded successfully');
-                loadTabContent('files')
-            } else {
-                console.error('Error uploading files');
-            }
-        } catch (error) {
-            console.error('Error uploading files:', error);
-        }
-    });
-}
-
-async function getFiles(flag){
+  fileInput.addEventListener('change', async (event) => {
+    const files = fileInput.files;
     const formData = new FormData();
     const email_id = getCookie('username').email;
-    formData.append('email_id', email_id);
-    formData.append('flag', flag)
-    try{
-        const response = await fetch(`${backendUrl}get_filesList/`, {
-            method: 'POST',
-            body: formData,
-        });
-        if(!response.ok){
-            console.error(`HTTP error! Status: ${response.status}`)
-        }
-        const filesData = await response.json();
-        const fileData = filesData.map(file => ({
-            title: file.title,
-            url: file.url,
-            thumbnail: file.thumbnail
-        }));
-        return fileData;
-    } catch (error) {
-        console.error('Error fetching files: ', error)
+    for (const file of files) {
+      formData.append('files', file);
+      formData.append('flag', 'files');
+      formData.append('email_id', email_id);
     }
+
+    try {
+      const response = await fetch(`${backendUrl}upload_files/`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (response.ok) {
+        console.log('Files uploaded successfully');
+        loadTabContent('files')
+      } else {
+        console.error('Error uploading files');
+      }
+    } catch (error) {
+      console.error('Error uploading files:', error);
+    }
+  });
+}
+
+async function getProfilePic(email_id) {
+  try {
+    const response = await fetch(`${backendUrl}get_profilePic/`, {
+      method: 'POST',
+      body: JSON.stringify({ email_id })
+    });
+
+    const data = await response.json();
+    return data;
+
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
+async function getFiles(flag) {
+  const formData = new FormData();
+  const email_id = getCookie('username').email;
+  formData.append('email_id', email_id);
+  formData.append('flag', flag)
+  try {
+    const response = await fetch(`${backendUrl}get_filesList/`, {
+      method: 'POST',
+      body: formData,
+    });
+    if (!response.ok) {
+      console.error(`HTTP error! Status: ${response.status}`)
+    }
+    const filesData = await response.json();
+    const fileData = filesData.map(file => ({
+      title: file.title,
+      url: file.url,
+      thumbnail: file.thumbnail
+    }));
+    return fileData;
+  } catch (error) {
+    console.error('Error fetching files: ', error)
+  }
 }
 
 function loadLawyersContent(contentDiv) {
-    // Fetch lawyers data from the backend
-    const lawyersData = [
-        // { title: 'Lawyer 1', url: 'lawyer1.html', thumbnail: 'lawyer1.jpg' },
-        // { title: 'Lawyer 2', url: 'lawyer2.html', thumbnail: 'lawyer2.jpg' },
-        // ... add more lawyers
-    ];
+  // Fetch lawyers data from the backend
+  const lawyersData = [
+    // { title: 'Lawyer 1', url: 'lawyer1.html', thumbnail: 'lawyer1.jpg' },
+    // { title: 'Lawyer 2', url: 'lawyer2.html', thumbnail: 'lawyer2.jpg' },
+    // ... add more lawyers
+  ];
 
-    const gridContainer = document.createElement('div');
-    const gridTitle = document.createElement('h2');
-    gridTitle.classList.add('lawyersList');
-    gridTitle.textContent = 'Lawyer List';
+  const gridContainer = document.createElement('div');
+  const gridTitle = document.createElement('h2');
+  gridTitle.classList.add('lawyersList');
+  gridTitle.textContent = 'Lawyer List';
 
-    const lawyersContainer = document.createElement('div');
-    lawyersContainer.classList.add('lawyers-container');
-    lawyersData.forEach(lawyer => {
-        const lawyerTile = document.createElement('div');
-        lawyerTile.classList.add('lawyer-tile');
+  const lawyersContainer = document.createElement('div');
+  lawyersContainer.classList.add('lawyers-container');
+  lawyersData.forEach(lawyer => {
+    const lawyerTile = document.createElement('div');
+    lawyerTile.classList.add('lawyer-tile');
 
-        const lawyerLink = document.createElement('a');
-        lawyerLink.href = lawyer.url;
-        lawyerLink.target = '_blank';
-        lawyerLink.classList.add('lawyer-link');
+    const lawyerLink = document.createElement('a');
+    lawyerLink.href = lawyer.url;
+    lawyerLink.target = '_blank';
+    lawyerLink.classList.add('lawyer-link');
 
-        const lawyerImage = document.createElement('div');
-        lawyerImage.classList.add('lawyer-image');
-        lawyerImage.style.backgroundImage = `url('${lawyer.thumbnail}')`;
+    const lawyerImage = document.createElement('div');
+    lawyerImage.classList.add('lawyer-image');
+    lawyerImage.style.backgroundImage = `url('${lawyer.thumbnail}')`;
 
-        const lawyerTitle = document.createElement('div');
-        lawyerTitle.classList.add('lawyer-title');
-        lawyerTitle.textContent = lawyer.title;
+    const lawyerTitle = document.createElement('div');
+    lawyerTitle.classList.add('lawyer-title');
+    lawyerTitle.textContent = lawyer.title;
 
-        lawyerLink.appendChild(lawyerImage);
-        lawyerLink.appendChild(lawyerTitle);
-        lawyerTile.appendChild(lawyerLink);
-        lawyersContainer.appendChild(lawyerTile);
-    });
+    lawyerLink.appendChild(lawyerImage);
+    lawyerLink.appendChild(lawyerTitle);
+    lawyerTile.appendChild(lawyerLink);
+    lawyersContainer.appendChild(lawyerTile);
+  });
 
-    gridContainer.appendChild(gridTitle);
-    gridContainer.appendChild(lawyersContainer);
+  gridContainer.appendChild(gridTitle);
+  gridContainer.appendChild(lawyersContainer);
 
-    contentDiv.appendChild(gridContainer);
+  contentDiv.appendChild(gridContainer);
 }
 
 function loadSupportContent(contentDiv) {
-    const userEmail = getCookie('username').email;
+  const userEmail = getCookie('username').email;
 
-    const supportForm = document.createElement('form');
-    supportForm.classList.add('supportFormIncl')
-    supportForm.innerHTML = `
+  const supportForm = document.createElement('form');
+  supportForm.classList.add('supportFormIncl')
+  supportForm.innerHTML = `
     <h2 class="supporttitle">Support Form</h2>
     <div class="supportForm">
         <label id="supportEmail">Email: <input id="supportEmail" type="email" value="${userEmail}" disabled></label>
@@ -1336,110 +2177,104 @@ function loadSupportContent(contentDiv) {
     </div>
   `;
 
-    supportForm.addEventListener('submit', e => {
-        e.preventDefault();
-        const subject = supportForm.querySelector('input[type="text"]').value;
-        const message = supportForm.querySelector('textarea').value;
-        // ... send subject and message to the backend
-        alert('Support request submitted successfully!');
-        supportForm.reset();
-    });
+  supportForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const subject = supportForm.querySelector('input[type="text"]').value;
+    const message = supportForm.querySelector('textarea').value;
+    // ... send subject and message to the backend
+    alert('Support request submitted successfully!');
+    supportForm.reset();
+  });
 
-    contentDiv.appendChild(supportForm);
+  contentDiv.appendChild(supportForm);
 }
 
 async function loadFormsContent(contentDiv) {
-    // Fetch forms data from the backend
-    // const formsData = [
-    //     { title: 'Form 1', url: 'form1.html', thumbnail: 'form1.jpg' },
-    //     { title: 'Form 2', url: 'form2.html', thumbnail: 'form2.jpg' },
-    // ];
-    let formsData = await getFiles('forms') || [];
-    const gridContainer = document.createElement('div');
-    const gridTitle = document.createElement('h2');
-    gridTitle.classList.add('formsList');
-    gridTitle.textContent = 'Your Forms';
+  let formsData = await getFiles('forms') || [];
+  const gridContainer = document.createElement('div');
+  const gridTitle = document.createElement('h2');
+  gridTitle.classList.add('formsList');
+  gridTitle.textContent = 'Your Forms';
 
-    const formsContainer = document.createElement('div');
-    formsContainer.classList.add('forms-container');
-    formsData.forEach(form => {
-        const formTile = document.createElement('div');
-        formTile.classList.add('form-tile');
+  const formsContainer = document.createElement('div');
+  formsContainer.classList.add('forms-container');
+  formsData.forEach(form => {
+    const formTile = document.createElement('div');
+    formTile.classList.add('form-tile');
 
-        const formLink = document.createElement('a');
-        formLink.href = form.url;
-        formLink.target = '_blank';
-        formLink.classList.add('form-link');
+    const formLink = document.createElement('a');
+    formLink.href = form.url;
+    formLink.target = '_blank';
+    formLink.classList.add('form-link');
 
-        const formImage = document.createElement('div');
-        formImage.classList.add('form-image');
-        formImage.style.backgroundImage = `url('${form.thumbnail}')`;
+    const formImage = document.createElement('div');
+    formImage.classList.add('form-image');
+    formImage.style.backgroundImage = `url('${form.thumbnail}')`;
 
-        const formTitle = document.createElement('div');
-        formTitle.classList.add('form-title');
-        formTitle.textContent = form.title;
+    const formTitle = document.createElement('div');
+    formTitle.classList.add('form-title');
+    formTitle.textContent = form.title;
 
-        formLink.appendChild(formImage);
-        formLink.appendChild(formTitle);
-        formTile.appendChild(formLink);
-        formsContainer.appendChild(formTile);
-    });
+    formLink.appendChild(formImage);
+    formLink.appendChild(formTitle);
+    formTile.appendChild(formLink);
+    formsContainer.appendChild(formTile);
+  });
 
-    const addTile = document.createElement('div');
-    addTile.classList.add('form-tile', 'add-tile');
+  const addTile = document.createElement('div');
+  addTile.classList.add('form-tile', 'add-tile');
 
-    const addIcon = document.createElement('div');
-    addIcon.classList.add('add-icon');
-    addIcon.textContent = '+';
+  const addIcon = document.createElement('div');
+  addIcon.classList.add('add-icon');
+  addIcon.textContent = '+';
 
-    const addTitle = document.createElement('div');
-    addTitle.classList.add('add-title');
-    addTitle.textContent = 'Add from Local Storage';
+  const addTitle = document.createElement('div');
+  addTitle.classList.add('add-title');
+  addTitle.textContent = 'Add from Local Storage';
 
-    addTile.appendChild(addIcon);
-    addTile.appendChild(addTitle);
-    formsContainer.appendChild(addTile);
+  addTile.appendChild(addIcon);
+  addTile.appendChild(addTitle);
+  formsContainer.appendChild(addTile);
 
-    gridContainer.appendChild(gridTitle);
-    gridContainer.appendChild(formsContainer);
+  gridContainer.appendChild(gridTitle);
+  gridContainer.appendChild(formsContainer);
 
-    contentDiv.appendChild(gridContainer);
+  contentDiv.appendChild(gridContainer);
 
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.multiple = true;
-    fileInput.style.display = 'none';
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.multiple = true;
+  fileInput.style.display = 'none';
 
-    addTile.addEventListener('click', () => {
-        // Handle adding items from local storage
-        fileInput.click();
-        console.log('Adding items from local storage');
-    });
+  addTile.addEventListener('click', () => {
+    fileInput.click();
+    console.log('Adding items from local storage');
+  });
 
-    fileInput.addEventListener('change', async (event) => {
-        const files = event.target.files;
-        const formData = new FormData();
-        const email_id = getCookie('username').email;
-        for (const file of files) {
-            formData.append('files', file);
-            formData.append('flag', 'forms');
-            formData.append('email_id', email_id);
-        }
+  fileInput.addEventListener('change', async (event) => {
+    const files = event.target.files;
+    const formData = new FormData();
+    const email_id = getCookie('username').email;
+    for (const file of files) {
+      formData.append('files', file);
+      formData.append('flag', 'forms');
+      formData.append('email_id', email_id);
+    }
 
-        try {
-            const response = await fetch(`${backendUrl}upload_files/`, {
-                method: 'POST',
-                body: formData,
-            });
+    try {
+      const response = await fetch(`${backendUrl}upload_files/`, {
+        method: 'POST',
+        body: formData,
+      });
 
-            if (response.ok) {
-                console.log('Forms uploaded successfully');
-                loadTabContent('forms')
-            } else {
-                console.error('Error uploading files');
-            }
-        } catch (error) {
-            console.error('Error uploading files:', error);
-        }
-    });
+      if (response.ok) {
+        console.log('Forms uploaded successfully');
+        loadTabContent('forms')
+      } else {
+        console.error('Error uploading files');
+      }
+    } catch (error) {
+      console.error('Error uploading files:', error);
+    }
+  });
 }
