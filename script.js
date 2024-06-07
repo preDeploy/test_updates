@@ -19,6 +19,7 @@ const monthlyPriceElements = document.querySelectorAll('.monthly-price');
 const yearlyPriceElements = document.querySelectorAll('.yearly-price');
 const yearlyPriceCrossedElements = document.querySelectorAll('.yearly-price-crossed');
 const backendUrl = 'http://127.0.0.1:8000/';
+// const backendUrl = 'https://justiguide.org/';
 const tabLinks = document.querySelectorAll('.sidebar a');
 const tabContents = document.querySelectorAll('.content .tab');
 const emailInput = document.getElementById('emailInput');
@@ -344,6 +345,7 @@ function login() {
     .then(data => {
       if (data['resp'] == true) {
         const { username, firstName, lastName, email, profilePicUrl, user_location } = data;
+        console.log(email);
         createLoginCookie(username, firstName, lastName, email, profilePicUrl, user_location);
         document.getElementById("login-window").setAttribute("style", "display: none");
         showUserPage(username, firstName, lastName, email, profilePicUrl, user_location)
@@ -354,13 +356,20 @@ function login() {
     .catch(error => console.error(error));
 }
 
-function showUserPage(username, firstName, lastName, email, profilePicUrl, user_location) {
+async function showUserPage(username, firstName, lastName, email, profilePicUrl, user_location) {
+  const data = await getProfilePic(email);
+  let newProfilePic;
+  if (data.result) {
+    newProfilePic = data.profilePic;
+  } else {
+    newProfilePic = profilePicUrl;
+  }
   const profileContainer = document.getElementById('profile-container');
   profileContainer.removeAttribute('style');
   const tabLinks = document.querySelectorAll('.sidebar a');
   const tabContents = document.querySelectorAll('.content .tab');
   const userData = {
-    profilePic: profilePicUrl,
+    profilePic: newProfilePic,
     username: username,
     firstName: firstName,
     lastName: lastName,
@@ -380,7 +389,6 @@ function showUserPage(username, firstName, lastName, email, profilePicUrl, user_
       newTabContent.id = targetTab;
       newTabContent.classList.add('tab', 'active');
       contentDiv.appendChild(newTabContent);
-      // document.getElementById(targetTab).classList.add('active');
       loadTabContent(targetTab, userData);
     });
   });
@@ -821,13 +829,13 @@ async function setActiveButton(clickedButton) {
       const sectionHeader = document.querySelector('.section-header');
       const sectionSubhead = document.querySelector('.section-subhead');
       const allSections = document.querySelectorAll('.section, .section-end');
-      const sectionEndElements = document.querySelectorAll('.section-end');
+      const sectionEndElements = document.querySelectorAll('.section-end button');
       const sectionOrder = ['part-a-i', 'part-a-ii', 'part-a-iii', 'part-b', 'part-c', 'part-d', 'part-suppAB'];
       const diffMailAddCheckbox = document.getElementById("diffMailAdd");
       const diffMailAddContainer = document.getElementById("diffMailAdd-container");
 
-
-      function openFormMenu() {
+      function openFormMenu() {        
+        const getActivePart = formParts.querySelector('#active a[id="part-selection"]').className;
         if (formParts.style.display == 'flex') {
           formParts.style.display = 'none';
           formMenu.style.opacity = 0.5;
@@ -839,7 +847,7 @@ async function setActiveButton(clickedButton) {
 
       function toggleMailingAddress() {
         if (diffMailAddCheckbox.checked) {
-          diffMailAddContainer.style.removeProperty('display') // Or "grid" or "flex" depending on your layout
+          diffMailAddContainer.style.removeProperty('display')
         } else {
           diffMailAddContainer.style.display = "none";
         }
@@ -851,6 +859,15 @@ async function setActiveButton(clickedButton) {
 
       function handlePartSelection(event) {
         const clickedElement = event.currentTarget;
+        const currentSectionId = clickedElement.children[0].className
+        const currentIndex = sectionOrder.indexOf(currentSectionId);
+        const previousIndex = (currentIndex + 1) % sectionOrder.length;
+        var prevSectionId = null;
+        var unfilledValues = null;
+        if (previousIndex !== -1) {
+          prevSectionId = sectionOrder[previousIndex]
+          unfilledValues = getUnfilledList(prevSectionId)
+        }
         partSelectionElements.forEach(element => {
           element.removeAttribute('id');
         });
@@ -876,159 +893,269 @@ async function setActiveButton(clickedButton) {
         }
         allSections.forEach(section => {
           if (section.id === childAnchorClass) {
-            section.style.removeProperty('display');
+            section.style.display = 'flex';
           } else {
             section.style.display = 'none';
           }
         });
-
-      }
-      const formDataDictionary = {};
-      function handleSectionEndClick(event, counter = 1, mainId = null) {
-        let currentSectionId = null;
-        if (event === null) {
-          currentSectionId = mainId
-        } else {
-          currentSectionId = event.currentTarget.id;
-        }
-        const inputElements = document.querySelectorAll(`#${currentSectionId}.section input`);
-        inputElements.forEach((input) => {
-          const { type, id, value, checked, files } = input;
-          if (type === 'text') {
-            formDataDictionary[`${currentSectionId}-${id}`] = value;
-          } else if (type === 'radio') {
-            if (checked) {
-              formDataDictionary[`${currentSectionId}-${id}`] = value;
-            }
-          } else if (type === 'checkbox') {
-            if (!formDataDictionary[`${currentSectionId}-${id}`]) {
-              formDataDictionary[`${currentSectionId}-${id}`] = [];
-            }
-            if (checked) {
-              formDataDictionary[`${currentSectionId}-${id}`].push(value);
-            }
-            else if (id.includes('childrenCheck')) {
-              formDataDictionary[`${currentSectionId}-${id}`] = ['yes']
-            }
-          } else if (type === 'file') {
-            formDataDictionary[`${currentSectionId}-${id}`] = files[0]
-          }
-        });
-        const textareaElements = document.querySelectorAll(`#${currentSectionId}.section textarea`);
-        textareaElements.forEach((textarea) => {
-          const { id, value } = textarea;
-          formDataDictionary[`${currentSectionId}-${id}`] = value;
-        })
-        const selectElements = document.querySelectorAll(`#${currentSectionId}.section select`);
-        selectElements.forEach((select) => {
-          const { id, value } = select;
-          const selectedOption = Array.from(select.options).find(option => option.value === value);
-          const selectedOptionText = selectedOption ? selectedOption.textContent : '';
-          formDataDictionary[`${currentSectionId}-${id}`] = selectedOptionText;
-        })
-
-        const currentIndex = sectionOrder.indexOf(currentSectionId);
-        const nextIndex = (currentIndex + counter) % sectionOrder.length;
-        const nextSectionId = sectionOrder[nextIndex];
-        const nextPartSelection = document.querySelector(`.part-selection a[class="${nextSectionId}"]`);
-        if (nextPartSelection) {
-          nextPartSelection.click();
-        }
         const scrollableContent = document.querySelector('.scrollable-content');
         if (scrollableContent) {
           scrollableContent.scrollTop = 0;
         }
+
+
       }
+
+      function getUnfilledList(currentSectionId) {
+        const requiredElements = Array.from(document.querySelectorAll(`#${currentSectionId}.section .required`))
+        const unfilledValues = []
+        for (var ind in requiredElements) {
+          if (currentSectionId != 'part-suppAB') {
+            if (requiredElements[ind].type == 'text' || requiredElements[ind].type == 'date') {
+              if (requiredElements[ind].value === '') {
+                unfilledValues.push(requiredElements[ind])
+              }
+            } else if (requiredElements[ind].tagName == 'DIV') {
+              if (requiredElements[ind].className.includes('radio-group')) {
+                const inputRadio = requiredElements[ind].querySelector(`.radio-set input`).name;
+                const isAnyRadioUnchecked = document.querySelector(`input[name="${inputRadio}"]:checked`) === null;
+                if (isAnyRadioUnchecked) {
+                  unfilledValues.push(requiredElements[ind])
+                }
+              } else if (requiredElements[ind].className.includes('checkbox-group')) {
+                const inputCheckbox = requiredElements[ind].querySelector(`.checkbox-set input`).id;
+                const isAnyCheckboxUnchecked = document.querySelector(`input[id="${inputCheckbox}"]:checked`) === null;
+                if (isAnyCheckboxUnchecked) {
+                  unfilledValues.push(requiredElements[ind])
+                }
+              } else if (requiredElements[ind].className.includes('sign-input')) {
+                const nosignFile = requiredElements[ind].querySelector('input[type="file"]').files.length === 0;
+                if (nosignFile) {
+                  unfilledValues.push(requiredElements[ind])
+                }
+              }
+            }
+          } else {
+            const selectElement = document.querySelector(`#${currentSectionId}.section select[name="part"]`);
+            const selectedValue = selectElement.value;
+            if (selectedValue !== 'start') {
+              if (requiredElements[ind].value === '') {
+                unfilledValues.push(requiredElements[ind])
+              }
+            }
+          }
+        }
+        return unfilledValues;
+
+      }
+      const formDataDictionary = {};
+      const allUnfilled = [];
+      function handleSectionEndClick(event) {
+        const currentSectionId = event.currentTarget.parentElement.id;
+        const unfilledValues = getUnfilledList(currentSectionId)
+        if (unfilledValues.length === 0) {
+          const inputElements = document.querySelectorAll(`#${currentSectionId}.section input`);
+          inputElements.forEach((input) => {
+            const { type, id, value, checked, files } = input;
+            if (type === 'text') {
+              formDataDictionary[`${currentSectionId}-${id}`] = value;
+            } else if (type === 'date') {
+              if (value !== '') {
+                splitDates = value.split('-');
+                if (id.includes('from') || id.includes('to')) {
+                  formDataDictionary[`${currentSectionId}-${id}`] = `${splitDates[1]}/${splitDates[0]}`;
+                } else {
+                  formDataDictionary[`${currentSectionId}-${id}`] = `${splitDates[1]}/${splitDates[2]}/${splitDates[0]}`
+                }
+              } else {
+                formDataDictionary[`${currentSectionId}-${id}`] = value
+              }
+            } else if (type === 'radio') {
+              if (checked) {
+                formDataDictionary[`${currentSectionId}-${id}`] = value;
+              }
+            } else if (type === 'checkbox') {
+              if (!formDataDictionary[`${currentSectionId}-${id}`]) {
+                formDataDictionary[`${currentSectionId}-${id}`] = [];
+              }
+              if (checked) {
+                formDataDictionary[`${currentSectionId}-${id}`].push(value);
+              }
+              else if (id.includes('childrenCheck')) {
+                formDataDictionary[`${currentSectionId}-${id}`] = ['yes']
+              }
+            } else if (type === 'file') {
+              formDataDictionary[`${currentSectionId}-${id}`] = files[0]
+            }
+          });
+          const textareaElements = document.querySelectorAll(`#${currentSectionId}.section textarea`);
+          textareaElements.forEach((textarea) => {
+            const { id, value } = textarea;
+            formDataDictionary[`${currentSectionId}-${id}`] = value;
+          })
+          const selectElements = document.querySelectorAll(`#${currentSectionId}.section select`);
+          selectElements.forEach((select) => {
+            const { id, value } = select;
+            const selectedOption = Array.from(select.options).find(option => option.value === value);
+            const selectedOptionText = selectedOption ? selectedOption.textContent : '';
+            formDataDictionary[`${currentSectionId}-${id}`] = selectedOptionText;
+          })
+
+          const currentIndex = sectionOrder.indexOf(currentSectionId);
+          const nextIndex = (currentIndex + 1) % sectionOrder.length;
+          const nextSectionId = sectionOrder[nextIndex];
+          const nextPartSelection = document.querySelector(`.part-selection a[class="${nextSectionId}"]`);
+          if (nextPartSelection) {
+            nextPartSelection.click();
+          }
+          const scrollableContent = document.querySelector('.scrollable-content');
+          if (scrollableContent) {
+            scrollableContent.scrollTop = 0;
+          }
+          allUnfilled.push(currentSectionId);
+        } else {
+          const firstElement = unfilledValues[0].parentElement;
+          firstElement.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+
+      function findMissingVals(filled, master) {
+        const missing = [];
+        for (const value of master) {
+          if (!filled.includes(value)) {
+            missing.push(value);
+          }
+        }
+        return missing;
+      }
+
+      sectionEndElements.forEach(element => {
+        element.addEventListener('click', handleSectionEndClick);
+      });
       const submitButton = document.getElementById('send-formButton');
 
 
       if (submitButton) {
+
         const email_id = getCookie('username').email;
+        const preSubmit = sectionOrder.slice(0, -1);
         submitButton.addEventListener('click', async (event) => {
-          currId = event.target.parentElement.id
-          if (currId) {
-            const inputElements = document.querySelectorAll(`#${currId}.section input`);
-            inputElements.forEach((input) => {
-              const { type, id, value, checked, files } = input;
-              if (type === 'text') {
-                formDataDictionary[`${currId}-${id}`] = value;
-              } else if (type === 'radio') {
-                if (checked) {
+          const UnfilledIds = findMissingVals(allUnfilled, preSubmit);
+          const thisId = 'part-suppAB'
+          const unFilledVals = getUnfilledList(thisId);
+          if (unFilledVals.length === 0 && UnfilledIds.length === 0) {
+            currId = event.target.parentElement.id
+            if (currId) {
+              const inputElements = document.querySelectorAll(`#${currId}.section input`);
+              inputElements.forEach((input) => {
+                const { type, id, value, checked, files } = input;
+                if (type === 'text') {
                   formDataDictionary[`${currId}-${id}`] = value;
+                } else if (type === 'date') {
+                  if (value !== '') {
+                    splitDates = value.split('-');
+                    if (id.includes('from') || id.includes('to')) {
+                      formDataDictionary[`${currId}-${id}`] = `${splitDates[1]}/${splitDates[0]}`;
+                    } else {
+                      formDataDictionary[`${currId}-${id}`] = `${splitDates[1]}/${splitDates[2]}/${splitDates[0]}`
+                    }
+                  } else {
+                    formDataDictionary[`${currId}-${id}`] = value
+                  }
+                } else if (type === 'radio') {
+                  if (checked) {
+                    formDataDictionary[`${currId}-${id}`] = value;
+                  }
+                } else if (type === 'checkbox') {
+                  if (!formDataDictionary[`${currId}-${id}`]) {
+                    formDataDictionary[`${currId}-${id}`] = [];
+                  }
+                  if (checked) {
+                    formDataDictionary[`${currId}-${id}`].push(value);
+                  }
+                } else if (type === 'file') {
+                  formDataDictionary[`${currId}-${id}`] = files[0]
                 }
-              } else if (type === 'checkbox') {
-                if (!formDataDictionary[`${currId}-${id}`]) {
-                  formDataDictionary[`${currId}-${id}`] = [];
-                }
-                if (checked) {
-                  formDataDictionary[`${currId}-${id}`].push(value);
-                }
-              } else if (type === 'file') {
-                formDataDictionary[`${currId}-${id}`] = files[0]
-              }
-            });
-            const textareaElements = document.querySelectorAll(`#${currId}.section textarea`);
-            textareaElements.forEach((textarea) => {
-              const { id, value } = textarea;
-              formDataDictionary[`${currId}-${id}`] = value;
-            })
-            const selectElements = document.querySelectorAll(`#${currId}.section select`);
-            selectElements.forEach((select) => {
-              const { id, value } = select;
-              const selectedOption = Array.from(select.options).find(option => option.value === value);
-              const selectedOptionText = selectedOption ? selectedOption.textContent : '';
-              formDataDictionary[`${currId}-${id}`] = selectedOptionText;
-            })
-          }
-          formWindow.style.display = 'none';
-          downloadFormContainer.removeAttribute('style');
-          try {
-            const formData = new FormData();
-            formData.append('email_id', email_id);
-            const textData = {};
-            const listData = {};
-            for (const sectionId in formDataDictionary) {
-              const value = formDataDictionary[sectionId];
-              if (sectionId.includes('hidden')) {
-                const keyList = sectionId.split('-')
-                const Input = document.getElementById(`${keyList[0]}-${keyList[1]}-applicant`)
-                const Inputfiles = Input.querySelector("#hiddenFileInput");
-                const newKey = sectionId.replaceAll("-", "");
-                const signImg = Inputfiles.files[0]
-                formData.append(newKey, signImg);
-
-              } else if (Array.isArray(value) && value.length == 1) {
-                if (value[0] != '') {
-                  textData[sectionId] = value[0];
-                }
-              } else if (Array.isArray(value) && value.length > 1) {
-                listData[sectionId] = value;
-
-              } else if (value != '') {
-                textData[sectionId] = value;
-              }
+              });
+              const textareaElements = document.querySelectorAll(`#${currId}.section textarea`);
+              textareaElements.forEach((textarea) => {
+                const { id, value } = textarea;
+                formDataDictionary[`${currId}-${id}`] = value;
+              })
+              const selectElements = document.querySelectorAll(`#${currId}.section select`);
+              selectElements.forEach((select) => {
+                const { id, value } = select;
+                const selectedOption = Array.from(select.options).find(option => option.value === value);
+                const selectedOptionText = selectedOption ? selectedOption.textContent : '';
+                formDataDictionary[`${currId}-${id}`] = selectedOptionText;
+              })
             }
-            formData.append('texts', JSON.stringify(textData));
-            formData.append('lists', JSON.stringify(listData));
-            const downloadFormText = document.getElementById('downloadForm-title')
-            const downloadForm_Button = document.querySelector(".downloadButton-button #downloadForm")
+            formWindow.style.display = 'none';
+            downloadFormContainer.removeAttribute('style');
+            try {
+              const formData = new FormData();
+              formData.append('email_id', email_id);
+              const textData = {};
+              const listData = {};
+              for (const sectionId in formDataDictionary) {
+                const value = formDataDictionary[sectionId];
+                if (sectionId.includes('hidden')) {
+                  const keyList = sectionId.split('-')
+                  const Input = document.getElementById(`${keyList[0]}-${keyList[1]}-applicant`)
+                  const Inputfiles = Input.querySelector("#hiddenFileInput");
+                  const newKey = sectionId.replaceAll("-", "");
+                  const signImg = Inputfiles.files[0]
+                  formData.append(newKey, signImg);
 
-            const response = await fetch(`${backendUrl}get_formData/`, {
-              method: 'POST',
-              body: formData
-            });
-            if (response.ok) {
-              const responseData = await response.json();
-              downloadFormText.textContent = 'Form Created Successfully!'
-              downloadForm_Button.style.cursor = 'pointer';
-              downloadForm_Button.style.opacity = 1;
-              downloadForm_Button.onclick = `location.href=${responseData.uploaded}`
-              // console.log(responseData);
+                } else if (Array.isArray(value) && value.length == 1) {
+                  if (value[0] != '') {
+                    textData[sectionId] = value[0];
+                  }
+                } else if (Array.isArray(value) && value.length > 1) {
+                  listData[sectionId] = value;
+
+                } else if (value != '') {
+                  textData[sectionId] = value;
+                }
+              }
+              formData.append('texts', JSON.stringify(textData));
+              formData.append('lists', JSON.stringify(listData));
+              const downloadFormText = document.getElementById('downloadForm-title')
+              const downloadForm_Button = document.querySelector(".downloadButton-button #downloadForm")
+
+              const response = await fetch(`${backendUrl}get_formData/`, {
+                method: 'POST',
+                body: formData
+              });
+              if (response.ok) {
+                const responseData = await response.json();
+                downloadFormText.textContent = 'Form Created Successfully!'
+                downloadForm_Button.style.cursor = 'pointer';
+                downloadForm_Button.style.opacity = 1;
+                downloadForm_Button.onclick = function () {
+                  location.href = responseData.uploaded;
+                }
+              } else {
+                console.error(`HTTP error! Status: ${response.status}`)
+              }
+            } catch (error) {
+              console.error('Error submitting form: ', error)
+            }
+
+          } else {
+            if (UnfilledIds.length !== 0) {
+              const nextPartSelection = document.querySelector(`.part-selection a[class="${UnfilledIds[0]}"]`);
+              if (nextPartSelection) {
+                nextPartSelection.click();
+              }
+              const scrollableContent = document.querySelector('.scrollable-content');
+              if (scrollableContent) {
+                scrollableContent.scrollTop = 0;
+              }
             } else {
-              console.error(`HTTP error! Status: ${response.status}`)
+              const suppAB_firstElement = unFilledVals[0].parentElement;
+              suppAB_firstElement.scrollIntoView({ behavior: 'smooth' });
             }
-          } catch (error) {
-            console.error('Error submitting form: ', error)
           }
         });
       }
@@ -1037,9 +1164,8 @@ async function setActiveButton(clickedButton) {
         element.addEventListener('click', handlePartSelection);
       });
 
-      sectionEndElements.forEach(element => {
-        element.addEventListener('click', handleSectionEndClick);
-      });
+
+
       formMenu.addEventListener('click', openFormMenu);
       const addSuppABRespButton = document.getElementById("suppAB-resp");
 
@@ -1131,7 +1257,7 @@ async function setActiveButton(clickedButton) {
         entryDiv.innerHTML = `
                 <div class="text-input" id="full-width">
                 <label for="a-i-date-${usEntryCounter}" id="text-box">Date</label>
-                <input type="text" id="a-i-date-${usEntryCounter}" class="textbox">
+                <input type="date" id="a-i-date-${usEntryCounter}" class="textbox">
                 </div>
                 <div class="text-input" id="full-width">
                 <label for="a-i-place-${usEntryCounter}" id="text-box">Place</label>
@@ -1160,16 +1286,16 @@ async function setActiveButton(clickedButton) {
         addressDiv.innerHTML = `
                 <div class="divided-text" id="three-three-three">
                 <div class="text-input" id="full-width">
-                    <label for="a-iii-address-${addressCounter}-country" id="text-box">Country</label> <input type="text"
-                    id="a-iii-address-${addressCounter}-country" class="textbox">
+                    <label for="a-iii-address-${addressCounter}-country" id="text-box" class="required">Country</label>
+                    <input type="text" id="a-iii-address-${addressCounter}-country" class="textbox required">
                 </div>
                 <div class="text-input" id="full-width">
-                    <label for="a-iii-address-${addressCounter}-state" id="text-box">Department, Province or State</label>
-                    <input type="text" id="a-iii-address-${addressCounter}-state" class="textbox">
+                    <label for="a-iii-address-${addressCounter}-state" id="text-box" class="required">Department, Province or State</label>
+                    <input type="text" id="a-iii-address-${addressCounter}-state" class="textbox required">
                 </div>
                 <div class="text-input" id="full-width">
-                    <label for="a-iii-address-${addressCounter}-city" id="text-box">City/Town</label> <input type="text"
-                    id="a-iii-address-${addressCounter}-city" class="textbox">
+                    <label for="a-iii-address-${addressCounter}-city" id="text-box" class="required">City/Town</label>
+                    <input type="text" id="a-iii-address-${addressCounter}-city" class="textbox required">
                 </div>
                 </div>
                 <div class="text-input" id="full-width">
@@ -1178,12 +1304,12 @@ async function setActiveButton(clickedButton) {
                 </div>
                 <div class="divided-text" id="one-one">
                 <div class="text-input" id="full-width">
-                    <label for="a-iii-address-${addressCounter}-date-from" id="text-box">Dates From</label> <input type="text"
-                    id="a-iii-address-${addressCounter}-date-from" class="textbox">
+                    <label for="a-iii-address-${addressCounter}-date-from" id="text-box" class="required">Dates From</label>
+                    <input type="date" id="a-iii-address-${addressCounter}-date-from" class="textbox required">
                 </div>
                 <div class="text-input" id="full-width">
-                    <label for="a-iii-address-${addressCounter}-date-to" id="text-box">Dates To</label> <input type="text"
-                    id="a-iii-address-${addressCounter}-date-to" class="textbox">
+                    <label for="a-iii-address-${addressCounter}-date-to" id="text-box" class="required">Dates To</label>
+                    <input type="date" id="a-iii-address-${addressCounter}-date-to" class="textbox required">
                 </div>
                 </div>
                 `;
@@ -1205,30 +1331,30 @@ async function setActiveButton(clickedButton) {
         residenceDiv.innerHTML = `
                 <div class="divided-text" id="three-three-three">
                 <div class="text-input" id="full-width">
-                    <label for="a-iii-residence-${residenceCounter}-country" id="text-box">Country</label> <input type="text"
-                    id="a-iii-residence-${residenceCounter}-country" class="textbox">
+                    <label for="a-iii-residence-${residenceCounter}-country" id="text-box" class="required">Country</label>
+                    <input type="text" id="a-iii-residence-${residenceCounter}-country" class="textbox required">
                 </div>
                 <div class="text-input" id="full-width">
-                    <label for="a-iii-residence-${residenceCounter}-state" id="text-box">Department, Province or State</label>
-                    <input type="text" id="a-iii-residence-${residenceCounter}-state" class="textbox">
+                    <label for="a-iii-residence-${residenceCounter}-state" id="text-box" class="required">Department, Province or State</label>
+                    <input type="text" id="a-iii-residence-${residenceCounter}-state" class="textbox required">
                 </div>
                 <div class="text-input" id="full-width">
-                    <label for="a-iii-residence-${residenceCounter}-city" id="text-box">City/Town</label> <input type="text"
-                    id="a-iii-residence-${residenceCounter}-city" class="textbox">
+                    <label for="a-iii-residence-${residenceCounter}-city" id="text-box" class="required">City/Town</label>
+                    <input type="text" id="a-iii-residence-${residenceCounter}-city" class="textbox required">
                 </div>
                 </div>
                 <div class="text-input" id="full-width">
-                <label for="a-iii-residence-${residenceCounter}-street" id="text-box">Number and Street (provide if
-                    any)</label> <input type="text" id="a-iii-residence-${residenceCounter}-street" class="textbox">
+                <label for="a-iii-residence-${residenceCounter}-street" id="text-box" class="required">Number and Street</label>
+                <input type="text" id="a-iii-residence-${residenceCounter}-street" class="textbox required">
                 </div>
                 <div class="divided-text" id="one-one">
                 <div class="text-input" id="full-width">
-                    <label for="a-iii-residence-${residenceCounter}-date-from" id="text-box">Dates From</label> <input type="text"
-                    id="a-iii-residence-${residenceCounter}-date-from" class="textbox">
+                    <label for="a-iii-residence-${residenceCounter}-date-from" id="text-box" class="required">Dates From</label>
+                    <input type="date" id="a-iii-residence-${residenceCounter}-date-from" class="textbox required">
                 </div>
                 <div class="text-input" id="full-width">
-                    <label for="a-iii-residence-${residenceCounter}-date-to" id="text-box">Dates To</label> <input type="text"
-                    id="a-iii-residence-${residenceCounter}-date-to" class="textbox">
+                    <label for="a-iii-residence-${residenceCounter}-date-to" id="text-box" class="required">Dates To</label>
+                    <input type="date" id="a-iii-residence-${residenceCounter}-date-to" class="textbox required">
                 </div>
                 </div>
                 `;
@@ -1252,26 +1378,28 @@ async function setActiveButton(clickedButton) {
         educationDiv.innerHTML = `
                 <div class="divided-text" id="one-one">
                 <div class="text-input" id="full-width">
-                    <label for="a-iii-education-${eduCounter}-name" id="text-box">Name of School</label> <input type="text"
-                    id="a-iii-education-${eduCounter}-name" class="textbox">
+                    <label for="a-iii-education-${eduCounter}-name" id="text-box" class="required">Name of School</label> <input type="text"
+                    id="a-iii-education-${eduCounter}-name" class="textbox required">
                 </div>
                 <div class="text-input" id="full-width">
-                    <label for="a-iii-education-${eduCounter}-type" id="text-box">Type of School</label> <input type="text"
-                    id="a-iii-education-${eduCounter}-type" class="textbox">
+                    <label for="a-iii-education-${eduCounter}-type" id="text-box" class="required">Type of School</label> <input type="text"
+                    id="a-iii-education-${eduCounter}-type" class="textbox required">
                 </div>
                 </div>
                 <div class="text-input" id="full-width">
-                <label for="a-iii-education-${eduCounter}-loc" id="text-box">Location (Address)</label> <input type="text"
-                    id="a-iii-education-${eduCounter}-loc" class="textbox">
+                <label for="a-iii-education-${eduCounter}-loc" id="text-box" class="required">Location (Address)</label> <input type="text"
+                    id="a-iii-education-${eduCounter}-loc" class="textbox required">
                 </div>
                 <div class="divided-text" id="one-one">
                 <div class="text-input" id="full-width">
-                    <label for="a-iii-education-${eduCounter}-dates-from" id="text-box">Dates From</label> <input type="text"
-                    id="a-iii-education-${eduCounter}-dates-from" class="textbox">
+                    <label for="a-iii-education-${eduCounter}-dates-from" id="text-box" class="required">Dates From</label>
+                    <input type="date"
+                    id="a-iii-education-${eduCounter}-dates-from" class="textbox required">
                 </div>
                 <div class="text-input" id="full-width">
-                    <label for="a-iii-education-${eduCounter}-dates-to" id="text-box">Dates To</label> <input type="text"
-                    id="a-iii-education-${eduCounter}-dates-to" class="textbox">
+                    <label for="a-iii-education-${eduCounter}-dates-to" id="text-box" class="required">Dates To</label>
+                    <input type="date"
+                    id="a-iii-education-${eduCounter}-dates-to" class="textbox required">
                 </div>
                 </div>
                 `;
@@ -1293,27 +1421,29 @@ async function setActiveButton(clickedButton) {
         employmentDiv.id = `employment-${emplCounter}`;
         employmentDiv.innerHTML = `
                 <div class="text-input" id="full-width">
-                <label for="a-iii-employment-${emplCounter}-occ" id="text-box">Your Occupation</label> <input type="text"
-                    id="a-iii-employment-${emplCounter}-occ" class="textbox">
+                <label for="a-iii-employment-${emplCounter}-occ" id="text-box" class="required">Your Occupation</label> <input type="text"
+                    id="a-iii-employment-${emplCounter}-occ" class="textbox required">
                 </div>
                 <div class="divided-text" id="one-one">
                 <div class="text-input" id="full-width">
-                    <label for="a-iii-employment-${emplCounter}-name" id="text-box">Name of Employer</label> <input type="text"
-                    id="a-iii-employment-${emplCounter}-name" class="textbox">
+                    <label for="a-iii-employment-${emplCounter}-name" id="text-box" class="required">Name of Employer</label> <input type="text"
+                    id="a-iii-employment-${emplCounter}-name" class="textbox required">
                 </div>
                 <div class="text-input" id="full-width">
-                    <label for="a-iii-employment-${emplCounter}-address" id="text-box">Address of Employer</label> <input type="text"
-                    id="a-iii-employment-${emplCounter}-address" class="textbox">
+                    <label for="a-iii-employment-${emplCounter}-address" id="text-box" class="required">Address of Employer</label> <input type="text"
+                    id="a-iii-employment-${emplCounter}-address" class="textbox required">
                 </div>
                 </div>
                 <div class="divided-text" id="one-one">
                 <div class="text-input" id="full-width">
-                    <label for="a-iii-employment-${emplCounter}-dates-from" id="text-box">Dates From</label> <input type="text"
-                    id="a-iii-employment-${emplCounter}-dates-from" class="textbox">
+                    <label for="a-iii-employment-${emplCounter}-dates-from" id="text-box" class="required">Dates From</label>
+                    <input type="date"
+                    id="a-iii-employment-${emplCounter}-dates-from" class="textbox required">
                 </div>
                 <div class="text-input" id="full-width">
-                    <label for="a-iii-employment-${emplCounter}-dates-to" id="text-box">Dates To</label> <input type="text"
-                    id="a-iii-employment-${emplCounter}-dates-to" class="textbox">
+                    <label for="a-iii-employment-${emplCounter}-dates-to" id="text-box" class="required">Dates To</label>
+                    <input type="date"
+                    id="a-iii-employment-${emplCounter}-dates-to" class="textbox required">
                 </div>
                 </div>
                 `;
@@ -1345,17 +1475,19 @@ async function setActiveButton(clickedButton) {
                 </div>
                 <div class="divided-text" id="one-one">
                 <div class="text-input" id="full-width">
-                    <label for="a-iii-sibling-${siblingCounter}-name" id="text-box">Full Name</label> <input type="text"
-                    id="a-iii-sibling-${siblingCounter}-name" class="textbox">
+                    <label for="a-iii-sibling-${siblingCounter}-name" id="text-box" class="required">Full Name</label> <input type="text"
+                    id="a-iii-sibling-${siblingCounter}-name" class="textbox required">
                 </div>
                 <div class="text-input" id="full-width">
-                    <label for="a-iii-sibling-${siblingCounter}-ccob" id="text-box">City/Town and Country of Birth</label>
-                    <input type="text" id="a-iii-sibling-${siblingCounter}-ccob" class="textbox">
+                    <label for="a-iii-sibling-${siblingCounter}-ccob" id="text-box" class="required">City/Town and Country of Birth</label>
+                    <input type="text" id="a-iii-sibling-${siblingCounter}-ccob" class="textbox required">
                 </div>
                 </div>
-                <div class="text-input" id="full-width">
-                <label for="a-iii-sibling-${siblingCounter}-loc" id="text-box">Current Location</label> <input type="text"
-                    id="a-iii-sibling-${siblingCounter}-loc" class="textbox">
+                <div class="a-iii-sibling-${siblingCounter}-loc">
+                  <div class="text-input" id="full-width">
+                  <label for="a-iii-sibling-${siblingCounter}-loc" id="text-box">Current Location</label>
+                  <input type="text" id="a-iii-sibling-${siblingCounter}-loc" class="textbox">
+                  </div>
                 </div>
                 `;
         const addEntriesDiv = addSiblingsButton.parentNode;
@@ -1420,14 +1552,27 @@ async function setActiveButton(clickedButton) {
         radio.addEventListener('change', handlePartCRadioChange);
       });
       handlePartCRadioChange();
+
+
       const assistanceCheckRadios = document.querySelectorAll('input[name="assistanceCheck"]');
       const assistantListDiv = document.querySelector('.assistant-list');
+      const assistant_requiredElements = assistantListDiv.querySelectorAll(".required");
       function toggleAssistantList(event = { target: assistanceCheckRadios[0] }) {
         const selectedRadio = event.target;
         if (selectedRadio.checked && selectedRadio.value === 'yes') {
           assistantListDiv.style.display = 'block';
+          assistant_requiredElements.forEach(element => {
+            if (!element.classList.contains('required')) {
+              element.classList.add('required');
+            }
+          });
         } else {
           assistantListDiv.style.display = 'none';
+          assistant_requiredElements.forEach(element => {
+            if (element.classList.contains('required')) {
+              element.classList.remove('required');
+            }
+          });
         }
       }
       assistanceCheckRadios.forEach(radio => {
@@ -1447,12 +1592,12 @@ async function setActiveButton(clickedButton) {
         assistantDiv.innerHTML = `
                 <div class="divided-text" id="one-one">
                 <div class="text-input" id="full-width">
-                    <label for="d-assistName-${assistantCounter}" id="text-box">Name</label>
-                    <input type="text" id="d-assistName-${assistantCounter}" class="textbox">
+                    <label for="d-assistName-${assistantCounter}" id="text-box" class="required">Name</label>
+                    <input type="text" id="d-assistName-${assistantCounter}" class="textbox required">
                 </div>
                 <div class="text-input" id="full-width">
-                    <label for="d-relationship-${assistantCounter}" id="text-box">Relationship</label>
-                    <input type="text" id="d-relationship-${assistantCounter}" class="textbox">
+                    <label for="d-relationship-${assistantCounter}" id="text-box" class="required">Relationship</label>
+                    <input type="text" id="d-relationship-${assistantCounter}" class="textbox required">
                 </div>
                 </div>
                 `;
@@ -1463,21 +1608,43 @@ async function setActiveButton(clickedButton) {
 
       const marriedToggle = document.querySelector("input[id='spouseCheck']");
       const spouseDiv = document.querySelector(".spouse");
+      const spouse_requiredElements = spouseDiv.querySelectorAll(".required");
       const childrenToggle = document.querySelector("input[id='childrenCheckInp']");
-      const childrenDiv = document.querySelector('.children')
+      const childrenDiv = document.querySelector('.children');
+      const children_requiredElements = childrenDiv.querySelectorAll(".required");
       function toggleSpouseInfo() {
         if (marriedToggle.checked) {
           spouseDiv.style.display = "none";
+          spouse_requiredElements.forEach(element => {
+            if (element.classList.contains('required')) {
+              element.classList.remove('required');
+            }
+          })
         } else {
           spouseDiv.style.display = "block";
+          spouse_requiredElements.forEach(element => {
+            if (!element.classList.contains('required')) {
+              element.classList.add('required');
+            }
+          })
         }
       }
 
       function toggleChildrenInfo() {
         if (childrenToggle.checked) {
           childrenDiv.style.display = "none";
+          children_requiredElements.forEach(element => {
+            if (element.classList.contains('required')) {
+              element.classList.remove('required');
+            }
+          })
         } else {
           childrenDiv.style.display = "block";
+          children_requiredElements.forEach(element => {
+            if (!element.classList.contains('required')) {
+              element.classList.add('required');
+            }
+          })
         }
       }
       marriedToggle.addEventListener('change', toggleSpouseInfo);
@@ -1498,21 +1665,21 @@ async function setActiveButton(clickedButton) {
         childDiv.id = `child-${childCounter}`;
         childDiv.innerHTML = `
                     <div class="text-input" id="full-width">
-                    <label for="a-ii-child-${childCounter}-firstName" id="text-box">First Name</label> <input type="text"
-                        id="a-ii-child-${childCounter}-firstName" class="textbox">
+                    <label for="a-ii-child-${childCounter}-firstName" id="text-box" class="required">First Name</label> <input type="text"
+                        id="a-ii-child-${childCounter}-firstName" class="textbox required">
                     </div>
                     <div class="text-input" id="full-width">
                     <label for="a-ii-child-${childCounter}-middleName" id="text-box">Middle Name</label> <input type="text"
                         id="a-ii-child-${childCounter}-middleName" class="textbox">
                     </div>
                     <div class="text-input" id="full-width">
-                    <label for="a-ii-child-${childCounter}-lastName" id="text-box">Complete Last Name</label> <input type="text"
-                        id="a-ii-child-${childCounter}-lastName" class="textbox">
+                    <label for="a-ii-child-${childCounter}-lastName" id="text-box" class="required">Complete Last Name</label> <input type="text"
+                        id="a-ii-child-${childCounter}-lastName" class="textbox required">
                     </div>
                     <div class="divided-text" id="one-three">
                     <div class="radio-input" id="full-width">
-                        <label for="a-ii-child-${childCounter}-gender" id="text-box">Gender:</label>
-                        <div class="radio-group">
+                        <label for="a-ii-child-${childCounter}-gender" id="text-box" class="required">Gender:</label>
+                        <div class="radio-group required">
                         <div class="radio-set">
                             <input type="radio" value="male" name="child-${childCounter}-gender" id="a-ii-child-${childCounter}-gender"> <label for="male" id="radio-set">Male</label>
                         </div>
@@ -1523,8 +1690,8 @@ async function setActiveButton(clickedButton) {
                         </div>
                     </div>
                     <div class="radio-input" id="full-width">
-                        <label for="a-ii-child-${childCounter}-maritalSts" id="text-box">Marital Status:</label>
-                        <div class="radio-group">
+                        <label for="a-ii-child-${childCounter}-maritalSts" id="text-box" class="required">Marital Status:</label>
+                        <div class="radio-group required">
                         <div class="radio-set">
                             <input type="radio" value="single" name="child-${childCounter}-maritalSts" id="a-ii-child-${childCounter}-maritalSts"> <label for="single"
                             id="radio-set">Single</label>
@@ -1558,27 +1725,28 @@ async function setActiveButton(clickedButton) {
                     </div>
                     <div class="divided-text" id="one-three">
                     <div class="text-input" id="full-width">
-                        <label for="a-ii-child-${childCounter}-dob" id="text-box">Date of Birth</label> <input type="text"
-                        id="a-ii-child-${childCounter}-dob" class="textbox">
+                        <label for="a-ii-child-${childCounter}-dob" id="text-box" class="required">Date of Birth</label>
+                        <input type="date"
+                        id="a-ii-child-${childCounter}-dob" class="textbox required">
                     </div>
                     <div class="text-input" id="full-width">
-                        <label for="a-ii-child-${childCounter}-ccob" id="text-box">City and Country of Birth</label> <input type="text"
-                        id="a-ii-child-${childCounter}-ccob" class="textbox">
+                        <label for="a-ii-child-${childCounter}-ccob" id="text-box" class="required">City and Country of Birth</label> <input type="text"
+                        id="a-ii-child-${childCounter}-ccob" class="textbox required">
                     </div>
                     </div>
                     <div class="divided-text" id="three-three-three">
                     <div class="text-input" id="full-width">
-                        <label for="a-ii-child-${childCounter}-citizenship" id="text-box">Nationality (Citizenship)</label>
-                        <input type="text" id="a-ii-child-${childCounter}-citizenship" class="textbox">
+                        <label for="a-ii-child-${childCounter}-citizenship" id="text-box" class="required">Nationality (Citizenship)</label>
+                        <input type="text" id="a-ii-child-${childCounter}-citizenship" class="textbox required">
                     </div>
                     <div class="text-input" id="full-width">
-                        <label for="a-ii-child-${childCounter}-race" id="text-box">Race, Ethnic or Tribal Group</label> <input type="text"
-                        id="a-ii-child-${childCounter}-race" class="textbox">
+                        <label for="a-ii-child-${childCounter}-race" id="text-box" class="required">Race, Ethnic or Tribal Group</label> <input type="text"
+                        id="a-ii-child-${childCounter}-race" class="textbox required">
                     </div>
                     </div>
                     <div class="radio-input" id="full-width">
-                    <label for="a-ii-child-${childCounter}-UScheck" id="text-box">Is this child in the U.S.?</label>
-                    <div class="radio-group">
+                    <label for="a-ii-child-${childCounter}-UScheck" id="text-box" class="required">Is this child in the U.S.?</label>
+                    <div class="radio-group required">
                         <div class="radio-set">
                         <input type="radio" value="yes" name="child-${childCounter}-childUS" id="a-ii-child-${childCounter}-UScheck"> <label for="yes" id="radio-set">Yes</label>
                         </div>
@@ -1587,14 +1755,16 @@ async function setActiveButton(clickedButton) {
                         </div>
                     </div>
                     </div>
-                    <div class="text-input" id="full-width">
-                    <label for="a-ii-child-${childCounter}-loc" id="text-box">Specify this child's location</label> <input type="text"
-                        id="a-ii-child-${childCounter}-loc" class="textbox">
+                    <div class="a-ii-child-${childCounter}-loc">
+                      <div class="text-input" id="full-width">
+                      <label for="a-ii-child-${childCounter}-loc" id="text-box">Specify this child's location</label> <input type="text"
+                          id="a-ii-child-${childCounter}-loc" class="textbox">
+                      </div>
                     </div>
                     <div class="divided-text" id="one-three">
                     <div class="text-input" id="full-width">
                         <label for="a-ii-child-${childCounter}-lastEntry-date" id="text-box">Date of last entry into the
-                        US</label> <input type="text" id="a-ii-child-${childCounter}-lastEntry-date" class="textbox">
+                        US</label> <input type="date" id="a-ii-child-${childCounter}-lastEntry-date" class="textbox">
                     </div>
                     <div class="text-input" id="full-width">
                         <label for="a-ii-child-${childCounter}-lastEntry-place" id="text-box">Place of last entry into the
@@ -1611,19 +1781,20 @@ async function setActiveButton(clickedButton) {
                         type, if any)</label> <input type="text" id="a-ii-child-${childCounter}-lastEntry-status" class="textbox">
                     </div>
                     <div class="text-input" id="full-width">
-                        <label for="a-ii-child-${childCounter}-currSts" id="text-box">Current status</label> <input type="text"
-                        id="a-ii-child-${childCounter}-currSts" class="textbox">
+                        <label for="a-ii-child-${childCounter}-currSts" id="text-box" class="required">Current status</label> <input type="text"
+                        id="a-ii-child-${childCounter}-currSts" class="textbox required">
                     </div>
                     </div>
                     <div class="text-input" id="full-width">
                     <label for="a-ii-child-${childCounter}-currExp" id="text-box">What is the expiration date of his/her
-                        authorized stay, if any?</label> <input type="text" id="a-ii-child-${childCounter}-currExp" class="textbox">
+                        authorized stay, if any?</label>
+                        <input type="date" id="a-ii-child-${childCounter}-currExp" class="textbox">
                     </div>
                     <div class="divided-text" id="one-one">
                     <div class="radio-input" id="full-width">
-                        <label for="a-ii-child-${childCounter}-immiProc" id="text-box">Is your child in Immigration Court
+                        <label for="a-ii-child-${childCounter}-immiProc" id="text-box" class="required">Is your child in Immigration Court
                         proceedings</label>
-                        <div class="radio-group">
+                        <div class="radio-group required">
                         <div class="radio-set">
                             <input type="radio" value="yes" name="child-${childCounter}-immiProc" id="a-ii-child-${childCounter}-immiProc"> <label for="yes" id="radio-set">Yes</label>
                         </div>
@@ -1708,14 +1879,17 @@ function closeDisclaimer() {
 
 
 async function createLoginCookie(username, firstName, lastName, email, profilePicUrl, user_location = null) {
-  const data = await getProfilePic(email_id);
+  const data = await getProfilePic(email);
+  let newProfilePic;
   if (data.result) {
-    profilePicUrl = data.profilePic;
+    newProfilePic = data.profilePic;
+  } else {
+    newProfilePic = profilePicUrl;
   }
   user_location = user_location || '';
   const expirationDate = new Date();
   expirationDate.setDate(expirationDate.getDate() + 14);
-  const cookieValue = `username=${username}|${firstName}|${lastName}|${email}|${user_location}|${profilePicUrl}; expires=${expirationDate.toUTCString()}; path=/`;
+  const cookieValue = `username=${username}|${firstName}|${lastName}|${email}|${user_location}|${newProfilePic}; expires=${expirationDate.toUTCString()}; path=/`;
   document.cookie = cookieValue;
 }
 
@@ -1862,13 +2036,13 @@ function loadProfileContent(contentDiv, userData) {
   });
 
   const saveChangesBtn = profileForm.querySelector('#saveChanges');
-  const email_id = getCookie('username').email
+  const email_id = userData.email;
   const newUsername = profileForm.querySelector('#username');
   const newUsernameError = profileForm.querySelector('#usernameError')
   const firstNameInput = profileForm.querySelector('#firstname')
   const lastNameInput = profileForm.querySelector('#lastname')
   const locationInput = profileForm.querySelector('#location')
-  let newProfilePic = getCookie('username').profilePicUrl;
+  let newProfilePic = userData.profilePic;
   const profilePicInput = profileForm.querySelector('#profilePicInput');
   const profilePicCanvas = profileForm.querySelector("#profilePicCanvas");
   profilePicInput.addEventListener('change', () => {

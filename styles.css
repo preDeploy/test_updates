@@ -549,9 +549,9 @@ a[id="assistant"] {
   left: calc(50vw + 5px);
   width: calc(50vw + 10px);
   background-color: #FFFF;
-  max-height: 78vh;
-  overflow: scroll;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-height: 75vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .section {
@@ -628,6 +628,7 @@ a[id="assistant"] {
   width: 100%;
 }
 
+
 .text-input,
 .textarea-input {
   display: flex;
@@ -662,6 +663,18 @@ a[id="assistant"] {
 .textbox {
   height: 40px;
 }
+
+/* .textbox.required,
+.textarea.required {
+  border-color: #F57E77;
+} */
+
+/* #text-box.required,
+.radio-set.required label[id="radio-set"],
+.checkbox-set.required label[id="checkbox-set"]{
+  color: #F57E77;
+} */
+
 
 .textarea {
   resize: none;
@@ -717,6 +730,13 @@ a[id="assistant"] {
   cursor: pointer;
 }
 
+/* .radio-set.required input[type="radio"],
+.checkbox-set.required input[type="checkbox"] {
+  border-color: #F57E77;
+} */
+
+
+
 .radio-set input[type="radio"]:checked {
   border: 1px solid #5080DE;
 }
@@ -762,6 +782,42 @@ a[id="assistant"] {
   flex-direction: row;
   gap: 20px;
   align-content: center;
+}
+
+#tel-divide.divided-text {
+  margin-top: 0px;
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+}
+
+#tel-divide.divided-text input[type="text"]{
+  border-radius: 0px;
+}
+
+#tel-divide>div:first-child input[type="text"]{
+  text-align: end;
+  border-radius: 10px 0px 0px 10px;
+}
+
+#tel-divide>div:last-child input[type="text"]{
+  border-radius: 0px 10px 10px 0px;
+}
+
+
+#tel-divide>div:first-child {
+  flex: 1;
+}
+
+#tel-divide>div:last-child {
+  flex: 10;
+}
+
+#three-one,
+#three-three-three,
+#one-three,
+#one-one {
+  flex-wrap: wrap;
 }
 
 #three-one>div:first-child {
@@ -852,6 +908,7 @@ input:checked+.slider-toggle:before {
   display: flex;
   flex-direction: row;
   justify-content: center;
+  cursor: pointer;
 }
 
 .add-entries {
@@ -962,15 +1019,11 @@ input:checked+.slider-toggle:before {
   text-align: center;
 }
 
-.sign-input.disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
+/* .sign-input.required {
+  border-color: #F57E77;
+  background-color: #fdcdca6b;
 
-.sign-input.disabled input[id="hiddenFileInput"],
-.sign-input.disabled .sign-text {
-  cursor: not-allowed;
-}
+} */
 
 .sign-text {
   position: relative;
@@ -1018,6 +1071,28 @@ input:checked+.slider-toggle:before {
   display: flex;
   flex-direction: column;
   gap: 25px;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  position: relative;
+  z-index: 1;
+  right: 0;
+  opacity: 0;
+}
+
+input[type="date"]::-webkit-datetime-edit-month-field,
+input[type="date"]::-webkit-datetime-edit-day-field,
+input[type="date"]::-webkit-datetime-edit-year-field,
+input[type="date"]::-webkit-datetime-edit-text {
+  font-family: inherit;
+  text-transform: uppercase;
+  font-family: monospace;
+}
+
+input[type="date"] {
+  background-image: url('https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/form/calendar.svg');
+  background-repeat: no-repeat;
+  background-position: right 8px center;
 }
 
 .hidden {
@@ -2162,6 +2237,27 @@ input[id="lastname"] {
 
 
 @media (max-width: 1200px) {
+  .part-selector {
+    position: fixed;
+    transform: translateY(-12vh);
+    top: 32px;
+    right: calc(-10vw + 32px);
+
+  }
+
+  .form-container {
+    transform: translateX(-50%);
+    left: 50%;
+    width: 80vw;
+    max-width: 950px;
+  }
+
+  .scrollable-content {
+    width: 80vw;
+    left: 50%;
+    max-width: 950px;
+  }
+
   .plan-selection {
     width: 5vw;
   }
@@ -2304,6 +2400,11 @@ input[id="lastname"] {
 
 
 @media (max-width: 600px) {
+  .scrollable-content {
+    max-height: 70vh;
+  }
+
+
   .message-bubble {
     max-width: calc(min(85vw, 250px));
   }
@@ -2473,6 +2574,11 @@ input[id="lastname"] {
 }
 
 @media (max-width: 472px) {
+  .scrollable-content {
+    max-height: 60vh;
+  }
+
+
 
   .profileButtons {
     position: fixed;
@@ -2508,6 +2614,14 @@ input[id="lastname"] {
 }
 
 @media (max-width: 375px) {
+  .scrollable-content {
+    font-size: 12px;
+  }
+
+  .sign-subtitle {
+    font-size: 9px;
+  }
+
   .plan-selection {
     width: 150px;
   }

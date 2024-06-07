@@ -1,6 +1,6 @@
-from fastapi import Body, FastAPI, Request, HTTPException, Depends, File, UploadFile, Form
+from fastapi import FastAPI, Request, Depends, File, UploadFile, Form
 from fastapi.responses import JSONResponse
-from typing import Optional, List, Union
+from typing import Optional, List
 from PIL import Image
 import io
 from openai import OpenAI
@@ -11,15 +11,13 @@ from datetime import datetime
 import os
 import time
 import asyncio
-from sqlalchemy import MetaData, create_engine, Column, String, Table, inspect, text, select, literal_column
+from sqlalchemy import MetaData, create_engine, Column, String, Table, inspect, text
 from sqlalchemy.orm import sessionmaker, Session, declarative_base
 import stripe
 import boto3
-from boto3.s3.transfer import TransferConfig
 import re
 import string
 from pathlib import Path
-import csv
 from dotenv import load_dotenv
 import cv2
 import numpy as np
@@ -625,6 +623,8 @@ class formFiller():
             ["part-suppAB-suppAB-ques-1", "-"],
             ["part-suppAB-suppAB-resp-0", "suppB_dets"],
             ["part-suppAB-suppAB-resp-1", "-"],
+            ["part-a-i-a-i-telArea", "ai_areaCode"],            
+            ["part-a-i-a-i-mailTelArea", "ai_MailareaCode"],
         ]
 
         self.web_form_data = {
@@ -1080,6 +1080,8 @@ class formFiller():
             449: ["part-suppAB-suppAB-ques-1", ""],
             450: ["part-suppAB-suppAB-resp-0", ""],
             451: ["part-suppAB-suppAB-resp-1", ""],
+            452: ["part-a-i-a-i-telArea", ""],
+            453: ["part-a-i-a-i-mailTelArea", ""],
 
         }
         self.pdf_path = pdf_path
@@ -1216,7 +1218,7 @@ class formFiller():
             outputPath = inputPath
         subprocess.run(["pdfcrop", "--margins", "0", inputPath, outputPath])
 
-    def signPDF(self, signature_info, filename='i589_flat.pdf'):
+    def signPDF(self, signature_info, filename='./i589_flat.pdf'):
         file_name = os.path.basename(filename)
         file_name_without_extension = os.path.splitext(file_name)[0]
         temp_path = "./temp"
@@ -1273,7 +1275,7 @@ class formFiller():
             for page in range(len(input_pdf_reader.pages)):
                 output_pdf.add_page(input_pdf_reader.pages[page])
             pdf_file.close()
-        output_path = 'i589_signed.pdf'
+        output_path = './i589_signed.pdf'
         with open(output_path, 'wb') as output_file:
             output_pdf.write(output_file)
         files = glob.glob('temp/*')
@@ -1289,14 +1291,14 @@ class formFiller():
                         if keys == detail[0]:
                             data_dict[keys] = frontend_resp[keys]
         fillpdfs.write_fillable_pdf(
-            'i589_template.pdf', 'i589_filled.pdf', data_dict)
+            './i589_template.pdf', './i589_filled.pdf', data_dict)
         fillpdfs.flatten_pdf(
-            'i589_filled.pdf', 'i589_flat.pdf', as_images=True)
+            './i589_filled.pdf', './i589_flat.pdf', as_images=True)
         signInfo = [[sign, frontend_resp[keys][0], frontend_resp[keys][1]]
                     for keys in frontend_resp if 'sign' in keys]
         self.signPDF(signInfo)
-        os.remove('i589_filled.pdf')
-        os.remove('i589_flat.pdf')
+        os.remove('./i589_filled.pdf')
+        os.remove('./i589_flat.pdf')
 
 
 class User(Base):
@@ -1678,6 +1680,7 @@ async def getPassword(request: Request, db: Session = Depends(sql_db.get_db)):
         if user.password != data['password']:
             return {'resp': 'Incorrect Password'}
         else:
+            print(user.email)
             return {'resp': True,
                     'username': user.username,
                     'firstName': user.first_name,
@@ -1852,10 +1855,13 @@ async def getForm(
     lists: Optional[str] = Form(...),
     db: Session = Depends(sql_db.get_db)
 ):
-    sign_map = {
+    idealSign_map = {
         "d_sign": [9, [0.55, 0.23]],
         "suppA_sign": [11, [0.13, 0.69]],
         "suppB_sign": [12, [0.15, 0.65]],
+    }
+    sign_map = {
+        "d_sign": [9, [0.55, 0.23]]
     }
     text_data = json.loads(texts) if texts else {}
     newTextData = {}
@@ -1876,12 +1882,16 @@ async def getForm(
     content = await partdhiddenFileInput.read()
     with open(f'./temp/{partdhiddenFileInput.filename}', 'wb') as f:
         f.write(content)
-
+    for keyWeb in upData:
+        if f'{keyWeb[:5]}_sign' in list(idealSign_map.keys())[1:]:
+            sign_map[f'{keyWeb[:5]}_sign'] = idealSign_map[f'{keyWeb[:5]}_sign']
     tempFile = f'./temp/{partdhiddenFileInput.filename}'
     sign_keys = [key for key, value in ff.web_form_data.items() if isinstance(
         value, (list, tuple)) and value[0] == "part-d-hiddenFileInput"]
     for sKey in sign_keys:
-        upData[ff.key_mapping[sKey][1]] = sign_map[ff.key_mapping[sKey][1]]
+        signKey = ff.key_mapping[sKey][1]
+        if signKey in sign_map:
+            upData[ff.key_mapping[sKey][1]] = sign_map[ff.key_mapping[sKey][1]]
     ff.main(upData, tempFile)
     file = './i589_signed.pdf'
     user = db.query(User).filter(User.email == email_id).first()
@@ -1889,7 +1899,7 @@ async def getForm(
     tmp_filename = s3.getLegalName(file)
     temp_file_path = Path('./temp') / tmp_filename
     temp_file_path.parent.mkdir(parents=True, exist_ok=True)
-    s3_key = s3.checkfile(destination_dir, tmp_filename)
+    s3_key = f'{destination_dir}/i589_signed.pdf'
 
     try:
         os.rename(file, temp_file_path)
@@ -1901,8 +1911,9 @@ async def getForm(
     temp_file_path = Path('./temp') / tmp_filename
     temp_file_path.parent.mkdir(parents=True, exist_ok=True)
     s3_key = s3.checkfile(destination_dir, tmp_filename)
-    _ = s3.upload_files(str(temp_file_path), s3_key)
-    # os.remove(temp_file_path)
+    formUrl = s3.upload_files(str(temp_file_path), s3_key)
+    sql_db.add_files(user.username, 'forms', formUrl)
+    os.remove(temp_file_path)
     return {"uploaded": file_url}
 
 
