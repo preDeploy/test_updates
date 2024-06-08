@@ -44,14 +44,6 @@ function getCookie(name) {
     const [username, firstName, lastName, email, user_location, profilePicUrl] = cookieData.split('|');
     return { username, firstName, lastName, email, user_location, profilePicUrl };
   }
-  // else {
-  //     const username = 'rajanpande';
-  //     const firstName = 'Rajan';
-  //     const lastName = 'Pande';
-  //     const email = 'panderajan1996@gmail.com';
-  //     const profilePicUrl = 'https://lh3.googleusercontent.com/a/ACg8ocLSpnnjCN1nbp0YmOax2v3KBzzedo_X9pxtXujLphgR_xqi9NuG7g=s288-c-no';
-  //     return { username, firstName, lastName, email, profilePicUrl };
-  // }
   return null;
 }
 
@@ -834,7 +826,7 @@ async function setActiveButton(clickedButton) {
       const diffMailAddCheckbox = document.getElementById("diffMailAdd");
       const diffMailAddContainer = document.getElementById("diffMailAdd-container");
 
-      function openFormMenu() {        
+      function openFormMenu() {
         const getActivePart = formParts.querySelector('#active a[id="part-selection"]').className;
         if (formParts.style.display == 'flex') {
           formParts.style.display = 'none';
@@ -934,6 +926,10 @@ async function setActiveButton(clickedButton) {
                   unfilledValues.push(requiredElements[ind])
                 }
               }
+            } else if (requiredElements[ind].tagName === 'SELECT') {
+              if (requiredElements[ind].value === '') {
+                unfilledValues.push(requiredElements[ind])
+              }
             }
           } else {
             const selectElement = document.querySelector(`#${currentSectionId}.section select[name="part"]`);
@@ -948,6 +944,48 @@ async function setActiveButton(clickedButton) {
         return unfilledValues;
 
       }
+      
+      function getCountryCodes(){
+        let countryCodesData = []
+        fetch('countryCodes.json')
+        .then(response => response.json())
+        .then(data => {
+          countryCodesData = data;
+          return countryCodesData
+        })
+        .catch(error => console.error('Error fetching country codes:', error));
+
+      }
+
+      const areaCodeTag = document.querySelectorAll('select[name="areaCodes"]');
+
+      function populateCountryCodeSelect(element) {
+        let countryCodes = []
+        fetch('countryCodes.json')
+        .then(response => response.json())
+        .then(data => {
+          countryCodes = data;
+          element.innerHTML = '';
+          const emptyOption = document.createElement("option");
+          emptyOption.value = '';
+          element.add(emptyOption);
+          countryCodes.forEach(data => {
+            const option = document.createElement("option");
+            option.value = data.code;
+            option.text = `${data.code} (${data.country})`;
+            element.add(option)
+          })
+        })
+        .catch(error => console.error('Error fetching country codes:', error));
+
+      }
+
+      areaCodeTag.forEach(element => {
+        // console.log(element)
+        populateCountryCodeSelect(element);
+      })
+
+
       const formDataDictionary = {};
       const allUnfilled = [];
       function handleSectionEndClick(event) {
@@ -996,9 +1034,13 @@ async function setActiveButton(clickedButton) {
           const selectElements = document.querySelectorAll(`#${currentSectionId}.section select`);
           selectElements.forEach((select) => {
             const { id, value } = select;
-            const selectedOption = Array.from(select.options).find(option => option.value === value);
-            const selectedOptionText = selectedOption ? selectedOption.textContent : '';
-            formDataDictionary[`${currentSectionId}-${id}`] = selectedOptionText;
+            if (currentSectionId == 'part-suppAB') {              
+              const selectedOption = Array.from(select.options).find(option => option.value === value);
+              const selectedOptionText = selectedOption ? selectedOption.textContent : '';
+              formDataDictionary[`${currentSectionId}-${id}`] = selectedOptionText;
+            } else {
+              formDataDictionary[`${currentSectionId}-${id}`] = value;
+            }
           })
 
           const currentIndex = sectionOrder.indexOf(currentSectionId);

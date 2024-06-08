@@ -785,32 +785,20 @@ a[id="assistant"] {
 }
 
 #tel-divide.divided-text {
-  margin-top: 0px;
   display: flex;
-  flex-direction: row;
-  gap: 0px;
+  flex-direction: row;  
 }
 
-#tel-divide.divided-text input[type="text"]{
-  border-radius: 0px;
-}
-
-#tel-divide>div:first-child input[type="text"]{
+#tel-divide input[id="a-i-telArea"] {
   text-align: end;
-  border-radius: 10px 0px 0px 10px;
 }
-
-#tel-divide>div:last-child input[type="text"]{
-  border-radius: 0px 10px 10px 0px;
-}
-
 
 #tel-divide>div:first-child {
   flex: 1;
 }
 
 #tel-divide>div:last-child {
-  flex: 10;
+  flex: 4;
 }
 
 #three-one,

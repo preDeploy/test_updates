@@ -623,7 +623,7 @@ class formFiller():
             ["part-suppAB-suppAB-ques-1", "-"],
             ["part-suppAB-suppAB-resp-0", "suppB_dets"],
             ["part-suppAB-suppAB-resp-1", "-"],
-            ["part-a-i-a-i-telArea", "ai_areaCode"],            
+            ["part-a-i-a-i-telArea", "ai_areaCode"],
             ["part-a-i-a-i-mailTelArea", "ai_MailareaCode"],
         ]
 
