@@ -1,10 +1,12 @@
 const buttons = document.querySelectorAll('.button');
 const chatHistory = document.querySelector('.chat-container');
 const messageInput = document.getElementById('user-input');
+const formInput = document.getElementById('form-chatInput');
 const sendButton = document.getElementById('send');
 const chatWindow = document.querySelector('.chat-bar-container');
 const formWindow = document.querySelector('.form-container');
 const chatMessages = document.querySelector('.chat-messages');
+const formBotMessages = document.querySelector('.form-chatContainer')
 const mainDownload = document.getElementById('download');
 const mainShare = document.getElementById('share');
 const progressBar = document.getElementById('progress');
@@ -19,7 +21,7 @@ const monthlyPriceElements = document.querySelectorAll('.monthly-price');
 const yearlyPriceElements = document.querySelectorAll('.yearly-price');
 const yearlyPriceCrossedElements = document.querySelectorAll('.yearly-price-crossed');
 const backendUrl = 'http://127.0.0.1:8000/';
-// const backendUrl = 'https://justiguide.org/';
+//const backendUrl = 'https://justiguide.org/';
 const tabLinks = document.querySelectorAll('.sidebar a');
 const tabContents = document.querySelectorAll('.content .tab');
 const emailInput = document.getElementById('emailInput');
@@ -35,6 +37,30 @@ const botOptions = document.querySelector('.botOptions');
 const reloOpt = document.querySelector('.relo-selection');
 const doloresOpt = document.querySelector('.dolores-selection');
 const downloadFormContainer = document.querySelector('.downloadForm-container');
+const formAssistant = document.getElementById('formAssist');
+const formMessages = document.querySelector('.formAssist-messages');
+
+let google = null;
+
+function initializeGoogleSignIn() {
+  google = window.google;
+
+  google.accounts.id.initialize({
+    client_id: "699627421105-5b2u0uckdbqievn40vjto4l04ih7v4pq.apps.googleusercontent.com",
+    callback: handleCredentialResponse,
+  });
+
+  google.accounts.id.renderButton(
+    document.getElementById("googleButton"),
+    {
+      theme: "no-outline",
+      size: "large",
+      shape: "pill",
+    }
+  );
+}
+
+window.onload = initializeGoogleSignIn;
 
 function getCookie(name) {
   const value = `; ${document.cookie}`;
@@ -458,8 +484,6 @@ function showLoginWindow() {
   } catch {
 
   }
-  document.getElementById("download").style.display = "none";
-  document.getElementById("share").style.display = "none";
 }
 
 
@@ -478,6 +502,21 @@ function addUserMessage(message, profilePicUrl) {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
+function addFormUserMessage(message, profilePicUrl) {
+  const messageElement = document.createElement('div');
+  messageElement.classList.add('user-message');
+  messageElement.innerHTML = `
+    <div class="user-profile">
+      <svg class="user-avatar" id="userPic" style="background-image: url(${profilePicUrl})"></svg>
+    </div>
+    <div class="message-bubble">
+      <p>${message}</p>
+    </div>
+  `;
+  formBotMessages.appendChild(messageElement);
+  formBotMessages.scrollTop = formBotMessages.scrollHeight;
+}
+
 function addBotMessage(message) {
   const messageElement = document.createElement('div');
   messageElement.classList.add('bot-message');
@@ -491,6 +530,22 @@ function addBotMessage(message) {
   `;
   chatMessages.appendChild(messageElement);
   chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function addDolMessage(message) {
+  const messageElement = document.createElement('div');
+  messageElement.classList.add('bot-message');
+  messageElement.innerHTML = `
+    <div class="bot-profile">
+      <svg class="bot-avatar"></svg>
+    </div>
+    <div class="message-bubble">
+      <p>${message}</p>
+    </div>
+  `;
+  formBotMessages.appendChild(messageElement);
+  formBotMessages.scrollTop = formBotMessages.scrollHeight;
+
 }
 
 function addGeneratingMessage() {
@@ -509,6 +564,34 @@ function addGeneratingMessage() {
 }
 
 function removeGeneratingMessage() {
+  const botProfileElement = document.querySelector('.bot-profile.loading');
+  const botAvatarElement = document.querySelector('.bot-avatar.loading');
+  if (botProfileElement) {
+    botProfileElement.remove();
+    botAvatarElement.remove();
+  }
+  const messageBubbleElement = document.querySelector('.message-bubble.loading');
+  if (messageBubbleElement) {
+    messageBubbleElement.remove();
+  }
+}
+
+function addFormGeneratingMessage() {
+  const messageElement = document.createElement('div');
+  messageElement.classList.add('bot-message');
+  messageElement.innerHTML = `
+    <div class="bot-profile loading">
+      <svg class="bot-avatar loading"></svg>
+    </div>
+    <div class="message-bubble loading">
+      <svg class="ellipsis-gif"></svg>
+    </div>
+  `;
+  formBotMessages.appendChild(messageElement);
+  formBotMessages.scrollTop = formBotMessages.scrollHeight;
+}
+
+function removeFormGeneratingMessage() {
   const botProfileElement = document.querySelector('.bot-profile.loading');
   const botAvatarElement = document.querySelector('.bot-avatar.loading');
   if (botProfileElement) {
@@ -555,10 +638,10 @@ function hideAll() {
   if (formWindow.classList.contains('active')) {
     formWindow.classList.remove('active');
   }
-  const mainDownload = document.getElementById('download');
-  const mainShare = document.getElementById('share');
-  mainDownload.setAttribute('style', 'display: none;');
-  mainShare.setAttribute('style', 'display: none;');
+  formMessages.style.display = 'none';
+  if (formAssistant.style.display != 'none') {
+    formAssistant.setAttribute('style', 'display: none;')
+  }
   document.getElementById("login-window").setAttribute("style", "display: none");
   try {
     document.getElementById("profile-container").setAttribute("style", "display: none");
@@ -566,6 +649,7 @@ function hideAll() {
   catch {
 
   }
+
   botOptions.setAttribute('style', 'display: none;')
   document.getElementById("subscription-container").setAttribute("style", "display: none");
 }
@@ -672,23 +756,23 @@ async function setActiveButton(clickedButton) {
       if (!chatHistory.classList.contains('active')) {
         chatHistory.classList.add('active');
       }
-      const toBlock = await getMessageNum();
-      if (toBlock) {
-        if (toBlock.bool) {
-          alertTitle.textContent = 'Upgrade your Subscription!';
-          alertContent.textContent = 'You have reached the limit of free messages. To continue using the chat without any restrictions, please upgrade to the "Basic" tier.';
-          sendButton.style.pointerEvents = 'none';
-          sendButton.style.cursor = 'not-allowed';
-          messageInput.disabled = true;
-        } else {
-          alertTitle.textContent = 'Upgrade your Subscription!';
-          alertContent.textContent = `You have ${4 - parseInt(toBlock.num)} messages left. To enjoy unlimited access to the chat, consider upgrading to the "Basic" tier.`;
-        }
-        upgradeAlert.style.display = 'block';
-        closeBtn.addEventListener('click', () => {
-          upgradeAlert.style.display = 'none';
-        });
-      }
+      //const toBlock = await getMessageNum();
+      //if (toBlock) {
+      //  if (toBlock.bool) {
+      //    alertTitle.textContent = 'Upgrade your Subscription!';
+      //    alertContent.textContent = 'You have reached the limit of free messages. To continue using the chat without any restrictions, please upgrade to the "Basic" tier.';
+      //    sendButton.style.pointerEvents = 'none';
+      //    sendButton.style.cursor = 'not-allowed';
+      //    messageInput.disabled = true;
+      //  } else {
+      //    alertTitle.textContent = 'Upgrade your Subscription!';
+      //    alertContent.textContent = `You have ${4 - parseInt(toBlock.num)} messages left. To enjoy unlimited access to the chat, consider upgrading to the "Basic" tier.`;
+      //  }
+      //  upgradeAlert.style.display = 'block';
+      //  closeBtn.addEventListener('click', () => {
+      //    upgradeAlert.style.display = 'none';
+      //  });
+      //}
       botIcon.style.backgroundImage = 'url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/chat/unnamed_relo.png")';
       const iconLoc = 'https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/chat/unnamed_';
       botIcon.style.backgroundImage = `url('${iconLoc}${assistantID}.png')`;
@@ -735,23 +819,23 @@ async function setActiveButton(clickedButton) {
                   console.error('Error: ', error);
                 });
               messageInput.value = '';
-              const toBlock = await getMessageNum();
-              if (toBlock) {
-                if (toBlock.bool) {
-                  alertTitle.textContent = 'Upgrade your Subscription!';
-                  alertContent.textContent = 'You have reached the limit of free messages. To continue using the chat without any restrictions, please upgrade to the "Basic" tier.';
-                  sendButton.style.pointerEvents = 'none';
-                  sendButton.style.cursor = 'not-allowed';
-                  messageInput.disabled = true;
-                } else {
-                  alertTitle.textContent = 'Upgrade your Subscription!';
-                  alertContent.textContent = `You have ${4 - parseInt(toBlock.num)} messages left. To enjoy unlimited access to the chat, consider upgrading to the "Basic" tier.`;
-                }
-                upgradeAlert.style.display = 'block';
-                closeBtn.addEventListener('click', () => {
-                  upgradeAlert.style.display = 'none';
-                });
-              }
+              // const toBlock = await getMessageNum();
+              // if (toBlock) {
+              //   if (toBlock.bool) {
+              //     alertTitle.textContent = 'Upgrade your Subscription!';
+              //     alertContent.textContent = 'You have reached the limit of free messages. To continue using the chat without any restrictions, please upgrade to the "Basic" tier.';
+              //     sendButton.style.pointerEvents = 'none';
+              //     sendButton.style.cursor = 'not-allowed';
+              //     messageInput.disabled = true;
+              //   } else {
+              //     alertTitle.textContent = 'Upgrade your Subscription!';
+              //     alertContent.textContent = `You have ${4 - parseInt(toBlock.num)} messages left. To enjoy unlimited access to the chat, consider upgrading to the "Basic" tier.`;
+              //   }
+              //   upgradeAlert.style.display = 'block';
+              //   closeBtn.addEventListener('click', () => {
+              //     upgradeAlert.style.display = 'none';
+              //   });
+              // }
             }
           });
           messageInput.addEventListener('keydown', async (event) => {
@@ -781,23 +865,23 @@ async function setActiveButton(clickedButton) {
                     console.error('Error: ', error);
                   });
                 messageInput.value = '';
-                const toBlock = await getMessageNum();
-                if (toBlock) {
-                  if (toBlock.bool) {
-                    alertTitle.textContent = 'Upgrade your Subscription!';
-                    alertContent.textContent = 'You have reached the limit of free messages. To continue using the chat without any restrictions, please upgrade to the "Basic" tier.';
-                    sendButton.style.pointerEvents = 'none';
-                    sendButton.style.cursor = 'not-allowed';
-                    messageInput.disabled = true;
-                  } else {
-                    alertTitle.textContent = 'Upgrade your Subscription!';
-                    alertContent.textContent = `You have ${4 - parseInt(toBlock.num)} messages left. To enjoy unlimited access to the chat, consider upgrading to the "Basic" tier.`;
-                  }
-                  upgradeAlert.style.display = 'block';
-                  closeBtn.addEventListener('click', () => {
-                    upgradeAlert.style.display = 'none';
-                  });
-                }
+                // const toBlock = await getMessageNum();
+                // if (toBlock) {
+                //   if (toBlock.bool) {
+                //     alertTitle.textContent = 'Upgrade your Subscription!';
+                //     alertContent.textContent = 'You have reached the limit of free messages. To continue using the chat without any restrictions, please upgrade to the "Basic" tier.';
+                //     sendButton.style.pointerEvents = 'none';
+                //     sendButton.style.cursor = 'not-allowed';
+                //     messageInput.disabled = true;
+                //   } else {
+                //     alertTitle.textContent = 'Upgrade your Subscription!';
+                //     alertContent.textContent = `You have ${4 - parseInt(toBlock.num)} messages left. To enjoy unlimited access to the chat, consider upgrading to the "Basic" tier.`;
+                //   }
+                //   upgradeAlert.style.display = 'block';
+                //   closeBtn.addEventListener('click', () => {
+                //     upgradeAlert.style.display = 'none';
+                //   });
+                // }
               }
             }
           });
@@ -805,6 +889,7 @@ async function setActiveButton(clickedButton) {
       });
     } else if (clickedButton.id == 'form') {
       hideAll();
+      formAssistant.removeAttribute('style');
       if (!formWindow.classList.contains('active')) {
         formWindow.classList.add('active');
       }
@@ -825,17 +910,6 @@ async function setActiveButton(clickedButton) {
       const sectionOrder = ['part-a-i', 'part-a-ii', 'part-a-iii', 'part-b', 'part-c', 'part-d', 'part-suppAB'];
       const diffMailAddCheckbox = document.getElementById("diffMailAdd");
       const diffMailAddContainer = document.getElementById("diffMailAdd-container");
-
-      function openFormMenu() {
-        const getActivePart = formParts.querySelector('#active a[id="part-selection"]').className;
-        if (formParts.style.display == 'flex') {
-          formParts.style.display = 'none';
-          formMenu.style.opacity = 0.5;
-        } else {
-          formParts.style.display = 'flex';
-          formMenu.style.opacity = 1;
-        }
-      }
 
       function toggleMailingAddress() {
         if (diffMailAddCheckbox.checked) {
@@ -944,18 +1018,6 @@ async function setActiveButton(clickedButton) {
         return unfilledValues;
 
       }
-      
-      function getCountryCodes(){
-        let countryCodesData = []
-        fetch('countryCodes.json')
-        .then(response => response.json())
-        .then(data => {
-          countryCodesData = data;
-          return countryCodesData
-        })
-        .catch(error => console.error('Error fetching country codes:', error));
-
-      }
 
       const areaCodeTag = document.querySelectorAll('select[name="areaCodes"]');
 
@@ -981,7 +1043,6 @@ async function setActiveButton(clickedButton) {
       }
 
       areaCodeTag.forEach(element => {
-        // console.log(element)
         populateCountryCodeSelect(element);
       })
 
@@ -1075,7 +1136,104 @@ async function setActiveButton(clickedButton) {
         element.addEventListener('click', handleSectionEndClick);
       });
       const submitButton = document.getElementById('send-formButton');
-
+      formInput.addEventListener('keyup', () => {
+        const message = formInput.value.trim();
+        if (message) {
+          sendButton.addEventListener('click', async (event) => {
+            event.preventDefault();
+            if (formInput.value != '') {
+              addFormUserMessage(formInput.value, getCookie('username').profilePicUrl);
+              const messageVal = formInput.value;
+              addFormGeneratingMessage();
+              fetch(`${backendUrl}get_response/`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  user_message: messageVal,
+                  user: getCookie('username').username,
+                  assistant: 'form'
+                })
+              })
+                .then(response => response.json())
+                .then(data => {
+                  const botResponse = data.bot_response;
+                  removeFormGeneratingMessage();
+                  addDolMessage(botResponse);
+                })
+                .catch((error) => {
+                  console.error('Error: ', error);
+                });
+                formInput.value = '';
+              // const toBlock = await getMessageNum();
+              // if (toBlock) {
+              //   if (toBlock.bool) {
+              //     alertTitle.textContent = 'Upgrade your Subscription!';
+              //     alertContent.textContent = 'You have reached the limit of free messages. To continue using the chat without any restrictions, please upgrade to the "Basic" tier.';
+              //     sendButton.style.pointerEvents = 'none';
+              //     sendButton.style.cursor = 'not-allowed';
+              //     formInput.disabled = true;
+              //   } else {
+              //     alertTitle.textContent = 'Upgrade your Subscription!';
+              //     alertContent.textContent = `You have ${4 - parseInt(toBlock.num)} messages left. To enjoy unlimited access to the chat, consider upgrading to the "Basic" tier.`;
+              //   }
+              //   upgradeAlert.style.display = 'block';
+              //   closeBtn.addEventListener('click', () => {
+              //     upgradeAlert.style.display = 'none';
+              //   });
+              // }
+            }
+          });
+          formInput.addEventListener('keydown', async (event) => {
+            if (event.key === 'Enter') {
+              if (formInput.value != '') {
+                addFormUserMessage(formInput.value, getCookie('username').profilePicUrl);
+                const messageVal = formInput.value;
+                addFormGeneratingMessage();
+                fetch(`${backendUrl}get_response/`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    user_message: messageVal,
+                    user: getCookie('username').username,
+                    assistant: 'form'
+                  })
+                })
+                  .then(response => response.json())
+                  .then(data => {
+                    const botResponse = data.bot_response;
+                    removeFormGeneratingMessage();
+                    addDolMessage(botResponse);
+                  })
+                  .catch((error) => {
+                    console.error('Error: ', error);
+                  });
+                  formInput.value = '';
+                // const toBlock = await getMessageNum();
+                // if (toBlock) {
+                //   if (toBlock.bool) {
+                //     alertTitle.textContent = 'Upgrade your Subscription!';
+                //     alertContent.textContent = 'You have reached the limit of free messages. To continue using the chat without any restrictions, please upgrade to the "Basic" tier.';
+                //     sendButton.style.pointerEvents = 'none';
+                //     sendButton.style.cursor = 'not-allowed';
+                //     formInput.disabled = true;
+                //   } else {
+                //     alertTitle.textContent = 'Upgrade your Subscription!';
+                //     alertContent.textContent = `You have ${4 - parseInt(toBlock.num)} messages left. To enjoy unlimited access to the chat, consider upgrading to the "Basic" tier.`;
+                //   }
+                //   upgradeAlert.style.display = 'block';
+                //   closeBtn.addEventListener('click', () => {
+                //     upgradeAlert.style.display = 'none';
+                //   });
+                // }
+              }
+            }
+          });
+        }
+      });
 
       if (submitButton) {
 
@@ -1206,9 +1364,24 @@ async function setActiveButton(clickedButton) {
         element.addEventListener('click', handlePartSelection);
       });
 
+      formAssistant.addEventListener('click', () => {
+        if (formMessages.style.display == 'flex') {
+          formMessages.style.display = 'none';
+        } else {
+          formMessages.style.display = 'flex';
+        }
 
+      })
 
-      formMenu.addEventListener('click', openFormMenu);
+      formMenu.addEventListener('click', () => {        
+        if (formParts.style.display == 'flex') {
+          formParts.style.display = 'none';
+          formMenu.style.opacity = 0.5;
+        } else {
+          formParts.style.display = 'flex';
+          formMenu.style.opacity = 1;
+        }
+      });
       const addSuppABRespButton = document.getElementById("suppAB-resp");
 
       let suppABCounter = 0;
@@ -1935,19 +2108,72 @@ async function createLoginCookie(username, firstName, lastName, email, profilePi
   document.cookie = cookieValue;
 }
 
-function attachSignin(element) {
-  auth2.attachClickHandler(element, {},
-    function (googleUser) {
-      const profile = googleUser.getBasicProfile();
-      const email = profile.getEmail();
-      const username = email.split('@')[0];
-      const firstName = profile.getGivenName();
-      const lastName = profile.getFamilyName();
-      const profilePicUrl = profile.getImageUrl();
-      createLoginCookie(username, firstName, lastName, email, profilePicUrl, user_location = null);
-      document.getElementById("login-window").setAttribute("style", "display: none");
-      showUserPage(username, firstName, lastName, email, profilePicUrl, user_location = null)
+function parseJwt(token) {
+  const base64Url = token.split('.')[1];
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+  }).join(''));
+
+  return JSON.parse(jsonPayload);
+}
+
+function sendCredentialToServer(credential) {
+  const payload = credential;
+
+  fetch(`${backendUrl}verify-credential`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: `credential=${encodeURIComponent(payload)}`,
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        // User is authenticated, proceed with your application logic
+        const email = data.email;
+        const username = email.split("@")[0];
+        const firstName = data.firstName;
+        const lastName = data.lastName;
+        const profilePicUrl = data.profilePicUrl;
+        createLoginCookie(username, firstName, lastName, email, profilePicUrl, user_location = null);
+        document.getElementById("login-window").setAttribute("style", "display: none");
+        showUserPage(username, firstName, lastName, email, profilePicUrl, user_location = null);
+        // ... (your existing code to handle successful sign-in)
+      } else {
+        // Authentication failed, handle the error
+        console.error("Authentication failed:", data.error);
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
     });
+}
+
+function handleCredentialResponse(response) {
+
+  const decodedCredential = parseJwt(response.credential);
+  const email = decodedCredential.email;
+  const username = email.split('@')[0];
+  const firstName = decodedCredential.given_name;
+  const lastName = decodedCredential.family_nsmr;
+  const profilePicUrl = decodedCredential.picture;
+  createLoginCookie(username, firstName, lastName, email, profilePicUrl, user_location = null);
+  document.getElementById("login-window").setAttribute("style", "display: none");
+  showUserPage(username, firstName, lastName, email, profilePicUrl, user_location = null);
+  // auth2.attachClickHandler(element, {},
+  //   function (googleUser) {
+  //     const profile = googleUser.getBasicProfile();
+  //     const email = profile.getEmail();
+  //     const username = email.split('@')[0];
+  //     const firstName = profile.getGivenName();
+  //     const lastName = profile.getFamilyName();
+  //     const profilePicUrl = profile.getImageUrl();
+  //     createLoginCookie(username, firstName, lastName, email, profilePicUrl, user_location = null);
+  //     document.getElementById("login-window").setAttribute("style", "display: none");
+  //     showUserPage(username, firstName, lastName, email, profilePicUrl, user_location = null)
+  //   });
 }
 
 function addUser(backendUrl, firstName, lastName, email, username, user_location = null, password = null, profilePic = "https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png") {

@@ -288,8 +288,10 @@ input:checked+.slider .slider-handle {
   bottom: 32px;
   right: 32px;
   display: flex;
-  flex-direction: row;
+  flex-direction: column-reverse;
+  align-items: flex-end;
   gap: 16px;
+  z-index: 3;
 }
 
 .chat-bar-container {
@@ -487,7 +489,13 @@ a[id="assistant"] {
 }
 
 .button-icon.info {
-  background-image: url('https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/side_menu/info.svg');
+  background-image: url('https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/chat/unnamed_dolores.png');
+  height: 75%;
+  width: 75%;
+}
+
+a[id="formAssist"] {
+  opacity: 0.75;
 }
 
 ::-webkit-scrollbar {
@@ -793,6 +801,15 @@ a[id="assistant"] {
   text-align: end;
 }
 
+select {
+  appearance: none;
+  background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/form/arrow.png");
+  background-repeat: no-repeat;
+  background-size: 1.5rem;
+  background-position: right 0.4rem top 50%;  
+  font-family: inherit;
+}
+
 #tel-divide>div:first-child {
   flex: 1;
 }
@@ -1082,6 +1099,64 @@ input[type="date"] {
   background-repeat: no-repeat;
   background-position: right 8px center;
 }
+
+.formAssist-messages {
+  width: 25vw;
+  height: 75vh;
+  background-color: #ffffff;
+  border-radius: 35px 35px 0px 35px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 4px rgb(0, 0, 0, 0.1);
+  gap: 10px;
+}
+
+.form-chatContainer {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow-wrap: break-word;
+  height: calc(100% - 30px);
+  max-height: calc(75vh - 60px);
+  background-color: #5080DE0D;
+  border-radius: 25px;
+  padding: 10px;
+}
+
+.form-chatBar {
+  position: relative;
+  box-shadow: 0 0 4px rgb(0, 0, 0, 0.1);
+  height: 50px;
+  border-radius: 25px;
+  display: flex;
+  padding: 10px;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+}
+
+.form-chatBar input {
+  outline: none;
+  border: none;
+  background-color: #5080DE0D;
+  border-radius: 15px;
+  width: calc(100% - 40px);
+  padding: 15px;
+
+}
+
+#form-chatsend.chat-buttons {
+  height: 30px;
+  width: 30px;
+}
+
+#form-chatsend.chat-buttons .chat-icons.send {
+  width: 75%;
+  height: 75%;
+}
+
 
 .hidden {
   display: none;
@@ -1433,16 +1508,23 @@ button[id="savePassword"]:disabled {
   background-color: #FFFF;
   color: rgba(0, 0, 0);
   font-family: 'Nunito', sans-serif;
-  padding: 10px 20px;
+  /* padding: 10px 20px; */
   margin: 10px;
   border-radius: 25px;
   outline: none;
-  border: thin;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border: none;
+  padding: 0;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   align-items: center;
   justify-content: center;
 }
+
+ /* {
+  display: flex;
+  justify-content: center;
+  height: 25px;
+} */
 
 #separator {
   text-align: center;
@@ -2118,6 +2200,7 @@ input[id="lastname"],
 input[id="password"],
 input[id="location"],
 input[id="Confpassword"] {
+  outline: none;
   padding: 10px;
   border-radius: 25px;
   border-style: solid;

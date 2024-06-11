@@ -4,14 +4,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
-  <meta name="google-signin-client_id"
-    content="699627421105-5b2u0uckdbqievn40vjto4l04ih7v4pq.apps.googleusercontent.com">
+  <!-- <meta name="google-signin-client_id"
+    content="699627421105-5b2u0uckdbqievn40vjto4l04ih7v4pq.apps.googleusercontent.com"> -->
   <title>ReLo | JustiGuide</title>
   <link rel="stylesheet" href="styles.css">
-  <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <!-- <script src="https://apis.google.com/js/platform.js" async defer></script> -->
   <script src="https://apis.google.com/js/api.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://js.stripe.com/v3/"></script>
-  <script>
+  <!-- <script>
     function startApp() {
       gapi.load('auth2', function () {
         auth2 = gapi.auth2.init({
@@ -23,7 +24,7 @@
       });
     }
 
-  </script>
+  </script> -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&display=swap"
@@ -77,15 +78,34 @@
     </a>
   </div>
   <div class="bottom-container">
-    <a id="download" class="button" style="display: none;">
+    <!-- <a id="download" class="button" style="display: none;">
       <svg class="button-icon download"></svg>
     </a>
     <a id="share" class="button" style="display: none;">
       <svg class="button-icon share"></svg>
+    </a> -->
+    <a id="formAssist" class="button" style="display: none;">
+      <svg class="button-icon info"></svg>
     </a>
-    <!-- <a id="info" class="button" href="https://www.justiguide.com/faq">
-            <svg class="button-icon info"></svg>
-        </a> -->
+    <div class="formAssist-messages" style="display: none;">
+      <div class="form-chatContainer">
+        <div class="bot-message">
+          <div class="bot-profile">
+            <svg class="bot-avatar"></svg>
+          </div>
+          <div class="message-bubble">
+            <p>Hi there! I'm here to assist you. How can I help you today?</p>
+          </div>
+        </div>
+
+      </div>
+      <div class="form-chatBar">
+        <input type="text" id="form-chatInput" placeholder="Enter your message">
+        <a class="chat-buttons" id="form-chatsend">
+          <svg class="chat-icons send"></svg>
+        </a>
+      </div>
+    </div>
   </div>
   <div class="chat-bar-container">
     <a class="chat-buttons" id="assistant" style="display: none;">
@@ -1891,7 +1911,14 @@
       <div id="separator">
         <span>OR</span>
       </div>
-      <button id="googleButton" onclick="startApp();">
+      <!-- <div id="g_id_onload" data-client_id="699627421105-5b2u0uckdbqievn40vjto4l04ih7v4pq.apps.googleusercontent.com"
+        data-context="signin" data-ux_mode="popup" data-callback="handleCredentialResponse" data-auto_prompt="false">
+      </div>
+      <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline"
+        data-text="signin_with" data-size="large">
+      </div> -->
+
+      <button id="googleButton">
         <span class="icon"></span>
         <span class="buttonText">Sign in with Google</span>
       </button>
@@ -2051,7 +2078,7 @@
       showUserPage(username, firstName, lastName, email, profilePicUrl, user_location);
     } else {
       showLoginWindow();
-      startApp();
+      // startApp();
     }
   </script>
 </body>
