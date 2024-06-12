@@ -1,0 +1,216 @@
+{
+    "Part A.I.": [
+        {
+            "Main Information": [
+                "First Name",
+                "Middle Name",
+                "Last Name",
+                "Aliases",
+                "Alien Registration Number",
+                "US Social Security Number",
+                "USCIS Online Account Number"
+            ]
+        },
+        {
+            "Residences in the U.S.": [
+                "Street Number and Name",
+                "Apt Number",
+                "City",
+                "State",
+                "Zip Code",
+                "Telephone Number"
+            ]
+        },
+        {
+            "Different Mailing Address": [
+                "In Care Of",
+                "Street Number and Name",
+                "Apt Number",
+                "City",
+                "State",
+                "Zip Code",
+                "Telephone Number"
+            ]
+        },
+        {
+            "General Information": [
+                "Gender",
+                "Marital Status",
+                "Date of Birth",
+                "City and Country of Birth",
+                "Present Nationality",
+                "Nationality at Birth",
+                "Race, Ethnic or Tribal Group",
+                "Religion",
+                "Immigration Court Proceedings",
+                "Last leave date",
+                "Current I-94 Number"
+            ]
+        },
+        {
+            "U.S. Entries": [
+                "Current Date",
+                "Current Place",
+                "Current Status",
+                "Current Status Expiry Date",
+                "Additional Date 1",
+                "Additional Place 1",
+                "Additional Status 1"
+            ]
+        },
+        {
+            "Passport Information": [
+                "Issuing Country",
+                "Passport Number",
+                "Travel Document Number",
+                "Expiration Date"
+            ]
+        },
+        {
+            "Language": [
+                "Native Language",
+                "English Fluency",
+                "Other Fluency"
+            ]
+        }
+    ],
+    "Part A.II.": [
+        {
+            "Spouse": [
+                "First Name",
+                "Middle Name",
+                "Last Name",
+                "Date of Birth",
+                "City and Country of Birth",
+                "Aliases",
+                "Alien Registration Number",
+                "US Social Security Number",
+                "Passport/ID Card Number",
+                "Date of Marriage",
+                "Place of Marriage",
+                "Nationality",
+                "Race, Ethnic or Tribal Group",
+                "Gender",
+                "In US",
+                "Location",
+                "Date of last entry",
+                "Place of last entry",
+                "I-94 Number",
+                "Status when last admitted",
+                "Current Status",
+                "Current Status Expiration Date",
+                "Previous Arrival Date",
+                "Immigration Proceedings",
+                "Include in the Application"
+            ]
+        },
+        {
+            "Children": [
+                "Total Number of Children",
+                "First Name",
+                "Middle Name",
+                "Last Name",
+                "Gender",
+                "Marital Status",
+                "Alien Registration Number",
+                "US Social Security Number",
+                "Passport/ID Card Number",
+                "Date of Birth",
+                "City and Country of Birth",
+                "Nationality",
+                "Race, Ethnic or Tribal Group",
+                "In US",
+                "Location",
+                "Date of last entry",
+                "Place of last entry",
+                "I-94 Number",
+                "Status when last admitted",
+                "Current Status",
+                "Current Status Expiration Date",
+                "Immigration Proceedings",
+                "Include in the Application"
+            ]
+        }
+    ],
+    "Part A.III.": [
+        {
+            "Addresses before coming to the US": [
+                "Country",
+                "State",
+                "City/Town",
+                "Number and Street",
+                "Dates From To"
+            ]
+        },
+        {
+            "Residences": [
+                "Country",
+                "State",
+                "City",
+                "Number and Street",
+                "Dates From To"
+            ]
+        },
+        {
+            "Education": [
+                "Name of School",
+                "Type of School",
+                "Address",
+                "Dates From To"
+            ]
+        },
+        {
+            "Employment": [
+                "Role",
+                "Name of Employer",
+                "Address of Employer",
+                "Dates From To"
+            ]
+        },
+        {
+            "Parents and Siblings": [
+                "Mother Deceased Status",
+                "Mother Full Name",
+                "Mother City and Country of Birth",
+                "Mother Current Location",
+                "Father Deceased Status",
+                "Father Full Name",
+                "Father City and Country of Birth",
+                "Father Current Location",
+                "Sibling Deceased Status",
+                "Sibling Full Name",
+                "Sibling City and Country of Birth",
+                "Sibling Current Location"
+            ]
+        }
+    ],
+    "Part B": [
+        "Reason for Asylum",
+        "Explanation of harm or mistreatment or threats",
+        "Explanation of fear of harm or mistreatment on returning",
+        "Explanation of crime",
+        "Explanation of being part of an organization",
+        "Explanation of actively participating in an organization",
+        "Explanation of torture"
+    ],
+    "Part C": [
+        "Previous Application Decisions",
+        "Explanation of residence/asylum in other country",
+        "Explanation of causing harm",
+        "Explanation of harm experienced",
+        "Explanation of late application",
+        "Explanation of crime commited in the U.S."
+    ],
+    "Part D": [
+        "Family Assist",
+        "External Preparer",
+        "List of Counsel Representation",
+        "Applicant's Sign",
+        "Applicant's Sign Date"
+    ],
+    "Additional Information": [
+        "Part",
+        "Question",
+        "Details"
+    ]
+}

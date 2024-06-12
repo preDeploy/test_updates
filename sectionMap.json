@@ -1,0 +1,51 @@
+{
+    "part-a-i": {
+        "Main Information": "mainInformation",
+        "Residences in the U.S.": "residence",
+        "Different Mailing Address": "diffMailAdd-toggle",
+        "General Information": "generalInformation",
+        "U.S. Entries": "us-entries",
+        "Passport Information": "passportInfo",
+        "Language": "language"
+    },
+    "part-a-ii": {
+        "Spouse": "spouse",
+        "Children": "children"
+    },
+    "part-a-iii": {
+        "Addresses before coming to the US": "prevAddresses",
+        "Residences": "prevResidences",
+        "Education": "educationHistory",
+        "Employment": "employmentHistory",
+        "Parents and Siblings": "family"
+    },
+    "part-b": {
+        "Reason for Asylum": "asylumReason",
+        "Explanation of harm or mistreatment or threats": "harmCheck",
+        "Explanation of fear of harm or mistreatment on returning": "harmfear",
+        "Explanation of crime": "crime",
+        "Explanation of being part of an organization": "orgAss",
+        "Explanation of actively participating in an organization": "orgPart",
+        "Explanation of torture": "orgTorture"
+    },
+    "part-c": {
+        "Previous Application Decisions": "prevApplCheck",
+        "Explanation of residence/asylum in other country": "inCountry",
+        "Explanation of causing harm": "causedHarmCheck",
+        "Explanation of harm experienced": "leftCountryCheck",
+        "Explanation of late application": "oneYearCheck",
+        "Explanation of crime commited in the U.S.": "crimeCommCheck"
+    },
+    "part-d": {
+        "Family Assist": "d-assistanceCheck",
+        "External Preparer": "d-additionalApplnCheck",
+        "List of Counsel Representation": "d-reprCheck",
+        "Applicant's Sign": "part-d-applicant",
+        "Applicant's Sign Date": "d-sign-date"
+    },
+    "part-suppAB": {        
+        "Part": "suppAB-part-0",
+        "Question": "suppAB-ques-0",
+        "Details": "suppAB-resp-0"
+    }
+}

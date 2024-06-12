@@ -1,4 +1,4 @@
-const buttons = document.querySelectorAll('.button');
+const buttons = document.querySelectorAll('.side-container .button');
 const chatHistory = document.querySelector('.chat-container');
 const messageInput = document.getElementById('user-input');
 const formInput = document.getElementById('form-chatInput');
@@ -618,7 +618,7 @@ function confirmSignOut() {
   document.getElementById("profile-container").setAttribute("style", "display: none;");
   closeSignOutModal();
   document.getElementById("login-window").setAttribute("style", "display: block;");
-  startApp();
+  // startApp();
   document.getElementById("form").style.display = "none";
   location.reload();
 }
@@ -725,6 +725,42 @@ function handleRadioButtonChange(event, extraElements) {
     element.style.display = 'block';
   });
 }
+
+function navigateTo(part, section) {
+  let parts = {}
+  fetch('partMap.json')
+  .then(response => response.json())
+  .then(data => {
+    parts = data;
+    const navPart = parts[part]
+    const nextPartSelection = document.querySelector(`.part-selection a[class="${navPart}"]`);
+    if (nextPartSelection) {
+      nextPartSelection.click();
+    }
+    let sections = {}
+    fetch('sectionMap.json')
+    .then(response => response.json())
+    .then(data => {
+      sections = data;
+      const navSection = sections[navPart][section]
+      let queryElement;
+      if (navPart !== 'part-d' && navPart !== 'part-suppAB') {        
+        queryElement = document.querySelector(`#${navPart}.section #${navSection}`) 
+      } else {
+        if (navSection !== "suppAB-resp-0" && navSection !== "part-d-applicant") {
+          queryElement = document.querySelector(`#${navPart}.section #${navSection}`)
+        } else {
+          queryElement = document.querySelector(`#${navPart}.section label[for="${navSection}"]`)
+        }
+      }
+      queryElement.scrollIntoView({ behavior: 'smooth' });
+      // console.log(navPart)
+      // console.log(navSection)
+    })
+  })
+}
+
+
 
 async function setActiveButton(clickedButton) {
   const botIcon = document.querySelector('svg[id="assistant"]');
@@ -889,6 +925,7 @@ async function setActiveButton(clickedButton) {
       });
     } else if (clickedButton.id == 'form') {
       hideAll();
+      // navigateTo('Part A.III.', 'Education')
       formAssistant.removeAttribute('style');
       if (!formWindow.classList.contains('active')) {
         formWindow.classList.add('active');
@@ -1160,7 +1197,14 @@ async function setActiveButton(clickedButton) {
                 .then(data => {
                   const botResponse = data.bot_response;
                   removeFormGeneratingMessage();
-                  addDolMessage(botResponse);
+                  if (botResponse.includes('navigate to') && botResponse.includes('part of the') && botResponse.includes('section to the') && botResponse.includes('question')) {
+                    const part = botResponse.split(' part of the ')[0].split('navigate to ')[1];
+                    const section = botResponse.split(' part of the ')[1].split(' section to the ')[0];
+                    addDolMessage(`Sure! Navigating you to the ${section} section of the ${part}`)
+                    navigateTo(part, section)
+                  } else {
+                    addDolMessage(botResponse);
+                  }
                 })
                 .catch((error) => {
                   console.error('Error: ', error);
@@ -2118,38 +2162,6 @@ function parseJwt(token) {
   return JSON.parse(jsonPayload);
 }
 
-function sendCredentialToServer(credential) {
-  const payload = credential;
-
-  fetch(`${backendUrl}verify-credential`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: `credential=${encodeURIComponent(payload)}`,
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.success) {
-        // User is authenticated, proceed with your application logic
-        const email = data.email;
-        const username = email.split("@")[0];
-        const firstName = data.firstName;
-        const lastName = data.lastName;
-        const profilePicUrl = data.profilePicUrl;
-        createLoginCookie(username, firstName, lastName, email, profilePicUrl, user_location = null);
-        document.getElementById("login-window").setAttribute("style", "display: none");
-        showUserPage(username, firstName, lastName, email, profilePicUrl, user_location = null);
-        // ... (your existing code to handle successful sign-in)
-      } else {
-        // Authentication failed, handle the error
-        console.error("Authentication failed:", data.error);
-      }
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-    });
-}
 
 function handleCredentialResponse(response) {
 
@@ -2162,18 +2174,6 @@ function handleCredentialResponse(response) {
   createLoginCookie(username, firstName, lastName, email, profilePicUrl, user_location = null);
   document.getElementById("login-window").setAttribute("style", "display: none");
   showUserPage(username, firstName, lastName, email, profilePicUrl, user_location = null);
-  // auth2.attachClickHandler(element, {},
-  //   function (googleUser) {
-  //     const profile = googleUser.getBasicProfile();
-  //     const email = profile.getEmail();
-  //     const username = email.split('@')[0];
-  //     const firstName = profile.getGivenName();
-  //     const lastName = profile.getFamilyName();
-  //     const profilePicUrl = profile.getImageUrl();
-  //     createLoginCookie(username, firstName, lastName, email, profilePicUrl, user_location = null);
-  //     document.getElementById("login-window").setAttribute("style", "display: none");
-  //     showUserPage(username, firstName, lastName, email, profilePicUrl, user_location = null)
-  //   });
 }
 
 function addUser(backendUrl, firstName, lastName, email, username, user_location = null, password = null, profilePic = "https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png") {

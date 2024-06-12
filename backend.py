@@ -383,6 +383,8 @@ class Dolores():
         self.user_input = ''
         self.bot_response = ''
         self.location = './context/'
+        with open('navigateDict.json', 'r') as nav:
+            self.webForm = json.load(nav)
 
     def getFileName(self, user):
         if user == 'unknown':
@@ -418,7 +420,7 @@ class Dolores():
             thread_id=thread.id,
             assistant_id=assistant_id[assistant]
         )
-        while run.status != "completed":
+        while run.status != "completed" and run.status != "requires_action":
             run = client.beta.threads.runs.retrieve(
                 thread_id=thread.id,
                 run_id=run.id
@@ -464,9 +466,17 @@ class Dolores():
 
     async def chat(self, user_input, user, assistant='relo'):
         self.user_input = user_input
-        self.openJSON(user)
-        response = self.assistant(user_input, assistant).replace("\n", "<br>")
-        self.bot_response = response
+        if assistant == 'form':
+            newUserInp = f'help me identify this query, if it is a query related to finding something in the form or going to certain part of the form, then respond with just "1" but if it related to getting help, or questions about parts of the form, respond with "0": "{user_input}"'
+            flag = self.assistant(newUserInp, assistant)
+            # print(flag)
+            if bool(int(flag)):
+                response = self.assistant(f'These are the sections and the subsections/questions from the form {self.webForm}. The keys of this dictionary represent the parts of the form, if the value for these keys is a list of dictionaries, then the keys of that dictionary are the sections of the part and their values are the questions in that section, if instead of a list of dictionaries, its a list of strings, then it will contain the question of that part, the sections and the questions are the same in this case, so the <question> will be the same as the <section>. Find the part of the webform based on this query: "{user_input}". respond with just this type of statement "navigate to <part> part of the <section> section. do not add anything else/sources.', assistant)
+                self.bot_response = response
+        else:
+            self.openJSON(user)
+            response = self.assistant(user_input, assistant).replace("\n", "<br>")
+            self.bot_response = response
         return response
 
     async def updateContext(self):
