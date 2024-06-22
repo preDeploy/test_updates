@@ -30,8 +30,7 @@ import PyPDF2
 from pdf2image import convert_from_path
 from reportlab.pdfgen import canvas
 import glob
-import google.oauth2.credentials
-import google_auth_oauthlib.flow
+from ast import literal_eval as toDict
 
 Base = declarative_base()
 load_dotenv()
@@ -41,11 +40,12 @@ class S3():
     def __init__(self):
         self.AWS_ACCESS_ID = os.getenv('AWS_ACCESS_ID')
         self.AWS_SECRET_KEY = os.getenv('AWS_SECRET_KEY')
-        self.s3 = boto3.client('s3', aws_access_key_id=self.AWS_ACCESS_ID,
+        self.s3 = boto3.client('s3',
+                               aws_access_key_id=self.AWS_ACCESS_ID,
                                aws_secret_access_key=self.AWS_SECRET_KEY)
         self.bucket_name = "doloreschatbucket"
-        self.session = boto3.Session(
-            aws_access_key_id=self.AWS_ACCESS_ID, aws_secret_access_key=self.AWS_SECRET_KEY)
+        self.session = boto3.Session(aws_access_key_id=self.AWS_ACCESS_ID,
+                                     aws_secret_access_key=self.AWS_SECRET_KEY)
         self.bucket_s3 = self.session.resource('s3')
         self.bucket = self.bucket_s3.Bucket(self.bucket_name)
 
@@ -54,28 +54,26 @@ class S3():
         resize_factor = resize[0] / min_dimension
         new_width = int(image.width * resize_factor)
         new_height = int(image.height * resize_factor)
-        resized_image = image.resize(
-            (new_width, new_height), Image.Resampling.LANCZOS)
+        resized_image = image.resize((new_width, new_height),
+                                     Image.Resampling.LANCZOS)
         left = (resized_image.width - resize[0]) / 2
         top = (resized_image.height - resize[1]) / 2
-        cropped_image = resized_image.crop(
-            (left, top, left + resize[0], top + resize[1]))
+        cropped_image = resized_image.crop((left,
+                                            top,
+                                            left + resize[0],
+                                            top + resize[1]))
         return cropped_image
 
     def upload_newPic(self, file, directory):
         profilePic_dir = f"{directory}/profilePic/"
-        self.s3.put_object(
-            Bucket=self.bucket_name,
-            Key=f"{profilePic_dir}user.png",
-            Body=file,
-        )
+        self.s3.put_object(Bucket=self.bucket_name,
+                           Key=f"{profilePic_dir}user.png",
+                           Body=file)
 
     def upload_files(self, file_path, file_dir):
-        self.s3.upload_file(
-            file_path,
-            self.bucket_name,
-            file_dir,
-        )
+        self.s3.upload_file(file_path,
+                            self.bucket_name,
+                            file_dir)
         return f'https://doloreschatbucket.s3.us-east-2.amazonaws.com/{file_dir}'
 
     def getLegalName(self, filename):
@@ -119,7 +117,9 @@ class S3():
 
     def createDir(self, username):
         newFolders = [f'users/{username}/profilePic/',
-                      f'users/{username}/files/', f'users/{username}/forms/', f'users/{username}/filledForms/']
+                      f'users/{username}/files/',
+                      f'users/{username}/forms/',
+                      f'users/{username}/filledForms/']
         for folder in newFolders:
             self.bucket.put_object(Key=folder, Body=b'')
 
@@ -130,7 +130,7 @@ class formFiller():
             self.key_mapping = json.load(keyMap)
         with open('webForm.json', 'r') as webForm:
             tempDict = json.load(webForm)
-        self.web_form_data = {int(k): v for k,v in tempDict.items()}
+        self.web_form_data = {int(k): v for k, v in tempDict.items()}
         self.pdf_path = pdf_path
         self.i589_form = PdfReader(pdf_path)
         self.fieldDets = {}
@@ -167,10 +167,7 @@ class formFiller():
                 self.fieldKeys.append(detail[0])
         self.numKeys = len(self.fieldKeys)
 
-    def transfer_data(self, web_form_data, physical_form_data={}):
-        suppB = {}
-        unnecessary = []
-
+    def transfer_data(self, web_form_data, physical_form_data={}, suppB={}):
         for key_val in web_form_data:
             web_key = web_form_data[key_val][0]
             web_value = web_form_data[key_val][1]
@@ -201,8 +198,6 @@ class formFiller():
                                     physical_form_data[key] = web_value
                                 except:
                                     physical_form_data[key] += ''
-                            else:
-                                unnecessary.append(key)
                         else:
                             physical_form_data[key] = web_value
                     elif 'include' in key.lower():
@@ -226,7 +221,7 @@ class formFiller():
                     newValue = f'{physical_form_data[physical_key]}\n{web_value}'
                     physical_form_data[physical_key] = newValue
 
-        return physical_form_data, suppB, unnecessary
+        return physical_form_data, suppB
 
     def createSign(self, signFile):
         signature_org = cv2.imread(signFile)
@@ -329,7 +324,7 @@ class formFiller():
         for f in files:
             os.remove(f)
 
-    def main(self, frontend_resp, sign):
+    def fillForm(self, frontend_resp, sign):
         data_dict = {}
         for types in self.fieldDets:
             if types != 'sign':
@@ -353,22 +348,20 @@ class User(Base):
 
     first_name = Column(String)
     last_name = Column(String)
-    email = Column(String, primary_key=True, nullable=False)
-    subscription_type = Column(String, default='free', nullable=False)
-    username = Column(String, nullable=False)
+    email = Column(String,
+                   primary_key=True,
+                   nullable=False)
+    subscription_type = Column(String,
+                               default='free',
+                               nullable=False)
+    username = Column(String,
+                      nullable=False)
     location = Column(String)
-    profile_pic = Column(
-        String, default='https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png', nullable=False)
+    profile_pic = Column(String,
+                         default='https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png',
+                         nullable=False)
     password = Column(String)
 
-class GoogleLogin():
-    def __init__(self):
-        self.CLIENT_ID = os.getenv('CLIENT_ID')
-        self.CLIENT_SECRET = os.getenv('CLIENT_SECRET')
-        self.oauth2_flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-            "client_secret.json",
-            scopes=["openid", "email", "profile"]
-        )
 
 class Dolores():
     def __init__(self):
@@ -466,17 +459,10 @@ class Dolores():
 
     async def chat(self, user_input, user, assistant='relo'):
         self.user_input = user_input
-        if assistant == 'form':
-            newUserInp = f'help me identify this query, if it is a query related to finding something in the form or going to certain part of the form, then respond with just "1" but if it related to getting help, or questions about parts of the form, respond with "0": "{user_input}"'
-            flag = self.assistant(newUserInp, assistant)
-            # print(flag)
-            if bool(int(flag)):
-                response = self.assistant(f'These are the sections and the subsections/questions from the form {self.webForm}. The keys of this dictionary represent the parts of the form, if the value for these keys is a list of dictionaries, then the keys of that dictionary are the sections of the part and their values are the questions in that section, if instead of a list of dictionaries, its a list of strings, then it will contain the question of that part, the sections and the questions are the same in this case, so the <question> will be the same as the <section>. Find the part of the webform based on this query: "{user_input}". respond with just this type of statement "navigate to <part> part of the <section> section. do not add anything else/sources.', assistant)
-                self.bot_response = response
-        else:
-            self.openJSON(user)
-            response = self.assistant(user_input, assistant).replace("\n", "<br>")
-            self.bot_response = response
+        self.openJSON(user)
+        response = self.assistant(
+            user_input, assistant).replace("\n", "<br>")
+        self.bot_response = response
         return response
 
     async def updateContext(self):
@@ -485,6 +471,44 @@ class Dolores():
         self.context['assistant'] = self.generateContext(
             f"{self.context['assistant']}\n\n{self.bot_response}", "assistant")
         self.saveJSON()
+    
+    def getDict(self, string):
+        pattern = r"\{[^}]*\}"
+        match = re.search(pattern, string)
+        extDict = {}
+        if match:
+            try:
+                extDict_str = match.group()
+                extDict = toDict(extDict_str)
+                return extDict
+            except:
+                return {}
+        else:
+            return {}
+
+
+    def autofill(self, messages, fieldExp):
+        client = OpenAI(api_key=self.OPENAI_API_KEY)
+        prompt = f"Extract key information from the following messages based on the provided fieldExp dictionary:\n\nfieldExp: {json.dumps(fieldExp)}\n\nMessages:\n"
+        chunk_size = 2000
+        message_chunks = [messages[i:i+chunk_size] for i in range(0, len(messages), chunk_size)]
+
+        output = {}
+
+        for chunk in message_chunks:
+            chunk_prompt = prompt + "\n".join(chunk) + "Note: "
+            response = client.chat.completions.create(
+                model="gpt-3.5-turbo-16k",
+                messages=[{"role": "system", "content": "You are an information extraction assistant. You also make sure the output is in a JSON dictionary type, with the keys matching the keys in fieldExp"},
+                        {"role": "user", "content": chunk_prompt}]
+            )
+            try:
+                chunk_output = json.loads(response.choices[0].message.content)
+            except:
+                chunk_output = self.getDict(response.choices[0].message.content)
+            output.update(chunk_output)
+
+        return output
 
 
 class Database():
@@ -516,7 +540,8 @@ class Database():
                 Column('user_messages', String),
                 Column('bot_messages', String),
                 Column('files', String),
-                Column('forms', String)
+                Column('forms', String),
+                Column('lawyers', String)
             )
             metadata.create_all(self.engine)
 
@@ -563,6 +588,19 @@ class Database():
             insert_vals = f"INSERT INTO {username.lower()} ({flag}) VALUES (:file_link)"
             conn.execute(text(insert_vals), {"file_link": file_link})
 
+    def add_lawyer(self, username, lawyer):
+        oldList = list(np.unique(self.getLawyers(username)))
+        inspector = inspect(self.engine)
+        columns = [col['name'] for col in inspector.get_columns(username.lower())]
+        if 'lawyers' not in columns:
+            alter_query = text(f"ALTER TABLE {username.lower()} ADD COLUMN lawyers VARCHAR;")
+            with self.engine.begin() as conn:
+                conn.execute(alter_query)
+        with self.engine.begin() as conn:
+            if lawyer not in oldList:
+                insert_vals = f"INSERT INTO {username.lower()} (lawyers) VALUES (:lawyer_id)"
+                conn.execute(text(insert_vals), {"lawyer_id": lawyer})
+
     def get_files(self, username, flag):
         with self.engine.begin() as conn:
             query = f"SELECT {flag} from {username.lower()}"
@@ -577,6 +615,26 @@ class Database():
             result = conn.execute(query)
             non_null_count = result.scalar()
         return non_null_count
+    
+    def getMessageHistory(self, username):
+        with self.engine.connect() as conn:
+            query = text(f"SELECT user_messages FROM {username.lower()};")
+            result = conn.execute(query)
+            col_vals = [row[0] for row in result]
+        return col_vals
+    
+    def getLawyers(self, username):
+        with self.engine.connect() as conn:
+            query = text(f"SELECT lawyers FROM {username.lower()};")
+            result = conn.execute(query)
+            col_vals = [row[0] for row in result if row[0] is not None]
+        # retVal = []
+        return list(np.unique(col_vals))
+    
+    def unsaveLawyers(self, username, lawyerID):
+        update_query = text(f"UPDATE {username.lower()} SET lawyers = NULL WHERE lawyers = :lawyername")
+        with self.engine.begin() as conn:
+            result = conn.execute(update_query, {"lawyername": lawyerID})
 
 
 class Stripe():
@@ -641,7 +699,6 @@ sql_db = Database()
 stripeObj = Stripe()
 s3 = S3()
 ff = formFiller()
-googleLogin = GoogleLogin()
 
 
 @app.post("/get_response/")
@@ -748,7 +805,6 @@ async def getPassword(request: Request, db: Session = Depends(sql_db.get_db)):
         if user.password != data['password']:
             return {'resp': 'Incorrect Password'}
         else:
-            print(user.email)
             return {'resp': True,
                     'username': user.username,
                     'firstName': user.first_name,
@@ -877,8 +933,10 @@ async def get_filesList(email_id: str = Form(...), flag: str = Form(...), db: Se
     tablename = user.username
     fileList = sql_db.get_files(tablename, flag)
     if len(fileList) > 0:
-        thumbnails = [standard_iconPack.get(file.split(
-            '.')[-1], unknownType) for file in fileList]
+        thumbnails = [
+            standard_iconPack.get(file.split('.')[-1], unknownType) for file in fileList
+        ]
+
         filenames = [file.split('/')[-1] for file in fileList]
         output_dic = [
             {'title': title, 'url': url, 'thumbnail': thumbnail}
@@ -939,14 +997,14 @@ async def getForm(
         if len(ind) > 0:
             newTextData[ind[0]] = [keys, text_data[keys]]
     newListData = {}
-    currData, _, _ = ff.transfer_data(newTextData)
+    currData, currSuppB = ff.transfer_data(newTextData)
     list_data = json.loads(lists) if lists else {}
     for list_key in list_data:
         ind = [key for key, value in ff.web_form_data.items() if isinstance(
             value, (list, tuple)) and value[0] == list_key]
         if len(ind) > 0:
             newListData[ind[0]] = [list_key, list_data[list_key]]
-    upData, _, _ = ff.transfer_data(newListData, currData)
+    upData, upSuppB = ff.transfer_data(newListData, currData, currSuppB)
     content = await partdhiddenFileInput.read()
     with open(f'./temp/{partdhiddenFileInput.filename}', 'wb') as f:
         f.write(content)
@@ -960,7 +1018,7 @@ async def getForm(
         signKey = ff.key_mapping[sKey][1]
         if signKey in sign_map:
             upData[ff.key_mapping[sKey][1]] = sign_map[ff.key_mapping[sKey][1]]
-    ff.main(upData, tempFile)
+    ff.fillForm(upData, tempFile)
     file = './i589_signed.pdf'
     user = db.query(User).filter(User.email == email_id).first()
     destination_dir = f"users/{user.username}/filledForms"
@@ -984,24 +1042,45 @@ async def getForm(
     os.remove(temp_file_path)
     return {"uploaded": file_url}
 
-@app.post("/verify-credential")
-async def verify_credential(request: Request):
-    try:
-        credential = await request.form()["credential"]
-        idinfo = google.oauth2.credentials.verify_google_oauth2_token(
-            credential, googleLogin.oauth2_flow.client_config["client_id"]
-        )
-        if idinfo["iss"] not in ["accounts.google.com", "https://accounts.google.com"]:
-            raise ValueError("Wrong Issuer.")
-        user_info = {
-            "email": idinfo["email"],
-            "firstName": idinfo["given_name"],
-            "lastName": idinfo["family_name"],
-            "profilePicUrl": idinfo["picture"],
-        }
-        return JSONResponse({"success": True, **user_info})
-    except ValueError as e:
-        return JSONResponse({"success": False, "error": str(e)})
+@app.post('/autofill/')
+async def getAutofillData(request: Request, db: Session = Depends(sql_db.get_db)):
+    data = await request.json()
+    user = db.query(User).filter(User.email == data['email_id']).first()
+    
+    messages = sql_db.getMessageHistory(user.username)
+    with open('contextExt.json', 'r') as exp:
+        fieldExp = json.load(exp)
+
+    webFields = bot_responses.autofill(messages, fieldExp)
+    return {"fields": webFields}
+
+@app.post('/saveLawyer/')
+async def save_lawyer(request: Request, db: Session = Depends(sql_db.get_db)):
+    data = await request.json()
+    user = db.query(User).filter(User.email == data['email_id']).first()
+    userName = user.username
+    lawyerID = data['user_name']
+    sql_db.add_lawyer(userName, lawyerID)
+    return {"message": "Lawyer added"}
+
+@app.post('/getLawyers/')
+async def get_lawyerList(request: Request, db: Session = Depends(sql_db.get_db)):
+    data = await request.json()
+    user = db.query(User).filter(User.email == data['email_id']).first()
+    userName = user.username
+    lawyersList = [lawyer for lawyer in sql_db.getLawyers(userName)]
+    # lawyersList.extend()
+    print(lawyersList)
+    return JSONResponse(lawyersList)
+
+@app.post('/removeLawyer/')
+async def remLawyer(request: Request, db: Session = Depends(sql_db.get_db)):
+    data = await request.json()
+    user = db.query(User).filter(User.email == data['email_id']).first()
+    userName = user.username
+    lawyer_id = data["lawyerID"]
+    sql_db.unsaveLawyers(userName, lawyer_id)
+    return {"message": "Lawyer removed"}
 
 
 
