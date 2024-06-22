@@ -3,6 +3,7 @@ const chatHistory = document.querySelector('.chat-container');
 const messageInput = document.getElementById('user-input');
 const formInput = document.getElementById('form-chatInput');
 const sendButton = document.getElementById('send');
+const formSend = document.getElementById('form-chatsend');
 const chatWindow = document.querySelector('.chat-bar-container');
 const formWindow = document.querySelector('.form-container');
 const chatMessages = document.querySelector('.chat-messages');
@@ -21,7 +22,7 @@ const monthlyPriceElements = document.querySelectorAll('.monthly-price');
 const yearlyPriceElements = document.querySelectorAll('.yearly-price');
 const yearlyPriceCrossedElements = document.querySelectorAll('.yearly-price-crossed');
 const backendUrl = 'http://127.0.0.1:8000/';
-//const backendUrl = 'https://justiguide.org/';
+// const backendUrl = 'https://justiguide.org/';
 const tabLinks = document.querySelectorAll('.sidebar a');
 const tabContents = document.querySelectorAll('.content .tab');
 const emailInput = document.getElementById('emailInput');
@@ -53,7 +54,7 @@ function initializeGoogleSignIn() {
   google.accounts.id.renderButton(
     document.getElementById("googleButton"),
     {
-      theme: "no-outline",
+      theme: "outline",
       size: "large",
       shape: "pill",
     }
@@ -235,7 +236,6 @@ function updateProfilePic(profilePicInput, profilePicCanvas) {
   }
 }
 
-
 function showProfileForm() {
   const profilePicUrl = "https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/users/user.png"
   const regEmailInput = document.getElementById('regEmailInput');
@@ -328,7 +328,6 @@ function registerUser(email, firstName, lastName, password, username, user_locat
     .catch(error => console.error(error));
 }
 
-
 function showEmailForm() {
   loginContainer.innerHTML = `
         <h2 id="emailformText">Register/Login</h2>
@@ -345,7 +344,6 @@ function showEmailForm() {
         </button>
     `;
 }
-
 
 function login() {
   const emailInput = document.querySelector('input[type="email"]');
@@ -413,7 +411,12 @@ async function showUserPage(username, firstName, lastName, email, profilePicUrl,
   const chatButton = document.getElementById('chat');
   chatButton.removeAttribute('style');
   const formButton = document.getElementById('form');
-  formButton.removeAttribute('style');
+  const lawyerButton = document.getElementById('lawyer');
+  const sub = await getSubscription();
+  if (sub != 'Free') {
+    formButton.removeAttribute('style');
+    lawyerButton.removeAttribute('style');
+  }
   loadTabContent('profile', userData);
   addUser(backendUrl, firstName, lastName, email, username, user_location, password = null, profilePic = profilePicUrl);
 
@@ -485,7 +488,6 @@ function showLoginWindow() {
 
   }
 }
-
 
 function addUserMessage(message, profilePicUrl) {
   const messageElement = document.createElement('div');
@@ -652,6 +654,7 @@ function hideAll() {
 
   botOptions.setAttribute('style', 'display: none;')
   document.getElementById("subscription-container").setAttribute("style", "display: none");
+  document.querySelector('.lawyer-connections').setAttribute("style", "display: none");
 }
 
 function updatePlanPrices() {
@@ -691,7 +694,7 @@ async function subscription() {
 
 async function getMessageNum() {
   const sub = await getSubscription();
-  if (sub == 'free' || sub == 'Free') {
+  if (sub == 'Free') {
     const email_id = getCookie('username').email
     try {
       const response = await fetch(`${backendUrl}free_chatLimit/`, {
@@ -726,40 +729,249 @@ function handleRadioButtonChange(event, extraElements) {
   });
 }
 
-function navigateTo(part, section) {
-  let parts = {}
-  fetch('partMap.json')
-  .then(response => response.json())
-  .then(data => {
-    parts = data;
-    const navPart = parts[part]
-    const nextPartSelection = document.querySelector(`.part-selection a[class="${navPart}"]`);
-    if (nextPartSelection) {
-      nextPartSelection.click();
-    }
-    let sections = {}
-    fetch('sectionMap.json')
-    .then(response => response.json())
-    .then(data => {
-      sections = data;
-      const navSection = sections[navPart][section]
-      let queryElement;
-      if (navPart !== 'part-d' && navPart !== 'part-suppAB') {        
-        queryElement = document.querySelector(`#${navPart}.section #${navSection}`) 
-      } else {
-        if (navSection !== "suppAB-resp-0" && navSection !== "part-d-applicant") {
-          queryElement = document.querySelector(`#${navPart}.section #${navSection}`)
-        } else {
-          queryElement = document.querySelector(`#${navPart}.section label[for="${navSection}"]`)
-        }
-      }
-      queryElement.scrollIntoView({ behavior: 'smooth' });
-      // console.log(navPart)
-      // console.log(navSection)
-    })
-  })
+
+
+async function loadLawyers() {
+  try {
+    const response = await fetch('lawyer-list.json');
+    const jsonData = await response.json();
+    return jsonData;
+  } catch (error) {
+    console.error("Error loading JSON:", error);
+    throw error
+  }
 }
 
+function getWebTitle(weblink, maxLength=25) {
+  const url = weblink.replace(/^(https?:\/\/)?(www\.)?(linkedin\.com\/in\/)?/, '')
+  if (url.length <= maxLength) {
+    return url;
+  }
+  return url.slice(0, maxLength) + '...';
+}
+
+async function displayLawyers(jsonData) {
+  const lawyerList = document.querySelector('.lawyer-list');
+  lawyerList.innerHTML = '';  
+  const all_savedLawyers = await getsavedLawyers();
+  const savedLawyers = all_savedLawyers.filter(element => element !== null)
+  
+  console.log(savedLawyers)
+  for (let key in jsonData) {
+    if (jsonData.hasOwnProperty(key)) {          
+      const lawyerDiv = document.createElement('div')
+      lawyerDiv.className = 'lawyer'
+      const user_name = key;
+      lawyerDiv.id = user_name;
+      const lawyer_info = jsonData[key];
+      let imageLink = "https://doloreschatbucket.s3.us-east-2.amazonaws.com/lawyer-connections/template-pp.png";
+      if (lawyer_info["Image link"]) {
+        imageLink = lawyer_info["Image link"]
+      }
+      let webTitle = getWebTitle(lawyer_info["Website"])
+      // const imageLink = lawyer_info["Image link"] || "https://doloreschatbucket.s3.us-east-2.amazonaws.com/lawyer-connections/template-pp.png";
+      let saveIcon = "https://doloreschatbucket.s3.us-east-2.amazonaws.com/lawyer-connections/lawyer-save.svg"
+      if (savedLawyers.includes(user_name)) {
+        saveIcon = "https://doloreschatbucket.s3.us-east-2.amazonaws.com/lawyer-connections/lawyer-saved.svg"
+      }
+      lawyerDiv.innerHTML = `
+      <div class="lawyer-details">
+          <div class="lawyer-connect">
+              <div class="lawyer-pic">
+                  <a href="${lawyer_info["Linkedin"]}" target="_blank">
+                    <svg class="lawyer-pp" id="${user_name}-profilePic" style="background-image: url('${imageLink}')"></svg>
+                  </a>
+              </div>
+              <div class="lawyer-socials">
+                  <!--<div class="lawyer-facebook">
+                      <svg class="socials" id="facebook"></svg>
+                  </div>
+                  <div class="lawyer-discord">
+                      <svg class="socials" id="discord"></svg>
+                  </div>-->
+              </div>
+          </div>
+          <div class="lawyer-info">
+              <div class="lawyer-header">
+                  <div class="lawyer-name">
+                      <div class="lawyer-nameVer">
+                          <div class="lawyer-fullName">
+                              <a class="fullname" id="${user_name}-fullName">${lawyer_info["Point of Contact"]}</a>
+                          </div>
+                          <div class="lawyer-verification">
+                              <svg id="lawyer-verifiedIcon"></svg>
+                          </div>
+                      </div>
+                      <div class="lawyer-saveShare">
+                          <!-- <div class="lawyer-share">
+                              <svg id="lawyer-shareIcon"></svg>
+                          </div> -->
+                          <div class="lawyer-save" id="${user_name}-saves">
+                            <a id="lawyer-saving">
+                              <svg id="lawyer-saveIcon" data-username="${user_name}" style="background-image: url('${saveIcon}');"></svg>
+                            </a>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="lawyer-description">
+                      <p class="description" id="${user_name}-description">${lawyer_info["Description"]}</p>
+                  </div>
+              </div>
+              <div class="lawyer-divider" id="h"></div>
+              <div class="lawyer-contact">
+                  <div class="lawyer-website">
+                      <svg id="lawyer-websiteIcon"></svg>
+                      <a class="website" id="${user_name}-website" href="${lawyer_info["Website"]}" target="_blank" style="text-decoration: none; color: inherit;">${webTitle}</a>
+                  </div>
+                  <div class="lawyer-divider" id="v"></div>
+                  <div class="lawyer-tel">
+                      <svg id="lawyer-telIcon"></svg>
+                      <a class="tel" id="${user_name}-tel">${lawyer_info["Phone Number"]}</a>
+                  </div>
+                  <div class="lawyer-divider" id="v"></div>
+                  <div class="lawyer-address">
+                      <svg id="lawyer-addressIcon"></svg>
+                      <a class="address" id="${user_name}-address">${lawyer_info["Main Office"]}</a>
+                  </div>
+              </div>
+              <div class="lawyer-divider" id="h"></div>
+              <div class="lawyer-qualifications">
+                  <div class="lawyer-qualElem">
+                      <div class="lawyer-education">
+                          <a class="education-title">Education</a>
+                          <a class="education" id="${user_name}-education">${lawyer_info["Education"]}</a>
+                      </div>
+                  </div>
+                  <div class="lawyer-qualElem">
+                      <div class="lawyer-divider" id="v"></div>
+                      <div class="lawyer-experience">
+                          <a class="experience-title">Experience</a>
+                          <a class="experience" id="${user_name}-experience">${lawyer_info["Experience"]} of
+                              experience</a>
+                      </div>
+                  </div>
+                  <div class="lawyer-qualElem">
+                      <div class="lawyer-divider" id="v"></div>
+                      <div class="lawyer-speciality">
+                          <a class="speciality-title">Speciality</a>
+                          <a class="speciality" id="${user_name}-speciality">${lawyer_info["Expertise"]}</a>
+                      </div>
+                  </div>
+              </div>
+              <div class="lawyer-divider" id="h"></div>
+              <div class="lawyer-review">
+                  <div class="lawyer-ratingComm">
+                      <div class="lawyer-ratings">
+                          <svg id="lawyer-ratingIcon"></svg>
+                          <a class="ratings" id="${user_name}-ratings">0.0 (0 reviews)</a>
+                      </div>
+                      <div class="lawyer-comments">
+                          <svg id="lawyer-commentIcon"></svg>
+                          <a class="comments" id="${user_name}-comments">0 comments</a>
+                      </div>
+                  </div>
+                  <div class="lawyer-profileReq">
+                    <div class="lawyer-request">
+                        <button class="request inactive" id="${user_name}-connectionReq">Send Request</button>
+                    </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div class="dolores-reco" style="display: none;">
+          <a class="recommended" id="${user_name}-recommended">Recommended by Dolores</a>
+      </div>`
+
+      lawyerList.appendChild(lawyerDiv);
+      if (lawyer_info["Website"] === "") {
+        const websiteElement = document.querySelector(`a[id="${user_name}-website"]`)
+        websiteElement.textContent = "unavailable";
+        websiteElement.removeAttribute('href')
+      }
+
+    }
+  }
+
+}
+
+function performSearch(jsonData){  
+  const searchInput = document.getElementById('search-query');
+  const searchQuery = searchInput.value.toLowerCase();
+  const noResult = document.querySelector('.no-result');
+  const filteredLawyers = Object.keys(jsonData).filter(key => {
+    const lawyer_info = jsonData[key];
+    return lawyer_info["Point of Contact"].toLowerCase().includes(searchQuery) ||
+    lawyer_info["Description"].toLowerCase().includes(searchQuery) ||
+    lawyer_info["Main Office"].toLowerCase().includes(searchQuery) ||
+    lawyer_info["Expertise"].toLowerCase().includes(searchQuery);
+  }).reduce((obj, key) => {
+    obj[key] = jsonData[key];
+    return obj;
+  }, {});
+  console.log(Object.keys(filteredLawyers).length)
+  displayLawyers(filteredLawyers);
+  if (Object.keys(filteredLawyers).length === 0) {
+    noResult.setAttribute('style', 'display: flex;')
+  } else {
+    noResult.setAttribute('style', 'display: none;')
+  }
+  searchInput.value = '';
+}
+
+async function saveLawyer(userName) {
+  const all_savedLawyers = await getsavedLawyers();
+  const savedLawyers = all_savedLawyers.filter(element => element !== null)
+  const email_id = getCookie('username').email;
+  if (!savedLawyers.includes(userName)){
+    try {
+      const response = await fetch(`${backendUrl}saveLawyer/`, {
+        method: 'POST',
+        body: JSON.stringify({user_name: userName, email_id: email_id})
+      });
+      if (!response.ok) {
+        console.error("Error saving the lawyer")
+      }
+  
+      const data = await response.json();
+      console.log("Success:", data["message"])
+    } catch (error) {
+      console.error("Error:", error)
+    }
+
+  } else {
+    try {
+      const response = await fetch(`${backendUrl}removeLawyer/`, {
+        method: 'POST',
+        body: JSON.stringify({lawyerID: userName, email_id: email_id})
+      });
+      if (!response.ok) {
+        console.error("Error unsaving the lawyer")
+      }
+  
+      const data = await response.json();
+      console.log("Success:", data["message"])
+    } catch (error) {
+      console.error("Error:", error)
+    }
+  }
+}
+
+async function getsavedLawyers() {
+  const email_id = getCookie('username').email;
+  try {
+    const response = await fetch(`${backendUrl}getLawyers/`, {
+      method: 'POST',
+      body: JSON.stringify({email_id: email_id})
+    });
+    if (!response.ok) {
+      console.error("Error getting lawyer list")
+    }
+    const lawyers = await response.json();
+    return lawyers
+  } catch (error) {
+    console.error("Error:", error)
+  }
+}
 
 
 async function setActiveButton(clickedButton) {
@@ -792,23 +1004,23 @@ async function setActiveButton(clickedButton) {
       if (!chatHistory.classList.contains('active')) {
         chatHistory.classList.add('active');
       }
-      //const toBlock = await getMessageNum();
-      //if (toBlock) {
-      //  if (toBlock.bool) {
-      //    alertTitle.textContent = 'Upgrade your Subscription!';
-      //    alertContent.textContent = 'You have reached the limit of free messages. To continue using the chat without any restrictions, please upgrade to the "Basic" tier.';
-      //    sendButton.style.pointerEvents = 'none';
-      //    sendButton.style.cursor = 'not-allowed';
-      //    messageInput.disabled = true;
-      //  } else {
-      //    alertTitle.textContent = 'Upgrade your Subscription!';
-      //    alertContent.textContent = `You have ${4 - parseInt(toBlock.num)} messages left. To enjoy unlimited access to the chat, consider upgrading to the "Basic" tier.`;
-      //  }
-      //  upgradeAlert.style.display = 'block';
-      //  closeBtn.addEventListener('click', () => {
-      //    upgradeAlert.style.display = 'none';
-      //  });
-      //}
+      const toBlock = await getMessageNum();
+      if (toBlock) {
+       if (toBlock.bool) {
+         alertTitle.textContent = 'Upgrade your Subscription!';
+         alertContent.textContent = 'You have reached the limit of free messages. To continue using the chat without any restrictions, please upgrade to the "Basic" tier.';
+         sendButton.style.pointerEvents = 'none';
+         sendButton.style.cursor = 'not-allowed';
+         messageInput.disabled = true;
+       } else {
+         alertTitle.textContent = 'Upgrade your Subscription!';
+         alertContent.textContent = `You have ${4 - parseInt(toBlock.num)} messages left. To enjoy unlimited access to the chat, consider upgrading to the "Basic" tier.`;
+       }
+       upgradeAlert.style.display = 'block';
+       closeBtn.addEventListener('click', () => {
+         upgradeAlert.style.display = 'none';
+       });
+      }
       botIcon.style.backgroundImage = 'url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/chat/unnamed_relo.png")';
       const iconLoc = 'https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/chat/unnamed_';
       botIcon.style.backgroundImage = `url('${iconLoc}${assistantID}.png')`;
@@ -855,23 +1067,23 @@ async function setActiveButton(clickedButton) {
                   console.error('Error: ', error);
                 });
               messageInput.value = '';
-              // const toBlock = await getMessageNum();
-              // if (toBlock) {
-              //   if (toBlock.bool) {
-              //     alertTitle.textContent = 'Upgrade your Subscription!';
-              //     alertContent.textContent = 'You have reached the limit of free messages. To continue using the chat without any restrictions, please upgrade to the "Basic" tier.';
-              //     sendButton.style.pointerEvents = 'none';
-              //     sendButton.style.cursor = 'not-allowed';
-              //     messageInput.disabled = true;
-              //   } else {
-              //     alertTitle.textContent = 'Upgrade your Subscription!';
-              //     alertContent.textContent = `You have ${4 - parseInt(toBlock.num)} messages left. To enjoy unlimited access to the chat, consider upgrading to the "Basic" tier.`;
-              //   }
-              //   upgradeAlert.style.display = 'block';
-              //   closeBtn.addEventListener('click', () => {
-              //     upgradeAlert.style.display = 'none';
-              //   });
-              // }
+              const toBlock = await getMessageNum();
+              if (toBlock) {
+                if (toBlock.bool) {
+                  alertTitle.textContent = 'Upgrade your Subscription!';
+                  alertContent.textContent = 'You have reached the limit of free messages. To continue using the chat without any restrictions, please upgrade to the "Basic" tier.';
+                  sendButton.style.pointerEvents = 'none';
+                  sendButton.style.cursor = 'not-allowed';
+                  messageInput.disabled = true;
+                } else {
+                  alertTitle.textContent = 'Upgrade your Subscription!';
+                  alertContent.textContent = `You have ${4 - parseInt(toBlock.num)} messages left. To enjoy unlimited access to the chat, consider upgrading to the "Basic" tier.`;
+                }
+                upgradeAlert.style.display = 'block';
+                closeBtn.addEventListener('click', () => {
+                  upgradeAlert.style.display = 'none';
+                });
+              }
             }
           });
           messageInput.addEventListener('keydown', async (event) => {
@@ -901,23 +1113,23 @@ async function setActiveButton(clickedButton) {
                     console.error('Error: ', error);
                   });
                 messageInput.value = '';
-                // const toBlock = await getMessageNum();
-                // if (toBlock) {
-                //   if (toBlock.bool) {
-                //     alertTitle.textContent = 'Upgrade your Subscription!';
-                //     alertContent.textContent = 'You have reached the limit of free messages. To continue using the chat without any restrictions, please upgrade to the "Basic" tier.';
-                //     sendButton.style.pointerEvents = 'none';
-                //     sendButton.style.cursor = 'not-allowed';
-                //     messageInput.disabled = true;
-                //   } else {
-                //     alertTitle.textContent = 'Upgrade your Subscription!';
-                //     alertContent.textContent = `You have ${4 - parseInt(toBlock.num)} messages left. To enjoy unlimited access to the chat, consider upgrading to the "Basic" tier.`;
-                //   }
-                //   upgradeAlert.style.display = 'block';
-                //   closeBtn.addEventListener('click', () => {
-                //     upgradeAlert.style.display = 'none';
-                //   });
-                // }
+                const toBlock = await getMessageNum();
+                if (toBlock) {
+                  if (toBlock.bool) {
+                    alertTitle.textContent = 'Upgrade your Subscription!';
+                    alertContent.textContent = 'You have reached the limit of free messages. To continue using the chat without any restrictions, please upgrade to the "Basic" tier.';
+                    sendButton.style.pointerEvents = 'none';
+                    sendButton.style.cursor = 'not-allowed';
+                    messageInput.disabled = true;
+                  } else {
+                    alertTitle.textContent = 'Upgrade your Subscription!';
+                    alertContent.textContent = `You have ${4 - parseInt(toBlock.num)} messages left. To enjoy unlimited access to the chat, consider upgrading to the "Basic" tier.`;
+                  }
+                  upgradeAlert.style.display = 'block';
+                  closeBtn.addEventListener('click', () => {
+                    upgradeAlert.style.display = 'none';
+                  });
+                }
               }
             }
           });
@@ -925,17 +1137,43 @@ async function setActiveButton(clickedButton) {
       });
     } else if (clickedButton.id == 'form') {
       hideAll();
-      // navigateTo('Part A.III.', 'Education')
+      const autofillButton = document.querySelector('.bottom-container #autofill');
       formAssistant.removeAttribute('style');
       if (!formWindow.classList.contains('active')) {
         formWindow.classList.add('active');
       }
+      autofillButton.addEventListener('click', () => {
+        const autofillOverlay = document.querySelector('.autofill-overlay');
+        autofillOverlay.style.display = 'flex'
+        fetch(`${backendUrl}autofill/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email_id: getCookie('username').email
+          })
+        })
+          .then(response => response.json())
+          .then(data => {
+            const autofillFields = data.fields;
+            autofill(autofillFields);
+            
+            // console.log(autofillFields)
+          })
+          .catch((error) => {
+            console.error('Error: ', error);
+          })
+          .finally(()=>{
+            autofillOverlay.style.display = 'none'
+          })
+      })
       formWindow.removeAttribute('style');
-      const DsignInput = document.getElementById("part-d-applicant");
-      const DsignTitle = DsignInput.querySelector('.sign-title');
-      const DsignSubtitle = DsignInput.querySelector('.sign-subtitle');
-      const DsignSelected = DsignInput.querySelector('.sign-uploaded');
-      const DhiddenFileInput = DsignInput.querySelector("#hiddenFileInput");
+      const signInput = document.getElementById("part-d-applicant");
+      const signTitle = signInput.querySelector('.sign-title');
+      const signSubtitle = signInput.querySelector('.sign-subtitle');
+      const signSelected = signInput.querySelector('.sign-uploaded');
+      const hiddenFileInput = signInput.querySelector("#hiddenFileInput");
 
       const formParts = document.querySelector('.parts');
       const formMenu = document.getElementById('form-parts');
@@ -1084,6 +1322,56 @@ async function setActiveButton(clickedButton) {
       })
 
 
+      function autofill(contextMessages) {
+        console.log(contextMessages)
+        const inputElements = document.querySelectorAll('.scrollable-content input')
+        inputElements.forEach((input) => {
+          const {type, id, value, checked} = input;
+          if (type==='text') {
+            input.value = contextMessages[id] || ''
+          } else if (type==='date') {
+            const conVal = contextMessages[id] || ''
+            const dates = conVal.split('/');
+            if (dates.length === 3) {
+              try {
+                input.value = `${dates[2]}-${dates[0]}-${dates[1]}`
+              } catch {
+
+              }
+            } else if (dates.length === 2) {
+              try {
+                input.value = `${dates[1]}-${dates[0]}-01`
+              } catch {
+
+              }              
+            }
+            
+          } else if (type==='radio') {
+            if (contextMessages[id] == value) {
+              input.checked = true
+            }
+          } else if (type==='checkbox') {
+            if (contextMessages[id] == value) {
+              input.checked = true
+            }
+          }
+        });
+        const textareaElements = document.querySelectorAll('.scrollable-content textarea')
+        textareaElements.forEach((textarea) => {
+          const {id, value} = textarea;
+          textarea.value = contextMessages[id] || ''
+        })
+        const selectElements = document.querySelectorAll('.scrollable-content select');
+        selectElements.forEach((select) => {
+          const {id, value} = select;
+          select.value = contextMessages[id] || ''
+        })
+        // console.log(inputElements)
+      }
+
+      
+
+
       const formDataDictionary = {};
       const allUnfilled = [];
       function handleSectionEndClick(event) {
@@ -1176,7 +1464,7 @@ async function setActiveButton(clickedButton) {
       formInput.addEventListener('keyup', () => {
         const message = formInput.value.trim();
         if (message) {
-          sendButton.addEventListener('click', async (event) => {
+          formSend.addEventListener('click', async (event) => {
             event.preventDefault();
             if (formInput.value != '') {
               addFormUserMessage(formInput.value, getCookie('username').profilePicUrl);
@@ -1197,36 +1485,12 @@ async function setActiveButton(clickedButton) {
                 .then(data => {
                   const botResponse = data.bot_response;
                   removeFormGeneratingMessage();
-                  if (botResponse.includes('navigate to') && botResponse.includes('part of the') && botResponse.includes('section to the') && botResponse.includes('question')) {
-                    const part = botResponse.split(' part of the ')[0].split('navigate to ')[1];
-                    const section = botResponse.split(' part of the ')[1].split(' section to the ')[0];
-                    addDolMessage(`Sure! Navigating you to the ${section} section of the ${part}`)
-                    navigateTo(part, section)
-                  } else {
-                    addDolMessage(botResponse);
-                  }
+                  addDolMessage(botResponse);
                 })
                 .catch((error) => {
                   console.error('Error: ', error);
                 });
                 formInput.value = '';
-              // const toBlock = await getMessageNum();
-              // if (toBlock) {
-              //   if (toBlock.bool) {
-              //     alertTitle.textContent = 'Upgrade your Subscription!';
-              //     alertContent.textContent = 'You have reached the limit of free messages. To continue using the chat without any restrictions, please upgrade to the "Basic" tier.';
-              //     sendButton.style.pointerEvents = 'none';
-              //     sendButton.style.cursor = 'not-allowed';
-              //     formInput.disabled = true;
-              //   } else {
-              //     alertTitle.textContent = 'Upgrade your Subscription!';
-              //     alertContent.textContent = `You have ${4 - parseInt(toBlock.num)} messages left. To enjoy unlimited access to the chat, consider upgrading to the "Basic" tier.`;
-              //   }
-              //   upgradeAlert.style.display = 'block';
-              //   closeBtn.addEventListener('click', () => {
-              //     upgradeAlert.style.display = 'none';
-              //   });
-              // }
             }
           });
           formInput.addEventListener('keydown', async (event) => {
@@ -1256,23 +1520,6 @@ async function setActiveButton(clickedButton) {
                     console.error('Error: ', error);
                   });
                   formInput.value = '';
-                // const toBlock = await getMessageNum();
-                // if (toBlock) {
-                //   if (toBlock.bool) {
-                //     alertTitle.textContent = 'Upgrade your Subscription!';
-                //     alertContent.textContent = 'You have reached the limit of free messages. To continue using the chat without any restrictions, please upgrade to the "Basic" tier.';
-                //     sendButton.style.pointerEvents = 'none';
-                //     sendButton.style.cursor = 'not-allowed';
-                //     formInput.disabled = true;
-                //   } else {
-                //     alertTitle.textContent = 'Upgrade your Subscription!';
-                //     alertContent.textContent = `You have ${4 - parseInt(toBlock.num)} messages left. To enjoy unlimited access to the chat, consider upgrading to the "Basic" tier.`;
-                //   }
-                //   upgradeAlert.style.display = 'block';
-                //   closeBtn.addEventListener('click', () => {
-                //     upgradeAlert.style.display = 'none';
-                //   });
-                // }
               }
             }
           });
@@ -2082,17 +2329,17 @@ async function setActiveButton(clickedButton) {
 
 
 
-      DsignInput.addEventListener('click', () => {
-        DhiddenFileInput.click();
+      signInput.addEventListener('click', () => {
+        hiddenFileInput.click();
       });
 
-      DhiddenFileInput.addEventListener('change', () => {
-        const DselectedFile = DhiddenFileInput.files[0];
-        DsignInput.style.borderStyle = 'solid';
-        DsignTitle.style.display = 'none';
-        DsignSubtitle.style.display = 'none';
-        DsignSelected.style.display = 'block';
-        DsignSelected.textContent += `${DselectedFile.name}`;
+      hiddenFileInput.addEventListener('change', () => {
+        const selectedFile = hiddenFileInput.files[0];
+        signInput.style.borderStyle = 'solid';
+        signTitle.style.display = 'none';
+        signSubtitle.style.display = 'none';
+        signSelected.style.display = 'block';
+        signSelected.textContent += `${selectedFile.name}`;
       });
       function handlePartChange(event) {
         const partDropdown = event.target;
@@ -2124,6 +2371,42 @@ async function setActiveButton(clickedButton) {
       }
       const chatButton = document.getElementById('chat');
       chatButton.removeAttribute('style');
+    } else if (clickedButton.id == 'lawyer') {
+      hideAll();
+      document.querySelector('.lawyer-connections').removeAttribute("style");
+      const searchInput = document.getElementById('search-query');
+      const searchButton = document.getElementById('search-send');
+      let jsonData = await loadLawyers();
+      await displayLawyers(jsonData);
+      const saveButtons = document.querySelectorAll('svg[id="lawyer-saveIcon"]');
+      // console.log(saveButtons)
+      // console.log(jsonData)
+      searchButton.addEventListener('click', () => {
+        performSearch(jsonData)
+      });
+      searchInput.addEventListener('keyup', (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          performSearch(jsonData)
+        }
+      });
+      saveButtons.forEach(button => {
+        button.addEventListener('click', function(event) {
+          console.log(this.style.backgroundImage);
+          event.preventDefault();
+          const userName = this.getAttribute('data-username');
+          if (this.style.backgroundImage.includes("save.svg")){
+            this.style.backgroundImage = "url('https://doloreschatbucket.s3.us-east-2.amazonaws.com/lawyer-connections/lawyer-saved.svg')"
+          } else {
+            this.style.backgroundImage = "url('https://doloreschatbucket.s3.us-east-2.amazonaws.com/lawyer-connections/lawyer-save.svg')"
+          }
+          saveLawyer(userName);
+        })
+      })
+
+
+
+
     }
   }
 }
@@ -2135,7 +2418,6 @@ function showDisclaimer() {
 function closeDisclaimer() {
   document.querySelector('.disclaimer').style.display = 'none';
 }
-
 
 async function createLoginCookie(username, firstName, lastName, email, profilePicUrl, user_location = null) {
   const data = await getProfilePic(email);
@@ -2162,14 +2444,13 @@ function parseJwt(token) {
   return JSON.parse(jsonPayload);
 }
 
-
 function handleCredentialResponse(response) {
 
   const decodedCredential = parseJwt(response.credential);
   const email = decodedCredential.email;
   const username = email.split('@')[0];
   const firstName = decodedCredential.given_name;
-  const lastName = decodedCredential.family_nsmr;
+  const lastName = decodedCredential.family_name;
   const profilePicUrl = decodedCredential.picture;
   createLoginCookie(username, firstName, lastName, email, profilePicUrl, user_location = null);
   document.getElementById("login-window").setAttribute("style", "display: none");
@@ -2195,13 +2476,7 @@ function addUser(backendUrl, firstName, lastName, email, username, user_location
 
 }
 
-
-
 buttons.forEach(button => button.addEventListener('click', () => setActiveButton(button)));
-
-
-
-
 
 async function handlePlanButtonClick(event) {
   const button = event.target;
@@ -2427,8 +2702,6 @@ function saveNewPassword(password) {
   const profileForm = document.querySelector('#profile form');
   profileForm.style.display = 'block';
 }
-
-
 
 async function loadFilesContent(contentDiv) {
   let filesData = await getFiles('files') || [];
