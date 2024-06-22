@@ -130,7 +130,33 @@ input:checked+.slider .slider-handle {
   max-height: 80vh;
 }
 
+.autofill-overlay {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  background-color: #6666669c;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 3;
+  /* opacity: 0.5; */
+}
 
+.autofill-gif {
+  height: 48px;
+  width: 48px;
+  background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/gifs/forms/autofill.gif");
+  background-size: contain;
+  background-repeat: no-repeat;
+
+}
+
+.autofill-message {
+  color: #FFFFFF
+}
 
 .chat-container.active {
   display: flex;
@@ -175,6 +201,25 @@ input:checked+.slider .slider-handle {
   justify-content: flex-start;
 }
 
+.autofill-button {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  margin: 10px;
+}
+
+button[id="autofill"] {
+  width: fit-content;
+  background-color: #5080DE;
+  border: none;
+  outline: none;
+  padding: 10px;
+  color: #FFFFFF;
+  font-family: inherit;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: inherit;
+}
 
 .user-profile,
 .bot-profile {
@@ -431,6 +476,10 @@ a[id="assistant"] {
   background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/chat/send.svg");
 }
 
+.chat-icons.search {
+  background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/lawyer-search/search.svg");
+}
+
 .chat-icons.assistant {
   width: 38.4px;
   height: 38.4px;
@@ -489,7 +538,13 @@ a[id="assistant"] {
 }
 
 .button-icon.info {
-  background-image: url('https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/chat/unnamed_dolores.png');
+  background-image: url('https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/chat/unnamed_forms.png');
+  height: 75%;
+  width: 75%;
+}
+
+.button-icon.lawyer {
+  background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/side_menu/lawyer.png");
   height: 75%;
   width: 75%;
 }
@@ -794,7 +849,7 @@ a[id="formAssist"] {
 
 #tel-divide.divided-text {
   display: flex;
-  flex-direction: row;  
+  flex-direction: row;
 }
 
 #tel-divide input[id="a-i-telArea"] {
@@ -806,7 +861,7 @@ select {
   background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/icons/form/arrow.png");
   background-repeat: no-repeat;
   background-size: 1.5rem;
-  background-position: right 0.4rem top 50%;  
+  background-position: right 0.4rem top 50%;
   font-family: inherit;
 }
 
@@ -1148,14 +1203,10 @@ input[type="date"] {
 }
 
 #form-chatsend.chat-buttons {
-  height: 30px;
-  width: 30px;
+  height: 45px;
+  width: 45px;
 }
 
-#form-chatsend.chat-buttons .chat-icons.send {
-  width: 75%;
-  height: 75%;
-}
 
 
 .hidden {
@@ -1508,7 +1559,6 @@ button[id="savePassword"]:disabled {
   background-color: #FFFF;
   color: rgba(0, 0, 0);
   font-family: 'Nunito', sans-serif;
-  /* padding: 10px 20px; */
   margin: 10px;
   border-radius: 25px;
   outline: none;
@@ -1519,12 +1569,6 @@ button[id="savePassword"]:disabled {
   align-items: center;
   justify-content: center;
 }
-
- /* {
-  display: flex;
-  justify-content: center;
-  height: 25px;
-} */
 
 #separator {
   text-align: center;
@@ -2305,6 +2349,487 @@ input[id="lastname"] {
 .profilePicText {
   text-align: center;
 }
+
+.lawyer-connections {
+  /* background-color: #FFFFFF; */
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  left: 10vw;
+  top: 15vh;
+  height: 85vh;
+  width: 80vw;
+
+}
+
+.search-bar {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  width: 80%;
+  height: 40px;
+  padding: 10px;
+  bottom: 10px;
+  background-color: #FFFFFF;
+  border-radius: 30px;
+  box-shadow: 0 0 4px rgb(0, 0, 0, 0.1);
+  gap: 10px;
+  align-items: center;
+  left: calc(-12.5px + 10%);
+
+}
+
+#search-send.chat-buttons {
+  border-radius: 20px;
+  height: 40px;
+  width: 40px;
+}
+
+input[id="search-query"] {
+  font-family: inherit;
+  width: 100%;
+  border-radius: 20px;
+  outline: none;
+  border: none;
+  padding: 10px;
+  background-color: #5080DE0D;
+}
+
+.lawyer-container {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* background-color: #0056b3; */
+  left: calc(-25px + 10%);
+  top: 0vh;
+  bottom: 60px;
+  width: 80%;
+  padding: 25px;
+  overflow-y: auto;
+  justify-content: space-between;
+  z-index: -1;
+  gap: 30px
+}
+
+.lawyer-list .lawyer {
+  position: relative;
+  /* padding: 10px; */
+  border-radius: 20px;
+  /* gap: 15px; */
+  /* height: 100px; */
+  display: flex;
+  flex-direction: column;
+  font-family: inherit;
+  background-color: #FFFFFF;
+}
+
+.lawyer-list {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.lawyer-education,
+.lawyer-experience,
+.lawyer-speciality,
+.lawyer-connect,
+.lawyer-info,
+.lawyer-header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* .lawyer-connect,
+.lawyer-info {
+  height: 300px;
+} */
+
+.lawyer-connect {
+  justify-content: space-evenly;
+}
+
+.no-result {
+  display: flex;  
+  font-size: 18px;
+  font-weight: 100;
+  opacity: 0.8;
+}
+
+.lawyer-description,
+.lawyer-details,
+.lawyer-contact,
+.lawyer-pic,
+.lawyer-socials,
+.lawyer-name,
+.lawyer-website,
+.lawyer-tel,
+.lawyer-address,
+.lawyer-review,
+.lawyer-ratings,
+.lawyer-comments,
+.lawyer-saveShare,
+.lawyer-nameVer,
+.lawyer-ratingComm,
+.lawyer-qualElem,
+.lawyer-profileReq {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.lawyer-name {
+  width: 100%;
+  justify-content: space-between;
+}
+
+.lawyer-details {
+  padding: 20px;
+  gap: 20px;
+}
+
+.lawyer-pic {
+  height: 254px;
+  width: 175px;
+  overflow: hidden;
+}
+
+.lawyer-pp {
+  width: 100%;
+  height: 100%;
+  /* background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/lawyer-connections/template-pp.png"); */
+    background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  border-radius: 16px;
+}
+
+.lawyer-socials {
+  justify-content: center;
+  justify-content: space-evenly;
+}
+
+.lawyer-info {
+  width: calc(100% - 185px);
+  gap: 15px;
+}
+
+.lawyer-description {
+  font-size: 14px;
+  flex-wrap: wrap;
+  color: #979797;
+}
+
+
+/* .lawyer-socials div {
+  height: 36px;
+  width: 36px;
+  padding: 12px;
+  align-items: center;
+} */
+
+.socials {
+  position: relative;
+  height: 24px;
+  width: 24px;
+  background-color: #FFFFFF;
+  border-radius: 36px;
+  box-shadow: 0 0 4px rgb(0, 0, 0, 0.1);
+}
+
+.lawyer-profile {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+  background-color: #5080DE;
+  box-shadow: 0 0 4px rgb(0, 0, 0, 0.1);
+  padding: 10px;
+  border-radius: 30px;
+}
+
+
+/* svg[id="discord"] {
+  background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/lawyer-connections/discord.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+svg[id="facebook"] {
+  background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/lawyer-connections/facebook.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+} */
+
+svg[id="profile"] {
+  height: 16px;
+  width: 16px;
+  border-radius: 0;
+  box-shadow: none;
+  background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/lawyer-connections/user-profile.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-color: transparent;
+}
+
+
+
+.dolores-reco {
+  display: flex;
+  justify-content: center;
+  background-color: #5080DE;
+  padding: 10px;
+  color: #FFFF;
+  border-radius: 0 0 20px 20px;
+}
+
+.lawyer-name {
+  align-items: center;
+}
+
+.fullname {
+  font-size: 24px;
+}
+
+#lawyer-verifiedIcon,
+#lawyer-shareIcon,
+#lawyer-saveIcon {
+  background-size: contain;
+  background-repeat: no-repeat;
+
+}
+
+.lawyer-divider {
+  background-color: #e9e9e9;
+}
+
+#h.lawyer-divider {
+  height: 1px;
+  width: 100%;
+}
+
+#v.lawyer-divider {
+  width: 1px;
+  height: 100%;
+}
+
+.lawyer-verification {
+  display: flex;
+  align-items: center;
+}
+
+#lawyer-verifiedIcon {
+  height: 24px;
+  width: 24px;
+  background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/lawyer-connections/verified.svg");
+}
+
+#lawyer-saveIcon {
+  height: 36px;
+  width: 36px;
+  
+}
+
+#lawyer-shareIcon {
+  height: 36px;
+  width: 36px;
+  background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/lawyer-connections/lawyer-share.svg");
+}
+
+/* #lawyer-shareIcon,
+#lawyer-saveIcon {
+  cursor: not-allowed;
+} */
+
+#lawyer-websiteIcon,
+#lawyer-telIcon,
+#lawyer-addressIcon {
+  min-height: 18px;
+  min-width: 18px;
+  height: 18px;
+  width: 18px;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+
+
+.lawyer-contact {
+  gap: 20px;
+  font-size: 16px;
+}
+
+#lawyer-websiteIcon {
+  background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/lawyer-connections/websiteIcon.svg");
+}
+
+#lawyer-telIcon {
+  background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/lawyer-connections/telIcon.svg");
+}
+
+#lawyer-addressIcon {
+  background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/lawyer-connections/addressIcon.svg");
+}
+
+.lawyer-qualifications {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  /* justify-content: space-between; */
+}
+
+/* .lawyer-qualifications>div:first-child {
+  flex: 0.333;
+}
+
+.lawyer-qualifications>div:last-child {
+  flex: 0.333;
+} */
+
+.lawyer-education .education-title,
+.lawyer-experience .experience-title,
+.lawyer-speciality .speciality-title {
+  font-size: 18px;
+  color: #000;
+  font-weight: 500;
+}
+
+.lawyer-education .education,
+.lawyer-experience .experience,
+.lawyer-speciality .speciality {
+  font-size: 14px;
+  color: #858585
+}
+
+#lawyer-ratingIcon,
+#lawyer-commentIcon {
+  height: 20px;
+  width: 20px;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+#lawyer-commentIcon {
+  background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/lawyer-connections/lawyer-comments.svg");
+}
+
+#lawyer-ratingIcon {
+  background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/lawyer-connections/lawyer-ratings.svg");
+}
+
+.lawyer-review {
+  justify-content: space-between;
+  color: #5080DE;
+}
+
+.lawyer-ratingComm {
+  gap: 15px;
+}
+
+.lawyer-ratings,
+.lawyer-comments {
+  display: flex;
+  align-items: center;
+  cursor: not-allowed;
+}
+
+.request {
+  padding: 10px;
+  background-color: #5080DE;
+  border: none;
+  color: #FFFF;
+  font-family: inherit;
+  font-size: 16px;
+  border-radius: 25px;
+}
+
+.request.inactive {
+  padding: 10px;
+  background-color: #dddcdc;
+  border: none;
+  color: #aaa9a9;
+  font-family: inherit;
+  font-size: 16px;
+  border-radius: 25px;
+  cursor: not-allowed;
+}
+
+.lawyers-db {
+  /* position: absolute; */
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  height: 48px;
+  /* bottom: 80px; */
+  width: 100%;
+  align-items: center;
+}
+
+.lawyers-previous,
+.lawyers-next {
+  display: flex;
+  /* background-color: #FFFFFF; */
+  border: 2px solid #5080DE;
+  border-radius: 48px;
+  box-shadow: 0 0 8pc rgb(0, 0, 0, 0.1);
+  justify-content: center;
+  align-items: center;
+}
+
+.lawyers-load {
+  display: flex;
+  border: none;
+  border: none;
+  background-color: #5080DE;
+  border-radius: 48px;
+  box-shadow: 0 0 8pc rgb(0, 0, 0, 0.1);
+  justify-content: center;
+  align-items: center;
+}
+
+/* .lawyers-next {
+  
+} */
+
+button[id="lawyer-prevPage"],
+button[id="lawyer-nextPage"] {
+  display: flex;
+  background-color: transparent;
+  height: 20px;
+  width: 20px;
+  padding: 18px;
+  border-radius: 48px;
+  border: none;
+  background-repeat: no-repeat;
+  background-size: 25%;
+  background-position: center;
+  opacity: 0.5;
+  cursor: pointer;
+
+}
+
+button[id="lawyer-nextPage"] {
+  background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/lawyer-connections/next-prev.svg");
+}
+
+button[id="lawyer-prevPage"] {
+  transform: rotate(180deg);
+  background-image: url("https://doloreschatbucket.s3.us-east-2.amazonaws.com/lawyer-connections/next-prev.svg");
+}
+
+button[id="lawyer-loadMore"] {
+  display: flex;
+  background-color: transparent;
+  padding: 10px 24px 10px 24px;
+  border: none;
+  color: #FFFF;
+  font-size: 14px;
+  font-family: inherit;
+
+}
+
 
 
 @media (max-width: 1200px) {
